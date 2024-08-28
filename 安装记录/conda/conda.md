@@ -42,3 +42,7 @@ mv 2022.05-linux-x86-64.sh的包 /home/vex/^C
 
 参考那个1分钟的视频
 
+---
+##检查版本
+
+conda --version
