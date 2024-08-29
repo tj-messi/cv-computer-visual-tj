@@ -59,6 +59,16 @@ Dist（Q，c）=根号累加（qi-qc）
 
 ---
 ##Some Properties of Time Series Discords
+###稀疏（离散）空间之中讨论不和谐问题不必要
+
+###不一致的结果是不可递归（传递）的
+
+---
+## FINDING TIME SERIES DISCORDS
+介绍了一个暴力的算法，复杂度为o（n平方）对于n长度的数据集
+
+
+
 
 
 
