@@ -26,5 +26,8 @@
 
 ---
 ##RELATED WORK AND BACKGROUND
-###
+###定义1
+时间序列T=t1.t2.....tm是m哥实值变量的有序集合
+
+
 
