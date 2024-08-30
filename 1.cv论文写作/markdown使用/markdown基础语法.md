@@ -41,11 +41,11 @@
 ---
 ###2.5插入图片
 
-[] ()
+![] ()
 
 图片描述+图片的url地址或者本地的地址
 
-<https://i-blog.csdnimg.cn/blog_migrate/ec1c9a9c57e4d6494b5b36554f7af692.png>
+![](https://i-blog.csdnimg.cn/blog_migrate/ec1c9a9c57e4d6494b5b36554f7af692.png)
 
 ---
 ###2.6分割线
