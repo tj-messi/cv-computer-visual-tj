@@ -40,9 +40,6 @@ def L2_Loss(y_hat,y):
     #L2损失函数
     return np.sum(np.abs(y_hat-y)**2);
 
-yhat = np.array([.9, 0.2, 0.1, .4, .9])
-y = np.array([1, 0, 0, 1, 1])
-print("L2 = " + str(L2_Loss(yhat,y)))
 
 
 
