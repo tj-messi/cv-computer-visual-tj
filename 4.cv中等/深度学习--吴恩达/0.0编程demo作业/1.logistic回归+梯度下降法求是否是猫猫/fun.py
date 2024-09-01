@@ -16,5 +16,14 @@ def image2vector(image):
     return image.reshape((image.shape[0] * image.shape[1] * image.shape[2], 1))
 
 
+def normalize_rows(x):
+    #归一化数据
+    return x / np.linalg.norm(x, axis=1, keepdims=True)
+
+
+def softmax(x):
+    #softmax函数
+    exp_x = np.exp(x)
+    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
 
