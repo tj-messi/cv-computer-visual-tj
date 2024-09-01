@@ -11,5 +11,10 @@ def sigmoid_derivative(x):
     ds = s * (1 - s)
     return ds
 
+def image2vector(image):
+    #将图像转化为向量
+    return image.reshape((image.shape[0] * image.shape[1] * image.shape[2], 1))
+
+
 
 
