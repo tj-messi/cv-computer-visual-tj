@@ -26,4 +26,7 @@ def softmax(x):
     exp_x = np.exp(x)
     return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
+def vect2image(vector, shape):
+    #将向量转化为图像
+    return vector.reshape(shape)
 
