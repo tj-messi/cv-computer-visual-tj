@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import imageio
 import h5py
 import scipy
 import fun
@@ -53,15 +54,28 @@ def model(X_train, Y_train, X_test, Y_test, num_iterations=2000, learning_rate=0
 
 d = model(train_set_x, train_set_y, test_set_x, test_set_y, num_iterations = 2000, learning_rate = 0.005, print_cost = True)
 
+
 ## START CODE HERE ## (PUT YOUR IMAGE NAME)
-my_image = "cat1.jpg"   # change this to the name of your image file
+my_image = "cat_in_iran.jpg"  # 确保该图片在 "images" 目录下
 ## END CODE HERE ##
 
 # We preprocess the image to fit your algorithm.
 fname = "images/" + my_image
-image = np.array(ndimage.imread(fname, flatten=False))
-my_image = scipy.misc.imresize(image, size=(num_px,num_px)).reshape((1, num_px*num_px*3)).T
+
+# 使用 imageio 读取图像
+image = imageio.imread(fname)
+
+# 使用 PIL 调整图像大小
+image = Image.fromarray(image)
+image = image.resize((num_px, num_px))  # 调整大小
+my_image = np.array(image).reshape((num_px * num_px * 3, 1))  # 确保形状正确，不需要转置
+
+# 预测图像
 my_predicted_image = fun.predict(d["w"], d["b"], my_image)
 
+print("y = " + str(np.squeeze(my_predicted_image)) + ", your algorithm predicts a \"" +
+      classes[int(np.squeeze(my_predicted_image))].decode("utf-8") + "\" picture.")
+# 显示图像
 plt.imshow(image)
-print("y = " + str(np.squeeze(my_predicted_image)) + ", your algorithm predicts a \"" + classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
+plt.axis('off')  # 隐藏坐标轴
+plt.show()
