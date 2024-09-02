@@ -52,7 +52,6 @@ def load_planar_dataset():
         
     X = X.T
     Y = Y.T
-
     return X, Y
 
 def load_extra_datasets():  
