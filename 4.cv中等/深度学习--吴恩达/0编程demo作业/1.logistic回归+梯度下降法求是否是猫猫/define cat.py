@@ -56,7 +56,7 @@ d = model(train_set_x, train_set_y, test_set_x, test_set_y, num_iterations = 200
 
 
 ## START CODE HERE ## (PUT YOUR IMAGE NAME)
-my_image = "my_image.jpg"  # 确保该图片在 "images" 目录下
+my_image = "cat_in_iran.jpg"  # 确保该图片在 "images" 目录下
 ## END CODE HERE ##
 
 # We preprocess the image to fit your algorithm.
