@@ -2,14 +2,17 @@ import math
 import numpy as np
 
 def basic_sigmoid(x):
-    #基础basic函数
-    return 1 / (1 + np.exp(-x))
+    #sigmoid函数
+    s = 1/(1+np.exp(-x))
+    return s
 
 def sigmoid_derivative(x):
-    #sigmoid函数函数
+    #sigmoid函数导数
     s = basic_sigmoid(x)
-    ds = s * (1 - s)
+    ds = np.exp(-x)/(1+np.exp(-x)**2)
     return ds
+
+#print ("sigmoid([0, 2]) = " + str(basic_sigmoid(np.array([0,2]))))
 
 def image2vector(image):
     #将图像转化为向量
