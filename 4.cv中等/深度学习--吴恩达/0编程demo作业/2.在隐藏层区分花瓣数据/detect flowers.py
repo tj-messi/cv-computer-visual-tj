@@ -1,4 +1,5 @@
 import numpy as np
+import fun
 import matplotlib.pyplot as plt
 import sklearn
 import sklearn.datasets
@@ -41,6 +42,7 @@ print('Accuracy of logistic regression: %d %%' % accuracy +
       ' (percentage of correctly labelled datapoints)')
 
 plt.show()
+# 准确度在47这样，二分类准确度不高
 '''
 
 
