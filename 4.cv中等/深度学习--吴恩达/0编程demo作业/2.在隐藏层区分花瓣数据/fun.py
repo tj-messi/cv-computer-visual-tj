@@ -1,6 +1,7 @@
 import numpy as np
 import planar_utils
 import testCases
+import scipy
 def layer_sizes(X, Y):
     """
     Arguments:
@@ -70,7 +71,7 @@ print("b2 = " + str(parameters["b2"]))
 '''
 
 def sigmoid(z):
-    return 1/(1+np.exp(-z))
+    return 1/(1+scipy.special.expit(-z))
 
 def forward_propagation(X, parameters):
     """
@@ -113,3 +114,191 @@ A2, cache = forward_propagation(X_assess, parameters)
 # Note: we use the mean here just to make sure that your output matches ours.
 print(np.mean(cache['Z1']) ,np.mean(cache['A1']),np.mean(cache['Z2']),np.mean(cache['A2']))
 '''
+
+def compute_cost(A2, Y, parameters):
+    """
+    Computes the cross-entropy cost given in equation (13)
+
+    Arguments:
+    A2 -- The sigmoid output of the second activation, of shape (1, number of examples)
+    Y -- "true" labels vector of shape (1, number of examples)
+    parameters -- python dictionary containing your parameters W1, b1, W2 and b2
+
+    Returns:
+    cost -- cross-entropy cost given equation (13)
+    """
+    # 获取样本数量
+    m = Y.shape[1]
+
+    # 获取w1，w2
+    W1 = parameters.get('W1')
+    W2 = parameters.get('W2')
+
+    # 成本计算
+    epsilon = 1e-15  # 添加一个很小的常数
+    logprobs = np.multiply(np.log(A2+epsilon), Y) + np.multiply(np.log(1 - A2+epsilon), (1 - Y))
+    cost = np.sum(logprobs, axis=1, keepdims=True) / -m
+
+    #使用np.squeeze去除成本数组中的单维度条目，确保成本是一个标量（即单个浮点数）
+    cost = np.squeeze(cost)
+    cost = float(cost)
+    assert (isinstance(cost, float)) # 检查cost类型
+
+    return cost
+
+'''
+A2, Y_assess, parameters = testCases.compute_cost_test_case()
+
+print("cost = " + str(compute_cost(A2, Y_assess, parameters)))
+'''
+
+
+def backward_propagation(parameters, cache, X, Y):
+    """
+    Implement the backward propagation using the instructions above.
+
+    Arguments:
+    parameters -- python dictionary containing our parameters
+    cache -- a dictionary containing "Z1", "A1", "Z2" and "A2".
+    X -- input data of shape (2, number of examples)
+    Y -- "true" labels vector of shape (1, number of examples)
+
+    Returns:
+    grads -- python dictionary containing your gradients with respect to different parameters
+    """
+    m = X.shape[1]
+
+    # 取出w1.w2
+    W1 = parameters.get('W1')
+    W2 = parameters.get('W2')
+
+    # 取出A1.A2
+    A1 = cache.get('A1')
+    A2 = cache.get('A2')
+
+    # 计算 dZ2,dW1, db1, dW2, db2.
+    dZ2 = A2 - Y
+    dW2 = np.dot(dZ2, A1.T) / m
+    db2 = np.sum(dZ2, axis=1, keepdims=True) / m
+    dZ1 = np.dot(W2.T, dZ2) * (1 - np.power(A1, 2))
+    # A1=tanh(Z1) 所以 g'(Z1)=(1-np.power(A1,2))
+    dW1 = np.dot(dZ1, X.T) / m
+    db1 = np.sum(dZ1, axis=1, keepdims=True) / m
+
+    grads = {"dW1": dW1,
+             "db1": db1,
+             "dW2": dW2,
+             "db2": db2}
+
+    return grads
+'''
+parameters, cache, X_assess, Y_assess =testCases. backward_propagation_test_case()
+
+grads = backward_propagation(parameters, cache, X_assess, Y_assess)
+print ("dW1 = "+ str(grads["dW1"]))
+print ("db1 = "+ str(grads["db1"]))
+print ("dW2 = "+ str(grads["dW2"]))
+print ("db2 = "+ str(grads["db2"]))
+'''
+
+
+def update_parameters(parameters, grads, learning_rate=1.2):
+    """
+    Updates parameters using the gradient descent update rule given above
+
+    Arguments:
+    parameters -- python dictionary containing your parameters
+    grads -- python dictionary containing your gradients
+
+    Returns:
+    parameters -- python dictionary containing your updated parameters
+    """
+    # 从参数中获得w1,b1,w2,b2
+    W1 = parameters.get('W1')
+    b1 = parameters.get('b1')
+    W2 = parameters.get('W2')
+    b2 = parameters.get('b2')
+
+    # 从梯度中获得dW1,db1,dW2,db2
+    dW1 = grads.get('dW1')
+    db1 = grads.get('db1')
+    dW2 = grads.get('dW2')
+    db2 = grads.get('db2')
+
+    # 更新参数
+    W1 = W1 - learning_rate * dW1
+    b1 = b1 - learning_rate * db1
+    W2 = W2 - learning_rate * dW2
+    b2 = b2 - learning_rate * db2
+
+    parameters = {"W1": W1,
+                  "b1": b1,
+                  "W2": W2,
+                  "b2": b2}
+
+    return parameters
+'''
+parameters, grads = testCases.update_parameters_test_case()
+parameters = update_parameters(parameters, grads)
+
+print("W1 = " + str(parameters["W1"]))
+print("b1 = " + str(parameters["b1"]))
+print("W2 = " + str(parameters["W2"]))
+print("b2 = " + str(parameters["b2"]))
+'''
+
+
+def nn_model(X, Y, n_h, num_iterations=10000, print_cost=False):
+    """
+    Arguments:
+    X -- dataset of shape (2, number of examples)
+    Y -- labels of shape (1, number of examples)
+    n_h -- size of the hidden layer
+    num_iterations -- Number of iterations in gradient descent loop
+    print_cost -- if True, print the cost every 1000 iterations
+
+    Returns:
+    parameters -- parameters learnt by the model. They can then be used to predict.
+    """
+
+    np.random.seed(3)
+    # layer_sizes(X, Y)返回输入层，隐藏层，输出层的大小.这里取0就是x的大小，取2就是y的大小
+    n_x = layer_sizes(X, Y)[0]
+    n_y = layer_sizes(X, Y)[2]
+
+    # 初始化参数
+    parameters = initialize_parameters(n_x, n_h, n_y)
+    W1 = parameters.get('W1')
+    b1 = parameters.get('b1')
+    W2 = parameters.get('W2')
+    b2 = parameters.get('b2')
+
+    # 循环迭代num_iterations次
+    for i in range(0, num_iterations):
+        # 前向传播计算
+        A2, cache = forward_propagation(X, parameters)
+
+        # 成本计算
+        cost = compute_cost(A2, Y, parameters)
+
+        # 反向传播计算梯度
+        grads = backward_propagation(parameters, cache, X, Y)
+
+        # 梯度下降更新参数
+        parameters = update_parameters(parameters, grads)
+
+        # 每1000次打印一次成本
+        if print_cost and i % 1000 == 0:
+            print("Cost after iteration %i: %f" % (i, cost))
+
+    return parameters
+'''
+X_assess, Y_assess = testCases.nn_model_test_case()
+
+parameters = nn_model(X_assess, Y_assess, 4, num_iterations=10000, print_cost=True)
+print("W1 = " + str(parameters["W1"]))
+print("b1 = " + str(parameters["b1"]))
+print("W2 = " + str(parameters["W2"]))
+print("b2 = " + str(parameters["b2"]))
+'''
+
