@@ -41,7 +41,6 @@ print('Accuracy of logistic regression: %d %%' % accuracy +
       ' (percentage of correctly labelled datapoints)')
 
 plt.show()
-
 '''
 
 
