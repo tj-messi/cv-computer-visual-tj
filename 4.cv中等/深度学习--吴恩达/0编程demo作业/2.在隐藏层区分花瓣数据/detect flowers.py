@@ -36,9 +36,12 @@ plot_decision_boundary(lambda x: clf.predict(x), X, Y)
 plt.title("Logistic Regression")
 
 LR_predictions = clf.predict(X.T)
-accuracy = (np.dot(Y, LR_predictions) + np.dot(1 - Y, 1 - LR_predictions)) / np.sum(Y) * 100
+accuracy = (np.dot(Y, LR_predictions) + np.dot(1 - Y, 1 - LR_predictions)) / float(Y.size) * 100
 print('Accuracy of logistic regression: %d %%' % accuracy +
       ' (percentage of correctly labelled datapoints)')
 
 plt.show()
+
 '''
+
+
