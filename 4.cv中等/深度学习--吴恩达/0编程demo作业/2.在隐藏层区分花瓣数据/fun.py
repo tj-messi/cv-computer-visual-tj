@@ -71,7 +71,8 @@ print("b2 = " + str(parameters["b2"]))
 '''
 
 def sigmoid(z):
-    return 1/(1+scipy.special.expit(-z))
+    s=1/(1+np.exp(-z))
+    return s
 
 def forward_propagation(X, parameters):
     """
@@ -136,7 +137,7 @@ def compute_cost(A2, Y, parameters):
 
     # 成本计算
     epsilon = 1e-15  # 添加一个很小的常数
-    logprobs = np.multiply(np.log(A2+epsilon), Y) + np.multiply(np.log(1 - A2+epsilon), (1 - Y))
+    logprobs = np.multiply(np.log(A2), Y) + np.multiply(np.log(1 - A2), (1 - Y))
     cost = np.sum(logprobs, axis=1, keepdims=True) / -m
 
     #使用np.squeeze去除成本数组中的单维度条目，确保成本是一个标量（即单个浮点数）
@@ -245,8 +246,8 @@ print("W1 = " + str(parameters["W1"]))
 print("b1 = " + str(parameters["b1"]))
 print("W2 = " + str(parameters["W2"]))
 print("b2 = " + str(parameters["b2"]))
-'''
 
+'''
 
 def nn_model(X, Y, n_h, num_iterations=10000, print_cost=False):
     """
@@ -300,5 +301,30 @@ print("W1 = " + str(parameters["W1"]))
 print("b1 = " + str(parameters["b1"]))
 print("W2 = " + str(parameters["W2"]))
 print("b2 = " + str(parameters["b2"]))
+'''
+
+
+def predict(parameters, X):
+    """
+    Using the learned parameters, predicts a class for each example in X
+
+    Arguments:
+    parameters -- python dictionary containing your parameters
+    X -- input data of size (n_x, m)
+
+    Returns
+    predictions -- vector of predictions of our model (red: 0 / blue: 1)
+    """
+
+    # 预测计算
+    A2, cache = forward_propagation(X, parameters)
+    predictions = np.ceil(A2 - 0.5)
+
+    return predictions
+'''
+parameters, X_assess = testCases.predict_test_case()
+
+predictions = predict(parameters, X_assess)
+print("predictions mean = " + str(np.mean(predictions)))
 '''
 
