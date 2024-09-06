@@ -274,19 +274,19 @@ def test_random_layer_dims(n_tests, n_layers, min_neurons, max_neurons, num_iter
         # 测试模型
         pred_test = predict(test_x, test_y, parameters)
         accuracy = np.mean(pred_test == test_y) * 100
-        accuracies.append(accuracy)
+        accuracies.append((layers_dims,accuracy))
         print(f"Test accuracy with random layer dimensions: {accuracy:.2f}% with parameters: {layers_dims}")
 
-    return (layers_dims, accuracies)
+    return  accuracies
 
 # 测试随机生成的每一层神经元数量的模型准确率
-n_tests = 5  # 测试次数
+n_tests = 100 # 测试次数
 n_layers = 3  # 隐藏层层数
 min_neurons = 5  # 每层最小神经元数量
 max_neurons = 20 # 每层最大神经元数量
 
 ans = test_random_layer_dims(n_tests, n_layers, min_neurons, max_neurons, num_iterations=2500, print_cost=True)
 # 打印最大精确度和对应的参数
-max_accuracy = max(ans[1])
-max_index = ans[1].index(max_accuracy)
-print(f"Maximum accuracy: {max_accuracy:.2f}% with parameters: {ans[0][max_index]}")
+max_accuracy = max(ans, key=lambda x: x[1])[1]
+max_index = next(i for i, v in enumerate(ans) if v[1] == max_accuracy)
+print(f"Maximum accuracy: {max_accuracy:.2f}% with parameters: {ans[max_index][0]}")
