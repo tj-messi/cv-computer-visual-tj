@@ -54,9 +54,9 @@ print ("test_x's shape: " + str(test_x.shape))
 
 # 设置神经网络的维度
 n_x = 12288     # num_px * num_px * 3
-n_h = 10
+n_h = 7
 n_y = 1
-layers_dims = (n_x, n_h,n_h,n_h,n_h,n_h, n_y)
+layers_dims = [12288, 20, 7, 5, 1] #  5-layer model
 
 
 def two_layer_model(X, Y, layers_dims, learning_rate=0.0075, num_iterations=3000, print_cost=False):
@@ -216,7 +216,8 @@ def L_layer_model(X, Y, layers_dims, learning_rate=0.0075, num_iterations=3000, 
     return parameters
 
 
-parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
+
+#parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
 
 
 '''
@@ -249,5 +250,43 @@ plt.axis('off')  # 隐藏坐标轴
 plt.show()
 '''
 
-pred_test = predict(test_x, test_y, parameters)
-print_mislabeled_images(classes, test_x, test_y, pred_test)
+#pred_test = predict(test_x, test_y, parameters)
+
+def random_layer_dims(n_layers, min_neurons, max_neurons):
+    """
+    随机生成每一层的神经元数量
+    """
+    return [np.random.randint(min_neurons, max_neurons) for _ in range(n_layers)]
+
+def test_random_layer_dims(n_tests, n_layers, min_neurons, max_neurons, num_iterations=2500, print_cost=False):
+    """
+    测试随机生成的每一层神经元数量的模型准确率
+    """
+    accuracies = []
+    for _ in range(n_tests):
+        # 随机生成每一层的神经元数量
+        hidden_layer_dims = random_layer_dims(n_layers, min_neurons, max_neurons)
+        layers_dims = [n_x] + hidden_layer_dims + [n_y]
+
+        # 训练模型
+        parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations=num_iterations, print_cost=print_cost)
+
+        # 测试模型
+        pred_test = predict(test_x, test_y, parameters)
+        accuracy = np.mean(pred_test == test_y) * 100
+        accuracies.append(accuracy)
+        print(f"Test accuracy with random layer dimensions: {accuracy:.2f}% with parameters: {layers_dims}")
+
+    return (layers_dims, accuracies)
+
+# 测试随机生成的每一层神经元数量的模型准确率
+n_tests = 5  # 测试次数
+n_layers = 3  # 隐藏层层数
+min_neurons = 5  # 每层最小神经元数量
+max_neurons = 20 # 每层最大神经元数量
+
+ans = test_random_layer_dims(n_tests, n_layers, min_neurons, max_neurons, num_iterations=2500, print_cost=True)
+# 打印最大精确度和对应的参数
+max_accuracy = max(ans[1])
+max_index = ans[1].index(max_accuracy)
+print(f"Maximum accuracy: {max_accuracy:.2f}% with parameters: {ans[0][max_index]}")
