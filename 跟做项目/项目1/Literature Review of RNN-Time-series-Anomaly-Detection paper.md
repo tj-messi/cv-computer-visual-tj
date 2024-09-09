@@ -14,7 +14,7 @@ While these approaches have shown promising results, they also have limitations.
 
 Overall, the literature on time-series anomaly detection using RNNs is rich and diverse, with many promising approaches and techniques being proposed. However, there is still a need for further research to develop more accurate and efficient models that can effectively detect anomalies in real-world time-series data. The proposed RNN-based model in this paper aims to contribute to this field by offering a two-stage strategy comprising time-series prediction and anomaly score calculation.
 
-##
+##Reference
 [1]曹晨曦,田友琳,张昱堃,等.基于统计方法的异常点检测在时间序列数据上的应用[J].合肥工业大学学报(自然科学版),2018,41(09):1284-1288.
 
 [2]孙梅玉.基于距离和密度的时间序列异常检测方法研究[J].计算机工程与应用,2012,48(20):11-17+22.
