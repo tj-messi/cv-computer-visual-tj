@@ -88,11 +88,11 @@ Characteristics: The data may contain periodic patterns (such as daily and weekl
 
 ###impovement
 
-While these approaches have shown promising results, they also have limitations. For instance, traditional RNNs can suffer from vanishing or exploding gradient problems, which can impact their performance over long time-series data. To address this issue, more recent studies have explored the use of advanced RNN variants, such as Gated Recurrent Units (GRUs), which have been found to be more robust to these issues.
+While these approaches have shown promising results, they also have limitations. For instance, traditional RNNs can suffer from ___vanishing___ or ___exploding gradient problems___, which can impact their performance over long time-series data. To address this issue, more recent studies have explored the use of advanced RNN variants, such as ___Gated Recurrent Units (GRUs)___, which have been found to be more robust to these issues.
 
 ---
 ##Summary
-Overall, the literature on time-series anomaly detection using RNNs is rich and diverse, with many promising approaches and techniques being proposed. However, there is still a need for further research to develop more accurate and efficient models that can effectively detect anomalies in real-world time-series data. The proposed RNN-based model in this paper aims to contribute to this field by offering a two-stage strategy comprising time-series prediction and anomaly score calculation.
+Overall, the literature on time-series anomaly detection using RNNs is rich and diverse, with many promising approaches and techniques being proposed. However, there is still a need for further research to develop more accurate and efficient models that can effectively detect anomalies in real-world time-series data. The proposed RNN-based model in this paper aims to contribute to this field by offering a two-stage strategy ___comprising time-series prediction___ and ___anomaly score calculation___.
 
 ---
 ##Reference
