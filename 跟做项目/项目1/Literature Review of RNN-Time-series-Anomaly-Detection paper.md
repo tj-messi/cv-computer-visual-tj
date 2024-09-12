@@ -27,9 +27,13 @@ Several researchers have investigated the use of ___RNNs for anomaly detection__
 
 ---
 ##Background
-In addition to LSTM networks, other variants of RNNs have also been explored for anomaly detection. For instance, the proposed RNN-based model in this paper (Park, 2018) utilizes a stacked RNN architecture to recursively predict future values of time-series data. This model then calculates anomaly scores based on the deviation between the predicted and actual values, using a multivariate Gaussian distribution model.
+In addition to LSTM networks, other variants of RNNs have also been explored for anomaly detection. For instance, the proposed RNN-based model in this paper (Park, 2018) utilizes ___a stacked RNN architecture to recursively predict future values___ of time-series data. This model then calculates anomaly scores based on the deviation between the predicted and actual values, using a multivariate ___Gaussian distribution model___.
 
-more exactly,The model employs a two-stage strategy comprising time-series prediction and anomaly score calculation. In the first stage, a stacked RNN model is trained on a clean dataset (without anomalies) to recursively predict future values of the time series. This model is then utilized to detect anomalies in a test dataset where anomalies are present. The second stage involves fitting a multivariate Gaussian distribution to the predicted time-series data and calculating anomaly scores based on the deviation from the distribution.
+more exactly,The model employs a two-stage strategy comprising time-series prediction and anomaly score calculation. 
+
+1:In the first stage, a stacked RNN model is trained on a clean dataset (without anomalies) to ___recursively predict future values of the time series___. This model is then utilized to detect anomalies in a test dataset where anomalies are present. 
+
+2:The second stage involves fitting a multivariate Gaussian distribution to the predicted time-series data and ___calculating anomaly scores based on the deviation from the distribution___.
 
 
 ###Dataset
