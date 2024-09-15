@@ -102,3 +102,134 @@ DATE 时间
 	);
 
 ###3.4 插入数据
+
+INSERT INTO 数据库名字.表格名字
+(列名...)
+VALYES
+(数值....)
+
+	USE egg;
+
+	create table eggs_record(
+		id INT primary key auto_incrementeggs_record,
+   	 	egg_name VARCHAR(10) not null,
+    	sold DATE null
+	);
+
+	insert into egg.eggs_record(id,egg_name,sold)
+	values(1,'鸡蛋','2020-01-01');
+
+	insert into egg.eggs_record(id,egg_name,sold)
+	values(2,'鸭蛋','2020-01-02');
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726379882658.png)
+
+###3.5 改变表格
+####3.5.1 添加新数据
+ALTER TABLE 表格名字
+
+ADD 列名 数据类型
+
+就可以改变表格
+
+####3.5.2 改变旧数据
+UPDATE 数据库名.表格名字
+SET 值
+WHERE 定位id
+
+	alter table egg.eggs_record
+	add stock int null;
+
+	update egg.eggs_record
+	set sold='2022-06-06'
+	where id=2;
+
+修改结果如下
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726380323569.png)
+
+
+###3.6 删除数据
+####3.6.1删除一条记录
+
+DELETE FROM 数据库名.表格名
+WHERE 索引
+
+	delete from egg.egg_record
+	where id=1;
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726380718183.png)
+
+####3.6.2删除表格
+
+DROP TABLE 数据库名.表格名
+
+####3.6.3删除数据库
+
+DROP DATABASE 数据库名
+
+###3.7 查找数据
+
+####3.7.1 查看表格全部内容
+
+select *
+from 表格名
+
+	select *
+	from eggs_record;
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726381174493.png)
+
+####3.7.2 查看表格某列内容
+
+select 列名...
+from 表格名
+
+	select id,sold
+	from eggs_record;
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726381243480.png)
+
+####3.7.3 特殊限制
+#####3.7.3.1 去重
+
+select distinct *
+from 表格名
+
+#####3.7.3.2 排序
+
+select *
+from 表格名
+order by 列名 asc/desc
+
+就是以列名的 升序/降序 排列
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726381513098.png)
+
+####3.7.4 过滤
+select *
+from 表格名
+where 条件
+order by 列名 asc/desc
+
+有如下的限制内容
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726381597424.png)
+
+可以进行如下限制
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726381649236.png)
+
+####3.7.5 合并
+
+select *
+from 表格名
+inner join 表格名
+on 条件
+
+用条件来取两个表格交集--inner  并集--union
+
+保留上表格并且加入下层表格符合条件的--left
+
+保留下表格并且加入上层表格符合条件的--right
+
