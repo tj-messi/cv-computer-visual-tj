@@ -15,3 +15,12 @@ MongoDB是一个非关系型数据库，是一个集合型的数据库。
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726384595943.png)
 
 ##2.安装
+
+从官网https://www.mongodb.com/try 下载好社区版本的MongoDB
+
+complete完整安装就行
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726390558613.png)
+
+然后就可以安装了，注意他会安装一个图形化工具compass
+
