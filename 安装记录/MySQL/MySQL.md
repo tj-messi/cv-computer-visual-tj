@@ -57,4 +57,48 @@
 
 CREATE DATABASE 数据库名字
 
+然后快捷执行--execute
 
+就会发现有生成好的数据库
+![](https://gitee.com/tj-messi/picture/raw/master/1726378695309.png)
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726378778557.png)
+
+如果再次执行同样的创造数据库就会出错，原因是数据库的名字不能一样
+
+###3.2 指定数据库
+
+USE 数据库名字
+
+###3.3 创造表格
+
+CREATE TABLE 表格名字
+{
+
+数据名字 类型....
+
+}
+
+典型类型：
+
+INT 整形数据
+
+VARCHAR() 字符串
+
+DATE 时间
+
+	create table eggs_record(
+		num INT,
+    	egg_name VARCHAR(10),
+    	egg_time DATE,
+	);
+数据类型有空和非空两种属性，NULL和NOT NULL
+
+然后可以设置primary key，主键，必须非空 
+
+	create table eggs_record(
+		id INT primary key,
+    	egg_name VARCHAR(10) not null,
+    	egg_time DATE null,
+	);
+
+###3.4 插入数据
