@@ -32,4 +32,25 @@ __编码器-解码器结构__：模型由编码器和解码器两部分组成，
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726648612388.png)
 
+__自注意力层__：在编码器和解码器中均使用了自注意力层，允许模型在处理序列时，每个位置都能关注到序列中的其他所有位置
 ####Multi-Head Attention（多头注意）
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726648779252.png)
+
+__多头注意力__：通过并行地运行多个自注意力层，模型能够同时从不同的子空间表示中学习信息
+
+###位置前馈网络
+__正弦位置编码__：由于Transformer模型没有循环或卷积结构来捕获序列的顺序信息，因此引入了正弦和余弦函数的位置编码，以__提供关于序列中单词位置的信息__
+
+###Positional Encoding
+编入时序信息
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1726649780009.png)
+
+这个就是transformer输入时带入时序信息的方法
+
+###实验
+
+###评论
+
+我们用来训练和评估模型的代码可以在https://github.com/ tensorflow/tensor2tensor上找到。
