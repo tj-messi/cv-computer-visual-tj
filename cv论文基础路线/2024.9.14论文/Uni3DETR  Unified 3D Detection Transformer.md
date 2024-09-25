@@ -24,3 +24,4 @@
 
 ###3.1 Unified 3D Detection Transformer for Diverse Scenes
 
+利用一系列的3D稀疏卷积层对3D特征进行编码和下采样，以避免大范围户外场景的过载内存消耗
