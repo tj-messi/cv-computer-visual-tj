@@ -7,7 +7,7 @@
 
 我们的方法简化了检测管道，__有效地消除了许多手工设计的组件__，如__非最大抑制过程__ 或 __锚生成__，这些组件显式地编码了我们对任务的先验知识。
 
-##introduction
+##1.introduction
 现有的预测期都是用一个人工的调参控制的内容来实现__集合预测(边框预测)__
 
 全局的特征能很好的减少多个类似的框
@@ -26,9 +26,19 @@ detr善于检测大物体，暂时对小物体有点障碍
 
 detr训练时间很久，但是泛用性很广
 
-##related work
+##2.related work
 
-###objection detection
+###2.1objection detection
 大多数现代目标检测方法都是根据最初的猜测做出预测的，__两阶段的检测器__基于的是__之前的预测方框建议__
 
-##Detr模型
+##3.Detr模型
+
+模型示意图：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1727224046725.png)
+
+###3.1 预测损失
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1727223323202.png)
+
+每一次都会输出N（自己设定）的预测框个数，然后进行__二分图匹配__,
