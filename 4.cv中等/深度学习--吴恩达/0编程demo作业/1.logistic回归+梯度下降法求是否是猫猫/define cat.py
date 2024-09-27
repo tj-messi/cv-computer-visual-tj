@@ -60,7 +60,7 @@ my_image = "cat_in_iran.jpg"  # 确保该图片在 "images" 目录下
 ## END CODE HERE ##
 
 # We preprocess the image to fit your algorithm.
-fname = "images/" + my_image
+fname = "D:/cv计算机视觉/cv-computer-visual/4.cv中等/深度学习--吴恩达/0编程demo作业/1.建设自己的深层神经网络/images/" + my_image
 
 # 使用 imageio 读取图像
 image = imageio.imread(fname)
