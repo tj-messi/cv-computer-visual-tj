@@ -9,3 +9,5 @@ print(x)
 
 # 创建模型并移动到GPU上
 #model = MyModel().to(device)
+
+print(torch.cuda.get_device_name())
