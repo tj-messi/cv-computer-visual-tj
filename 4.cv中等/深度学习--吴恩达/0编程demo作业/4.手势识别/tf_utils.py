@@ -4,11 +4,11 @@ import tensorflow as tf
 import math
 
 def load_dataset():
-    train_dataset = h5py.File('datasets/train_signs.h5', "r")
+    train_dataset = h5py.File('D:\cv计算机视觉/cv-computer-visual/4.cv中等/深度学习--吴恩达/0编程demo作业/4.手势识别/datasets/train_signs.h5', "r")
     train_set_x_orig = np.array(train_dataset["train_set_x"][:]) # your train set features
     train_set_y_orig = np.array(train_dataset["train_set_y"][:]) # your train set labels
 
-    test_dataset = h5py.File('datasets/test_signs.h5', "r")
+    test_dataset = h5py.File('D:\cv计算机视觉/cv-computer-visual/4.cv中等/深度学习--吴恩达/0编程demo作业/4.手势识别/datasets/test_signs.h5', "r")
     test_set_x_orig = np.array(test_dataset["test_set_x"][:]) # your test set features
     test_set_y_orig = np.array(test_dataset["test_set_y"][:]) # your test set labels
 

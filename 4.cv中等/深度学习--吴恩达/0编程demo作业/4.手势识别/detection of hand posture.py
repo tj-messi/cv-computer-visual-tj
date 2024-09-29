@@ -110,3 +110,35 @@ labels = np.array([1,2,3,0,2,1])
 one_hot = one_hot_matrix(labels, C = 4)
 print ("one_hot = " + str(one_hot))
 '''
+
+def ones(shape):
+    """
+    Creates an array of ones of dimension shape
+    
+    Arguments:
+    shape -- shape of the array you want to create
+        
+    Returns: 
+    ones -- array containing only ones
+    """
+    
+    # 使用 tf.ones 创建全为 1 的张量
+    ones = tf.ones(shape)
+    
+    # 直接返回 NumPy 数组
+    return ones.numpy()
+
+'''
+print ("ones = " + str(ones([3])))
+'''
+
+X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()
+
+'''
+# Example of a picture
+index = 80
+plt.imshow(X_train_orig[index])
+plt.show()
+print ("y = " + str(np.squeeze(Y_train_orig[:, index])))
+'''
+
