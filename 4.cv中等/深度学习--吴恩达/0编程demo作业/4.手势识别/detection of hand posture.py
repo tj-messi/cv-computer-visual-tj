@@ -9,30 +9,29 @@ from tf_utils import load_dataset, random_mini_batches, convert_to_one_hot, pred
 #%matplotlib inline
 np.random.seed(1)
 
-# 定义初始参数 y_hat 和 y
-y_hat = tf.Variable(36, dtype=tf.float32, name='y_hat')  # y_hat变量，初始值为36
-y = tf.constant(39, dtype=tf.float32, name='y')            # y常量，设置为39
+def linear_function():
+    """
+    Implements a linear function: 
+            Initializes W to be a random tensor of shape (4,3)
+            Initializes X to be a random tensor of shape (3,1)
+            Initializes b to be a random tensor of shape (4,1)
+    Returns: 
+    result -- runs the function for Y = WX + b 
+    """
+    
+    np.random.seed(1)
+    
+    # 初始化随机张量
+    X = tf.constant(np.random.randn(3, 1), dtype=tf.float32, name="X")
+    W = tf.constant(np.random.randn(4, 3), dtype=tf.float32, name="W")
+    b = tf.constant(np.random.randn(4, 1), dtype=tf.float32, name="b")
 
-# 定义学习率
-learning_rate = 0.01
+    # 计算 Y = WX + b
+    result = tf.add(tf.matmul(W, X), b)
 
-# 创建优化器
-optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
-
-for step in range(100):  # 进行100次迭代
-    with tf.GradientTape() as tape:
-        # 计算损失
-        loss = (y - y_hat) ** 2  # 计算损失
-
-    # 计算梯度
-    gradients = tape.gradient(loss, [y_hat])
-
-    # 更新 y_hat
-    optimizer.apply_gradients(zip(gradients, [y_hat]))
-
-    # 打印每10步的损失和 y_hat 值
-    if step % 10 == 0:
-        print(f"Step {step}, Loss: {loss.numpy()}, y_hat: {y_hat.numpy()}")
-
-# 最终输出
-print(f"Final Loss: {loss.numpy()}, Final y_hat: {y_hat.numpy()}")
+    return result.numpy()  # 返回结果并转换为 NumPy 数组
+'''
+# 调用函数并打印结果
+output = linear_function()
+print(output)
+'''
