@@ -49,5 +49,5 @@ print(x)
 y=bn(x)
 print(y)
 
-print(bn.running_mean)  # 均值
-print(bn.running_var)   # 方差
+print(bn.running_mean,"均值")  # 均值
+print(bn.running_var,"方差")   # 方差
