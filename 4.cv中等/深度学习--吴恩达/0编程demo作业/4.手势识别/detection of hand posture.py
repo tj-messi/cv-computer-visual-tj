@@ -35,3 +35,27 @@ def linear_function():
 output = linear_function()
 print(output)
 '''
+
+def sigmoid(z):
+    """
+    Computes the sigmoid of z
+    
+    Arguments:
+    z -- input value, scalar or vector
+    
+    Returns: 
+    results -- the sigmoid of z
+    """
+    
+    # 计算 sigmoid(z)
+    result = tf.sigmoid(z)
+
+    return result.numpy()  # 返回结果并转换为 NumPy 数组
+
+'''
+z_input = tf.constant([0.0, 12], dtype=tf.float32)  # 示例输入
+output = sigmoid(z_input)
+print(output)  # 打印结果
+'''
+
+
