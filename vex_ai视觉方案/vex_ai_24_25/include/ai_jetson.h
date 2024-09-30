@@ -28,6 +28,7 @@ extern "C" {
 /// GPS status flags
 #define POS_GPS_CONNECTED   0x01
 
+//机器人自己的坐标
 /// This structure represents a the robots location in reference to the center of the playing field
 typedef struct {
 	int32_t		framecnt;       // This counter increments each frame
@@ -41,6 +42,7 @@ typedef struct {
   float     rot;            // Rotation/Tilt of the robot in degrees (Roll)
 } POS_RECORD;
 
+//dashboad坐标
 /// This structure represents a visual detection of a VEX object from the forward facing depth camera.
 /// These objects are in reference to the video image frame 
 typedef struct {
@@ -48,6 +50,7 @@ typedef struct {
 	int32_t		width, height;	// The width and height of the bounding box of this object
 } IMAGE_DETECTION;
 
+//场地坐标
 /// This structure represents a visual detection of a VEX object from the forward facing depth camera.
 /// These objects are in reference to the playing field.
 typedef struct {
@@ -56,6 +59,7 @@ typedef struct {
   float     z;      // Z position field coordinates in meters. Z represents height above the field tiles.
 } MAP_DETECTION;
 
+//检测目标的记录
 /// This structure represents an object detection of a VEX object from the forward facing depth camera.
 typedef struct {
 	int32_t		      classID;	        // The class ID of the object.
@@ -65,6 +69,7 @@ typedef struct {
   MAP_DETECTION     mapLocation;      // The field coordinates of this object
 } DETECTION_OBJECT;
 
+//local_map坐标记录
 // The AI_RECORD contains information about the map location of the robot and objects on map
 typedef struct {
 	int32_t					    detectionCount;		            // The number of objects detected
