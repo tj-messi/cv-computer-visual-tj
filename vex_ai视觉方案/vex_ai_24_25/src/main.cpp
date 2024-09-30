@@ -157,7 +157,8 @@ int main() {
 
   Arm.setVelocity(60, percent);
 
-  while(1) {
+  while(1) 
+  {
       // get last map data
       jetson_comms.get_data( &local_map );
 
@@ -170,16 +171,19 @@ int main() {
       // NOTE: This request should only happen in a single task.    
       jetson_comms.request_map();
 
+      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
       // Allow other tasks to run
       this_thread::sleep_for(loop_time);
-  
     
-    for(int i=0;i<MAX_DETECTIONS;i++)
-    {
-      if(local_map.detections[i].screenLocation.x || local_map.detections[i].screenLocation.y)
-        printf("%d %d %d  \n", local_map.detections[i].screenLocation.x,local_map.detections[i].screenLocation.y,local_map.detectionCount);
-    
-    }
-    
+      /*
+      jetson_comms.get_data( &local_map );
+      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
+      this_thread::sleep_for(loop_time);
+
+      jetson_comms.get_data( &local_map );
+      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
+      this_thread::sleep_for(loop_time);
+      this_thread::sleep_for(loop_time);
+      */
   }
 }
