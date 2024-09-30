@@ -307,7 +307,7 @@ jetson::request_map() {
       // This is arbitary message at the moment
       // just using ASCII for convienience and debug porposes
       //
-      static char msg[] = "AA55CC3301\r\n"; 
+      static char msg[] = "AA55CC3301\r\n";
 
       // send
       fwrite( msg, 1, strlen(msg), fp );

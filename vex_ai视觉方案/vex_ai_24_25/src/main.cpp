@@ -133,7 +133,7 @@ void autonomousMain(void) {
 
 int main() {
 
-  printf("in /n");
+  printf("in \n");
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
@@ -152,7 +152,7 @@ int main() {
   // then this can be used as a direct connection to USB on the controller
   // when using VEXcode.
   //
-  //FILE *fp = fopen("/dev/serial2","wb");
+  FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
   Arm.setVelocity(60, percent);
@@ -164,7 +164,7 @@ int main() {
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
 
-      // fprintf(fp, "%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az)
+       //fprintf(fp, "%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
 
       // request new data    
       // NOTE: This request should only happen in a single task.    
@@ -174,14 +174,14 @@ int main() {
       this_thread::sleep_for(loop_time);
     
     
-    //for(int i=0;i<MAX_DETECTIONS;i++)
+    for(int i=0;i<MAX_DETECTIONS;i++)
     {
-      //if(local_map.detections[i].screenLocation.x || local_map.detections[i].screenLocation.y)
-        //printf("%d %d %d  \n", local_map.detections[i].screenLocation.x,local_map.detections[i].screenLocation.y,local_map.detectionCount);
-      if(local_map.detectionCount>0)
-        printf("%ld \n",local_map.detectionCount);
-      else 
-        printf("not found \n");
+      if(local_map.detections[i].screenLocation.x || local_map.detections[i].screenLocation.y)
+        printf("%d %d %d  \n", local_map.detections[i].screenLocation.x,local_map.detections[i].screenLocation.y,local_map.detectionCount);
+      //if(local_map.detectionCount>0)
+        //printf("%ld\n",local_map.detectionCount+1);
+      //else 
+       // printf("not found \n");
     }
     
   }

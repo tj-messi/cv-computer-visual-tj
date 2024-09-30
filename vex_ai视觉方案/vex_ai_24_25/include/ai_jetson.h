@@ -80,6 +80,7 @@ typedef struct {
 
 #define	MAP_POS_SIZE	(sizeof(int32_t) + sizeof(POS_RECORD))
 
+
 // packet from V5
 typedef struct __attribute__((__packed__)) _map_packet {
     // 12 byte header
