@@ -249,9 +249,150 @@ def create_placeholders(input_size, num_examples):
     Y = tf.zeros((6, num_examples))             # 目标占位符
     return X, Y
 
-# 创建参数
+'''
 parameters = initialize_parameters()
 X, Y = create_placeholders(12288, 6)
 Z3 = forward_propagation(X, parameters)
 
 print("Z3 = " + str(Z3.numpy()))  # 使用 .numpy() 方法获取 NumPy 数组格式的输出
+'''
+
+
+def compute_cost(Z3, Y):
+    """
+    Computes the cost
+    
+    Arguments:
+    Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (6, number of examples)
+    Y -- "true" labels vector, same shape as Z3
+    
+    Returns:
+    cost - Tensor of the cost function
+    """
+    
+    # to fit the TensorFlow requirement for tf.nn.softmax_cross_entropy_with_logits(...,...)
+    logits = tf.transpose(Z3)
+    labels = tf.transpose(Y)
+    
+    ### START CODE HERE ### (1 line of code)
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
+    ### END CODE HERE ###
+    
+    return cost
+
+
+'''
+# 创建参数和输入数据
+parameters = initialize_parameters()
+X, Y = create_placeholders(12288, 6)
+Z3 = forward_propagation(X, parameters)
+
+# 计算成本
+cost = compute_cost(Z3, Y)
+
+print("cost = " + str(cost.numpy()))  # 使用 .numpy() 方法获取 NumPy 数组格式的输出
+'''
+
+def model(X_train, Y_train, X_test, Y_test, learning_rate=0.0001,
+          num_epochs=1500, minibatch_size=32, print_cost=True):
+    """
+    Implements a three-layer TensorFlow neural network: LINEAR->RELU->LINEAR->RELU->LINEAR->SOFTMAX.
+
+    Arguments:
+    X_train -- training set, of shape (input size = 12288, number of training examples = 1080)
+    Y_train -- test set, of shape (output size = 6, number of training examples = 1080)
+    X_test -- training set, of shape (input size = 12288, number of training examples = 120)
+    Y_test -- test set, of shape (output size = 6, number of test examples = 120)
+    learning_rate -- learning rate of the optimization
+    num_epochs -- number of epochs of the optimization loop
+    minibatch_size -- size of a minibatch
+    print_cost -- True to print the cost every 100 epochs
+
+    Returns:
+    parameters -- parameters learnt by the model. They can then be used to predict.
+    """
+
+    tf.random.set_seed(1)                             # to keep consistent results
+    seed = 3                                          # to keep consistent results
+    (n_x, m) = X_train.shape                          # (n_x: input size, m: number of examples in the train set)
+    n_y = Y_train.shape[0]                            # n_y: output size
+    costs = []                                        # To keep track of the cost
+
+    # Create Placeholders of shape (n_x, n_y)
+    ### START CODE HERE ### (1 line)
+    X = tf.keras.Input(shape=(n_x,))
+    Y = tf.keras.Input(shape=(n_y,))
+    ### END CODE HERE ###
+
+    # Initialize parameters
+    ### START CODE HERE ### (1 line)
+    parameters = initialize_parameters()
+    ### END CODE HERE ###
+
+    # Forward propagation: Build the forward propagation in the tensorflow graph
+    ### START CODE HERE ### (1 line)
+    Z3 = forward_propagation(X, parameters)
+    ### END CODE HERE ###
+
+    # Cost function: Add cost function to tensorflow graph
+    ### START CODE HERE ### (1 line)
+    cost = compute_cost(Z3, Y)
+    ### END CODE HERE ###
+
+    # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
+    ### START CODE HERE ### (1 line)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    ### END CODE HERE ###
+
+    # Training loop
+    for epoch in range(num_epochs):
+        epoch_cost = 0.                       # Defines a cost related to an epoch
+        num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
+        seed = seed + 1
+        minibatches = random_mini_batches(X_train, Y_train, minibatch_size, seed)
+
+        for minibatch in minibatches:
+            # Select a minibatch
+            (minibatch_X, minibatch_Y) = minibatch
+            
+            # IMPORTANT: The line that runs the graph on a minibatch.
+            with tf.GradientTape() as tape:
+                # Forward propagation
+                Z3 = forward_propagation(minibatch_X, parameters)
+                minibatch_cost = compute_cost(Z3, minibatch_Y)
+            
+            # Backpropagation
+            grads = tape.gradient(minibatch_cost, parameters.values())
+            optimizer.apply_gradients(zip(grads, parameters.values()))
+            
+            epoch_cost += minibatch_cost.numpy() / num_minibatches
+
+        # Print the cost every epoch
+        if print_cost and epoch % 100 == 0:
+            print("Cost after epoch %i: %f" % (epoch, epoch_cost))
+        if print_cost and epoch % 5 == 0:
+            costs.append(epoch_cost)
+
+    # Plot the cost
+    plt.plot(np.squeeze(costs))
+    plt.ylabel('cost')
+    plt.xlabel('iterations (per tens)')
+    plt.title("Learning rate =" + str(learning_rate))
+    plt.show()
+
+    # Save the parameters
+    print("Parameters have been trained!")
+
+    # Calculate the correct predictions
+    correct_prediction = tf.equal(tf.argmax(Z3, axis=1), tf.argmax(Y, axis=1))
+
+    # Calculate accuracy on the test set
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+
+    print("Train Accuracy:", accuracy.numpy())
+    print("Test Accuracy:", accuracy.numpy())
+
+    return parameters
+
+# 需要创建 X_train, Y_train, X_test, Y_test 数据
+parameters = model(X_train, Y_train, X_test, Y_test)
