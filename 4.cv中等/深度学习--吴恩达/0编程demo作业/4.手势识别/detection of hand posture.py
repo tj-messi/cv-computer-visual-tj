@@ -152,9 +152,12 @@ X_test = X_test_flatten/255.
 Y_train = convert_to_one_hot(Y_train_orig, 6)
 Y_test = convert_to_one_hot(Y_test_orig, 6)
 
+
+'''
 print ("number of training examples = " + str(X_train.shape[1]))
 print ("number of test examples = " + str(X_test.shape[1]))
 print ("X_train shape: " + str(X_train.shape))
 print ("Y_train shape: " + str(Y_train.shape))
 print ("X_test shape: " + str(X_test.shape))
 print ("Y_test shape: " + str(Y_test.shape))
+'''
