@@ -176,30 +176,82 @@ def initialize_parameters():
     parameters -- a dictionary of tensors containing W1, b1, W2, b2, W3, b3
     """
     
-    tf.set_random_seed(1)                   # so that your "random" numbers match ours
-        
+    tf.random.set_seed(1)  # 设置随机种子
+    
     ### START CODE HERE ### (approx. 6 lines of code)
-    W1 = tf.get_variable("W1", [25,12288], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
-    b1 = tf.get_variable("b1", [25,1], initializer = tf.zeros_initializer())
-    W2 = tf.get_variable("W2", [12,25], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
-    b2 = tf.get_variable("b2", [12,1], initializer = tf.zeros_initializer())
-    W3 = tf.get_variable("W3", [6,12], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
-    b3 = tf.get_variable("b3", [6,1], initializer = tf.zeros_initializer())
+    W1 = tf.keras.initializers.GlorotUniform(seed=1)(shape=(25, 12288))
+    b1 = tf.zeros((25, 1))
+    W2 = tf.keras.initializers.GlorotUniform(seed=1)(shape=(12, 25))
+    b2 = tf.zeros((12, 1))
+    W3 = tf.keras.initializers.GlorotUniform(seed=1)(shape=(6, 12))
+    b3 = tf.zeros((6, 1))
     ### END CODE HERE ###
 
-    parameters = {"W1": W1,
-                  "b1": b1,
-                  "W2": W2,
-                  "b2": b2,
-                  "W3": W3,
-                  "b3": b3}
+    parameters = {
+        "W1": W1,
+        "b1": b1,
+        "W2": W2,
+        "b2": b2,
+        "W3": W3,
+        "b3": b3
+    }
     
     return parameters
 
-tf.reset_default_graph()
-with tf.Session() as sess:
-    parameters = initialize_parameters()
-    print("W1 = " + str(parameters["W1"]))
-    print("b1 = " + str(parameters["b1"]))
-    print("W2 = " + str(parameters["W2"]))
-    print("b2 = " + str(parameters["b2"]))
+
+'''
+# 创建参数
+parameters = initialize_parameters()
+print("W1 = " + str(parameters["W1"]))
+print("b1 = " + str(parameters["b1"]))
+print("W2 = " + str(parameters["W2"]))
+print("b2 = " + str(parameters["b2"]))
+'''
+
+import tensorflow as tf
+
+def forward_propagation(X, parameters):
+    """
+    Implements the forward propagation for the model: LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SOFTMAX
+
+    Arguments:
+    X -- input dataset, of shape (input size, number of examples)
+    parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3"
+                  the shapes are given in initialize_parameters
+
+    Returns:
+    Z3 -- the output of the last LINEAR unit
+    """
+    
+    # Retrieve the parameters from the dictionary "parameters" 
+    W1 = parameters['W1']
+    b1 = parameters['b1']
+    W2 = parameters['W2']
+    b2 = parameters['b2']
+    W3 = parameters['W3']
+    b3 = parameters['b3']
+    
+    ### START CODE HERE ### (approx. 5 lines)              # Numpy Equivalents:
+    Z1 = tf.add(tf.matmul(W1, X), b1)                       # Z1 = np.dot(W1, X) + b1
+    A1 = tf.nn.relu(Z1)                                    # A1 = relu(Z1)
+    Z2 = tf.add(tf.matmul(W2, A1), b2)                      # Z2 = np.dot(W2, A1) + b2
+    A2 = tf.nn.relu(Z2)                                    # A2 = relu(Z2)
+    Z3 = tf.add(tf.matmul(W3, A2), b3)                      # Z3 = np.dot(W3, A2) + b3
+    ### END CODE HERE ###
+    
+    return Z3
+
+def create_placeholders(input_size, num_examples):
+    """
+    创建输入与目标的占位符
+    """
+    X = tf.zeros((input_size, num_examples))  # 输入占位符
+    Y = tf.zeros((6, num_examples))             # 目标占位符
+    return X, Y
+
+# 创建参数
+parameters = initialize_parameters()
+X, Y = create_placeholders(12288, 6)
+Z3 = forward_propagation(X, parameters)
+
+print("Z3 = " + str(Z3.numpy()))  # 使用 .numpy() 方法获取 NumPy 数组格式的输出
