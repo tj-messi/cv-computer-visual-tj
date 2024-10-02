@@ -137,11 +137,7 @@ void autonomousMain(void) {
 }
 
 int main() {
-
-  void vexcodeInit(void);
-  // run the vexcodeInit function to initialize the controller
-
-  printf("in main \n");
+  
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
