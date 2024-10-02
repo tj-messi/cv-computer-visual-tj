@@ -20,7 +20,7 @@ motor rightDrive = motor(PORT2, ratio18_1, true);
 gps GPS = gps(PORT12, -127, -165, distanceUnits::mm, 180);
 smartdrive Drivetrain = smartdrive(leftDrive, rightDrive, GPS, 319.19, 320, 40, mm, 1);
 // Controls arm used for raising and lowering rings
-motor Arm = motor(PORT3, ratio18_1, false);
+motor Arm = motor(PORT4, ratio18_1, false);//测试使用端口
 // Controls the chain at the front of the arm
 // used for pushing rings off of the arm
 motor Chain = motor(PORT8, ratio18_1, false);
@@ -33,7 +33,7 @@ competition Competition;
 // data from the Jetson nano
 //
 ai::jetson  jetson_comms;
-
+static AI_RECORD local_map;
 /*----------------------------------------------------------------------------*/
 // Create a robot_link on PORT1 using the unique name robot_32456_1
 // The unique name should probably incorporate the team number
@@ -100,6 +100,11 @@ void auto_Isolation(void) {
 
 
 void auto_Interaction(void) {
+
+  if(local_map.detectionCount>0)
+  {
+      Arm.spin(fwd);
+  }
   // Add functions for interaction phase
 }
 
@@ -133,7 +138,10 @@ void autonomousMain(void) {
 
 int main() {
 
-  printf("in \n");
+  void vexcodeInit(void);
+  // run the vexcodeInit function to initialize the controller
+
+  printf("in main \n");
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
@@ -171,12 +179,10 @@ int main() {
       // NOTE: This request should only happen in a single task.    
       jetson_comms.request_map();
 
-      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
+      //printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
       // Allow other tasks to run
       this_thread::sleep_for(loop_time);
-
-      if(local_map.detectionCount>0)
-        printf("Object Detected: %d\n", local_map.detections[0].classID);
+      
 
       /*
       jetson_comms.get_data( &local_map );
