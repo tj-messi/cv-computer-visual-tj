@@ -120,6 +120,7 @@ void moveToPosition(double target_x, double target_y, double target_theta = -1) 
     turnTo(target_theta, 5, 2);
 }
 
+//拿到最近的object并返回它的位置
 // Function to find the target object based on type and return its record
 DETECTION_OBJECT findTarget(int type){
     DETECTION_OBJECT target;
