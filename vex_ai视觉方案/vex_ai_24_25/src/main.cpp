@@ -149,7 +149,7 @@ int main() {
   int32_t loop_time = 33;
 
   // start the status update display
-  thread t1(dashboardTask);
+  thread t1(dashboardTask);//打开一个在v5 brain 主控上执行的broad
 
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomousMain);
