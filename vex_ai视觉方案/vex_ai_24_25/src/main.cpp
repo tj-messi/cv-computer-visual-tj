@@ -85,6 +85,11 @@ void auto_Isolation(void) {
   // Back off from the goal
   Drivetrain.driveFor(-30, distanceUnits::cm);
 
+    if(local_map.detectionCount>0)
+  {
+      Arm.spin(fwd);
+  }
+
 }
 
 
@@ -179,7 +184,10 @@ int main() {
       // Allow other tasks to run
       this_thread::sleep_for(loop_time);
       
-
+      if(local_map.detectionCount>0)
+     {
+        Arm.spin(fwd);
+     }
       /*
       jetson_comms.get_data( &local_map );
       printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
