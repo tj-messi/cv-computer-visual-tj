@@ -62,6 +62,7 @@ ai::robot_link       link( PORT10, "robot_32456_1", linkType::worker );
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+//编程比赛入口：
 void auto_Isolation(void) { 
   
   //test code
@@ -71,7 +72,8 @@ void auto_Isolation(void) {
       Arm.spin(fwd);
     }
   }
-  
+
+// Add functions for autonomous isolation phase
 
 
   // Calibrate GPS Sensor
