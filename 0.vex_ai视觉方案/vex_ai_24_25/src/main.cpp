@@ -20,7 +20,7 @@ motor rightDrive = motor(PORT2, ratio18_1, true);
 gps GPS = gps(PORT12, -127, -165, distanceUnits::mm, 180);
 smartdrive Drivetrain = smartdrive(leftDrive, rightDrive, GPS, 319.19, 320, 40, mm, 1);
 // Controls arm used for raising and lowering rings
-motor Arm = motor(PORT4, ratio18_1, false);//测试使用端口
+motor Arm = motor(PORT4, ratio18_1, false);//测试使用�?�?
 // Controls the chain at the front of the arm
 // used for pushing rings off of the arm
 motor Chain = motor(PORT8, ratio18_1, false);
@@ -62,33 +62,41 @@ ai::robot_link       link( PORT10, "robot_32456_1", linkType::worker );
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void auto_Isolation(void) {
-  // Calibrate GPS Sensor
-  GPS.calibrate();
-  // Optional wait to allow for calibration
-  waitUntil(!(GPS.isCalibrating()));
+void auto_Isolation(void) { 
+  
+  //test code
+  while(1){
+    //if(local_map.detectionCount>0)
+    {
+      Arm.spin(fwd);
+    }
+  }
+  
 
+
+  // Calibrate GPS Sensor
+  //GPS.calibrate();
+  // Optional wait to allow for calibration
+  //waitUntil(!(GPS.isCalibrating()));
+  
   // Set brake mode for the arm
-  Arm.setStopping(brakeType::hold);
+  //Arm.setStopping(brakeType::hold);
   // Reset the position of the arm while its still on the ground
-  Arm.resetPosition();
+  // Arm.resetPosition();
   // Lift the arm to prevent dragging
-  Arm.spinTo(75, rotationUnits::deg);
+  //Arm.spinTo(75, rotationUnits::deg);
 
   // Finds and moves robot to over the closest blue ring
-  goToObject(OBJECT::BlueRing);
-  grabRing();
+ // goToObject(OBJECT::BlueRing);
+  //grabRing();
   // Find and moves robot to the closest mobile drop
   // then drops the ring on the goal
-  goToObject(OBJECT::MobileGoal);
-  dropRing();
+ // goToObject(OBJECT::MobileGoal);
+ // dropRing();
   // Back off from the goal
-  Drivetrain.driveFor(-30, distanceUnits::cm);
+  //Drivetrain.driveFor(-30, distanceUnits::cm);
 
-    if(local_map.detectionCount>0)
-  {
-      Arm.spin(fwd);
-  }
+ 
 
 }
 
@@ -150,7 +158,7 @@ int main() {
   int32_t loop_time = 33;
 
   // start the status update display
-  thread t1(dashboardTask);//打开一个在v5 brain 主控上执行的broad
+  thread t1(dashboardTask);//打开一�?在v5 brain 主控上执行的broad
 
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomousMain);
