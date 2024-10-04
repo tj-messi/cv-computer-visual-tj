@@ -1,0 +1,26 @@
+<annotation>
+	<folder>image</folder>
+	<filename>12054e8843b466131f95057c251e9f7.jpg</filename>
+	<path>D:\cv\cv-computer-visual\0.vex_ai\yolov8\image\12054e8843b466131f95057c251e9f7.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4096</width>
+		<height>3072</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>red</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1352</xmin>
+			<ymin>1043</ymin>
+			<xmax>2552</xmax>
+			<ymax>2236</ymax>
+		</bndbox>
+	</object>
+</annotation>
