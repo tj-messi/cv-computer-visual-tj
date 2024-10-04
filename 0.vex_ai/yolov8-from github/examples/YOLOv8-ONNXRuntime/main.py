@@ -7,6 +7,8 @@ import numpy as np
 import onnxruntime as ort
 import torch
 
+from ultralytics import YOLO
+
 from ultralytics.utils import ASSETS, yaml_load
 from ultralytics.utils.checks import check_requirements, check_yaml
 
