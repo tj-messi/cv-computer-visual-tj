@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 
 
-model = YOLO("runs/detect/train/last.pt")
+model = YOLO("yolo11n.pt")
 
 
 camera_no = 0
@@ -17,6 +17,7 @@ while cap.isOpened():
         annotated_frame = results[0].plot()
 
         cv2.imshow(winname="yolov8_vex",mat= annotated_frame)
+
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
