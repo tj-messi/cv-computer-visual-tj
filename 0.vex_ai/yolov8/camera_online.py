@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 
 
-model = YOLO("yolo11n.pt")
+model = YOLO("best.pt")
 
 
 camera_no = 0
