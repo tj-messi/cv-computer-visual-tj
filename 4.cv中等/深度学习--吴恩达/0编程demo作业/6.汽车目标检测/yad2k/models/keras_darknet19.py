@@ -2,11 +2,11 @@
 import functools
 from functools import partial
 
-from tensorflow import Conv2D, MaxPooling2D
-from tensorflow import LeakyReLU
-from tensorflow import BatchNormalization
-from tensorflow import Model
-from tensorflow import l2
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import LeakyReLU, BatchNormalization
+from keras.models import Model
+from keras.regularizers import l2
+
 
 from ..utils import compose
 
