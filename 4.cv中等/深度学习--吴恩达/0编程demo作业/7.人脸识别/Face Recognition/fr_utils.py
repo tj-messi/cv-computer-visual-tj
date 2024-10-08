@@ -16,9 +16,8 @@ import matplotlib.pyplot as plt
 _FLOATX = 'float32'
 
 def variable(value, dtype=_FLOATX, name=None):
-    v = tf.Variable(np.asarray(value, dtype=dtype), name=name)
-    _get_session().run(v.initializer)
-    return v
+    return tf.Variable(np.asarray(value, dtype=dtype), name=name)
+
 
 def shape(x):
     return x.get_shape()
