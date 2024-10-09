@@ -5,11 +5,31 @@
 	import matplotlib.pyplot as plt
 
 ##A
+###plt.axis
+函数用于控制子图的坐标轴
 
+	plt.axis('off')
+
+'off'：表示关闭坐标轴。这意味着子图将不会显示x轴和y轴
+反之on表示打开
+
+##C
+###plt.title
+用于为当前的子图或图表设置标题。当你想要在图表上方显示一些描述性文本时，这个函数非常有用
+
+	plt.title(label, fontdict=None, loc='center', **kwargs)
+
+**label**：这是一个字符串，表示你想要显示的标题文本。
 ##I
+###plt.imshow
+
+用于在当前的子图中显示一个图像
+
+	X_train[idx].astype('uint8')
+
+X_train[idx].astype('uint8')：这是要显示的图像数据。X_train是一个包含训练图像的数组，idx是当前要显示的图像的索引。.astype('uint8')将图像数据转换为无符号8位整数格式，这是显示图像时常用的格式
 
 ##R
-
 ###plt.rcRarams
 
 重新设置matplotlib各个属性
@@ -29,4 +49,14 @@
 	#'gray' 是一种灰度颜色映射，它将图像中的像素值直接映射到灰度级别上
 	
 ##S
+###plt.subplot
 
+用于在当前的图形窗口中创建一个子图。它允许你在一个大的图形区域内划分出多个小的绘图区域，每个区域都可以独立地显示一个图表或图像
+
+	plt.subplot(samples_per_class, num_classes, plt_idx)
+
+**samples_per_class**：指定子图的行数（即垂直方向上的子图数量）。
+
+**num_classes**：指定子图的列数（即水平方向上的子图数量）。
+
+**plt_idx**：指定当前要创建的子图的索引号，它按照行优先的顺序进行编号。这个编号是按照从左到右从上到下进行

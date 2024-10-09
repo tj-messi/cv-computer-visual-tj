@@ -111,3 +111,66 @@ plt.axis('off') 关闭坐标轴。
 	        if i == 0:
 	            plt.title(cls)
 	plt.show()
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728441859553.png)
+
+##压缩数据量
+	
+	num_training = 5000
+	mask = list(range(num_training))
+	X_train = X_train[mask]
+	y_train = y_train[mask]
+	
+	num_test = 500
+	mask = list(range(num_test))
+	X_test = X_test[mask]
+	y_test = y_test[mask]
+	
+	# Reshape the image data into rows
+	X_train = np.reshape(X_train, (X_train.shape[0], -1))
+	X_test = np.reshape(X_test, (X_test.shape[0], -1))
+	print(X_train.shape, X_test.shape)
+
+##引入K邻近
+
+	from cs231n.classifiers import KNearestNeighbor
+	
+	# Create a kNN classifier instance. 
+	# Remember that training a kNN classifier is a noop: 
+	# the Classifier simply remembers the data and does no further processing 
+	classifier = KNearestNeighbor()
+	classifier.train(X_train, y_train)
+
+##实现L2距离计算
+	
+	# Open cs231n/classifiers/k_nearest_neighbor.py and implement
+	# compute_distances_two_loops.
+	
+	# Test your implementation:
+	dists = classifier.compute_distances_two_loops(X_test)
+	print(dists.shape)
+
+L2：
+
+	dists[i][j]=np.sqrt(np.sum(np.square(X[i]-self.X_train[j])))
+
+
+#输出前k预测值
+
+
+	在给出的代码片段中，我们看到了一行使用 NumPy 的 np.argsort 函数的代码。这行代码的目的是从一个训练数据集 self.y_train 中找出与某个给定距离数组 dists[i] 最接近的 k 个点的目标值（即标签）。让我们逐步解释这一行代码：
+	
+	变量解释：
+	self.y_train：这是一个数组，包含了训练数据集的目标值（标签）。
+	dists[i]：这是一个数组，包含了某个点（可能是测试集中的点）到训练集中所有点的距离。i 在这里是一个索引，指定了我们正在考虑哪个点的距离。
+	k：这是一个整数，表示我们想要找出的最近邻的个数。
+	np.argsort 的作用：
+	np.argsort(dists[i])：这个函数会对 dists[i] 数组中的元素进行排序，并返回排序后的索引数组。也就是说，如果 dists[i] 中的第 3 个元素是最小的，那么 np.argsort(dists[i]) 的第一个元素就会是 3。
+	切片操作：
+	[:k]：这个切片操作会从排序后的索引数组中取出前 k 个索引。这些索引对应了 dists[i] 中最小的 k 个元素。
+	索引self.y_train：
+	使用从 np.argsort 返回的索引数组（经过切片操作后只保留了前 k 个）来索引 self.y_train 数组。这样，我们就能得到与给定点距离最近的 k 个训练点的目标值。
+
+拿出前k的值：
+
+	closest_y=self.y_train[np.argsort(dists[i][:k])]
