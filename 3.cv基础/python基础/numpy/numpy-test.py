@@ -7,6 +7,8 @@ a = np.array([1,2,3,4,3,
 
 #print(idx)
 
-a=np.reshape(a,(2,5),'C')
+"""a=np.reshape(a,(2,5),'C')
 
-print(a)
+print(a)"""
+
+b=np.argsort()
