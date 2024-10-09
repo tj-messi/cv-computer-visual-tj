@@ -178,3 +178,5 @@ L2：
 计算出现最多的标签：
 
 	y_pred[i] = np.argmax(np.bincount(closest_y))
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728453960891.png)
