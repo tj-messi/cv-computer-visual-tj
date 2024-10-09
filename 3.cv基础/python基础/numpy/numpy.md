@@ -54,6 +54,39 @@ array_split 是一个用于将数组分割成多个子数组的函数。这个�
 
 
 
+	# 创建两个二维数组  
+	a = np.array([[1, 2, 3], [4, 5, 6]])  
+	b = np.array([[7, 8, 9], [10, 11, 12]])  
+	  
+	# 沿第一个轴连接（垂直连接，增加行数）  
+	c_vertical = np.concatenate((a, b), axis=0)  
+	print("Vertical concatenation:\n", c_vertical)  
+	  
+	# 沿第二个轴连接（水平连接，增加列数）  
+	c_horizontal = np.concatenate((a, b), axis=1)  
+	print("Horizontal concatenation:\n", c_horizontal)
+
+	Vertical concatenation:  
+	 [[ 1  2  3]  
+	 [ 4  5  6]  
+	 [ 7  8  9]  
+	 [10 11 12]]  
+	  
+	Horizontal concatenation:  
+	 [[ 1  2  3  7  8  9]  
+	 [ 4  5  6 10 11 12]]
+
+
+###np.compress
+用于通过给定的条件（布尔数组）筛选数组元素。这个函数返回一个新数组，仅包含满足条件的元素。
+
+	numpy.compress(condition, a, axis=None, out=None)
+
+**condition**：一个布尔数组，用于指定哪些元素应该被包含在新数组中。condition 的形状必须与 a 的形状相匹配，或者如果指定了 axis，则必须与 a 在该轴上的长度相匹配。
+
+**a**：要筛选的输入数组。
+
+**axis**：沿着它压缩数组的轴。如果为 None，则输入数组会被展平。这是一个可选参数。
 ##D
 ###np.dot
 矩阵乘法

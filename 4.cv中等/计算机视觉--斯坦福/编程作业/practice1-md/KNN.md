@@ -222,3 +222,18 @@ np.sum(..., axis=1) 沿着轴 1 求和，结果是一个形状为 (n_samples,) �
 	y_train_folds=np.array_split(y_train,num_folds)
 
 然后k次交叉验证，对每一个k值执行num_folds次knn
+
+	for k in k_choices:
+	  k_to_accuracies[k]=[]
+	  for i in range(num_folds):
+	    temp_train_x = np.concatenate(np.compress([False if temp_i == i else True for temp_i in range(num_folds)],X_train_folds,axis=0))
+	    temp_train_y = np.concatenate(np.compress([False if temp_i == i else True for temp_i in range(num_folds)],y_train_folds,axis=0))
+	
+	    classifier.train(temp_train_x,temp_train_y)
+	
+	    temp_pred_y = classifier.predict(X_train_folds[i],k=k,num_loops=0)
+	
+	    correct_count = np.sum(temp_pred_y == y_train_folds[i])
+	    k_to_accuracies[k].append(correct_count / len(temp_pred_y))
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241009153338.png)
