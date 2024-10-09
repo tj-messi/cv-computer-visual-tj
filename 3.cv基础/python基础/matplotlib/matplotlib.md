@@ -73,3 +73,15 @@ plt.show() 是用于显示图形的命令，它属于 matplotlib 库中的 pyplo
 	  
 	# 显示图表  
 	plt.show()
+
+##X
+###plt.xlabel
+给图标设置x轴内容
+
+	plt.xlabel('Iteration number')
+
+##Y
+###plt.ylabel
+给图标设置y轴内容
+
+	plt.ylabel('Loss value')

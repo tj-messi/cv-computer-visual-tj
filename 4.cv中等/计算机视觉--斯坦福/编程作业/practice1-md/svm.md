@@ -394,3 +394,163 @@ Wj * Xi 是错误分类的分数
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728481023961.png)
 
 ##线性分类训练
+
+	class LinearClassifier(object):
+	    def __init__(self):
+	        self.W = None
+	
+	    def train(
+	        self,
+	        X,
+	        y,
+	        learning_rate=1e-3,
+	        reg=1e-5,
+	        num_iters=100,
+	        batch_size=200,
+	        verbose=False,
+	    ):
+	        """
+	        Train this linear classifier using stochastic gradient descent.
+	
+	        Inputs:
+	        - X: A numpy array of shape (N, D) containing training data; there are N
+	          training samples each of dimension D.
+	        - y: A numpy array of shape (N,) containing training labels; y[i] = c
+	          means that X[i] has label 0 <= c < C for C classes.
+	        - learning_rate: (float) learning rate for optimization.
+	        - reg: (float) regularization strength.
+	        - num_iters: (integer) number of steps to take when optimizing
+	        - batch_size: (integer) number of training examples to use at each step.
+	        - verbose: (boolean) If true, print progress during optimization.
+	
+	        Outputs:
+	        A list containing the value of the loss function at each training iteration.
+	        """
+	        num_train, dim = X.shape
+	        num_classes = (
+	            np.max(y) + 1
+	        )  # assume y takes values 0...K-1 where K is number of classes
+	        if self.W is None:
+	            # lazily initialize W
+	            self.W = 0.001 * np.random.randn(dim, num_classes)
+	
+	        # Run stochastic gradient descent to optimize W
+	        loss_history = []
+	        for it in range(num_iters):
+	            X_batch = None
+	            y_batch = None
+	
+	            #########################################################################
+	            # TODO:                                                                 #
+	            # Sample batch_size elements from the training data and their           #
+	            # corresponding labels to use in this round of gradient descent.        #
+	            # Store the data in X_batch and their corresponding labels in           #
+	            # y_batch; after sampling X_batch should have shape (batch_size, dim)   #
+	            # and y_batch should have shape (batch_size,)                           #
+	            #                                                                       #
+	            # Hint: Use np.random.choice to generate indices. Sampling with         #
+	            # replacement is faster than sampling without replacement.              #
+	            #########################################################################
+	            # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	            choice_idxs = np.random.choice(num_train,batch_size)
+	            X_batch = X[choice_idxs]
+	            y_batch = y[choice_idxs]
+	
+	            # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	            # evaluate loss and gradient
+	            loss, grad = self.loss(X_batch, y_batch, reg)
+	            loss_history.append(loss)
+	
+	            # perform parameter update
+	            #########################################################################
+	            # TODO:                                                                 #
+	            # Update the weights using the gradient and the learning rate.          #
+	            #########################################################################
+	            # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	            
+	            self.W -= learning_rate * grad
+	
+	            # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	            if verbose and it % 100 == 0:
+	                print("iteration %d / %d: loss %f" % (it, num_iters, loss))
+	
+	        return loss_history
+
+调用训练
+
+	# In the file linear_classifier.py, implement SGD in the function
+	# LinearClassifier.train() and then run it with the code below.
+	from cs231n.classifiers import LinearSVM
+	svm = LinearSVM()
+	tic = time.time()
+	loss_hist = svm.train(X_train, y_train, learning_rate=1e-7, reg=2.5e4,
+	                      num_iters=1500, verbose=True)
+	toc = time.time()
+	print('That took %fs' % (toc - tic))
+
+损失
+
+	iteration 0 / 1500: loss 796.876175
+	iteration 100 / 1500: loss 472.439065
+	iteration 200 / 1500: loss 286.561045
+	iteration 300 / 1500: loss 175.174452
+	iteration 400 / 1500: loss 107.294658
+	iteration 500 / 1500: loss 66.577661
+	iteration 600 / 1500: loss 42.454063
+	iteration 700 / 1500: loss 27.529834
+	iteration 800 / 1500: loss 18.724411
+	iteration 900 / 1500: loss 13.755224
+	iteration 1000 / 1500: loss 10.751597
+	iteration 1100 / 1500: loss 8.385586
+	iteration 1200 / 1500: loss 7.456650
+	iteration 1300 / 1500: loss 6.583702
+	iteration 1400 / 1500: loss 5.222297
+	That took 10.588674s
+
+展示图
+
+	plt.plot(loss_hist)
+	plt.xlabel('Iteration number')
+	plt.ylabel('Loss value')
+	plt.show()
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241009215819.png)
+
+##预测
+	
+	def predict(self, X):
+	        """
+	        Use the trained weights of this linear classifier to predict labels for
+	        data points.
+	
+	        Inputs:
+	        - X: A numpy array of shape (N, D) containing training data; there are N
+	          training samples each of dimension D.
+	
+	        Returns:
+	        - y_pred: Predicted labels for the data in X. y_pred is a 1-dimensional
+	          array of length N, and each element is an integer giving the predicted
+	          class.
+	        """
+	        y_pred = np.zeros(X.shape[0])
+	        ###########################################################################
+	        # TODO:                                                                   #
+	        # Implement this method. Store the predicted labels in y_pred.            #
+	        ###########################################################################
+	        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	        #pass
+	        scores=np.dot(X,self.W)
+	        y_pred = np.argmax(scores,axis=1)
+	
+	        # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	        return y_pred
+
+预测
+
+	training accuracy: 0.379571
+	validation accuracy: 0.385000
