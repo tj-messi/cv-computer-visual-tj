@@ -174,3 +174,7 @@ L2：
 拿出前k的值：
 
 	closest_y=self.y_train[np.argsort(dists[i][:k])]
+
+计算出现最多的标签：
+
+	y_pred[i] = np.argmax(np.bincount(closest_y))

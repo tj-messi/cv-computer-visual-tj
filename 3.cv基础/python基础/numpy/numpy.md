@@ -18,6 +18,19 @@
 	
 	[ 1  3  6  0  2  9 10  4  8  7]
 
+##B
+###np.bincount()
+用于计算非负整数数组中每个元素出现的次数。
+
+	numpy.bincount(x, weights=None, minlength=0)
+
+**x**：输入的非负整数数组，其中的每个元素表示一个类别或标签。
+
+**weights**：可选的权重数组，与 x 具有相同的长度。如果提供了权重，np.bincount 将计算加权后的次数。
+
+**minlength**：可选参数，指定输出数组的最小长度。如果 x 中的最大元素大于或等于 minlength，输出数组的长度将是 x 中的最大元素加一；否则，输出数组的长度将是 minlength。
+
+
 ##F
 ###np.flatnonzero
 返回所有输入bool值为非0的内容，接受一个数组，返回索引值数组
