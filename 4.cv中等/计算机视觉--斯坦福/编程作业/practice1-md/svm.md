@@ -190,3 +190,19 @@
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728468640496.png)
 
+##SVM
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241009181641.png)
+
+其中
+
+Wj * Xi 是错误分类的分数
+
+-Wyi * Xi 是正确分类的分数
+
+所以一旦分类错误，就可以计算出对于该损失函数的梯度
+
+其中正确分类的Wj所在的梯度是 -Xi
+
+错误分类的Wyi所在的梯度是 +Xi
+
