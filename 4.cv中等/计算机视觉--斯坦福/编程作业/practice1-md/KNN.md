@@ -180,3 +180,40 @@ L2：
 	y_pred[i] = np.argmax(np.bincount(closest_y))
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728453960891.png)
+
+##修改成单循环计算
+
+	dists[i] = np.sqrt(np.sum(np.square(self.X_train - X[i]), axis = 1))
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/8da344a4b7f5913cfee3a518d2e2c1b.png)
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728455605682.png)
+
+##修改成无循环计算
+
+	dists = np.sqrt(-2*np.dot(X, self.X_train.T) + np.sum(np.square(self.X_train), axis = 1) + np.transpose([np.sum(np.square(X), axis = 1)]))
+
+把根号xi-xj平方转化为xi平方+xj平方-2*xi * xj
+
+X 是一个二维数组，假设其形状为 (n_samples, n_features)，其中 n_samples 是样本数，n_features 是特征数。
+self.X_train.T 是 self.X_train 的转置，假设 self.X_train 的形状为 (n_train_samples, n_features)，则 self.X_train.T 的形状为 (n_features, n_train_samples)。
+np.dot 执行矩阵乘法，结果是一个形状为 (n_samples, n_train_samples) 的二维数组，其中每个元素表示 X 中的一个样本与 self.X_train 中的一个样本的点积。
+
+np.sum(np.square(self.X_train), axis=1)：
+np.square(self.X_train) 计算 self.X_train 中每个元素的平方，结果形状仍为 (n_train_samples, n_features)。
+
+np.square(X) 计算 X 中每个元素的平方，结果形状仍为 (n_samples, n_features)。
+np.sum(..., axis=1) 沿着轴 1 求和，结果是一个形状为 (n_samples,) 的一维数组，其中每个元素表示 X 中一个样本的所有特征的平方和。
+[...] 将结果包装成一个列表，然后 np.transpose 将其转置成形状为 (1, n_samples) 的二维数组（实际上这里用 np.reshape 或者直接保持一维数组形状可能更直观，但转置也能达到目的）。
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/594227dbe06226a1b9af6fb80c76c8c.jpg)
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728456660954.png)
+
+##三种计算时间比较：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1728456856148.png)
+
+##交叉验证
+
+

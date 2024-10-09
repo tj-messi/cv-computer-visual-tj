@@ -28,6 +28,14 @@
 **axis**：可选参数，指定沿哪个轴寻找最大值。如果为 None（默认），则在整个数组中寻找最大值。
 
 **out**：可选参数，指定一个数组来存储结果。如果没有提供，则返回一个新数组。
+
+###np.arrat_split
+array_split 是一个用于将数组分割成多个子数组的函数。这个函数非常灵活，可以沿指定的轴将数组分割成指定数量的子数组，或者根据提供的索引列表进行分割。
+
+	print(np.array_split(x, 3))#长度切割
+	print(np.array_split(x, [3, 7]))#索引切割 
+
+
 ##B
 ###np.bincount()
 用于计算非负整数数组中每个元素出现的次数。
@@ -40,6 +48,11 @@
 
 **minlength**：可选参数，指定输出数组的最小长度。如果 x 中的最大元素大于或等于 minlength，输出数组的长度将是 x 中的最大元素加一；否则，输出数组的长度将是 minlength。
 
+##D
+###np.dot
+矩阵乘法
+
+	np.dot(X, self.X_train.T)
 
 ##F
 ###np.flatnonzero
@@ -135,3 +148,18 @@
 	row_sum_keepdims = np.sum(z, axis=1, keepdims=True)  
 	print(row_sum_keepdims)  # 输出: [[ 6]  
 	                         #       [15]]
+
+##T
+###np.transpose
+用于转置矩阵或数组。转置操作意味着将数组的行转换为列，将列转换为行。
+	
+	A = np.array([[1, 2], [3, 4]])
+	使用 np.transpose(A) 将得到形状为 (n, m) 的数组：
+	
+	python
+	复制代码
+	A_transposed = np.transpose(A)  
+	print(A_transposed)  
+	# 输出:  
+	# [[1 3]  
+	#  [2 4]]
