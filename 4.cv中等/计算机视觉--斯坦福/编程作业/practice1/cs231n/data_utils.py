@@ -28,6 +28,7 @@ def load_CIFAR_batch(filename):
         return X, Y
 
 
+
 def load_CIFAR10(ROOT):
     """ load all of cifar """
     xs = []
