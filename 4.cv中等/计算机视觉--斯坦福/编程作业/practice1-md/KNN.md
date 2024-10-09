@@ -216,4 +216,9 @@ np.sum(..., axis=1) 沿着轴 1 求和，结果是一个形状为 (n_samples,) �
 
 ##交叉验证
 
+先分割集合
 
+	X_train_folds=np.array_split(X_train,num_folds)
+	y_train_folds=np.array_split(y_train,num_folds)
+
+然后k次交叉验证，对每一个k值执行num_folds次knn
