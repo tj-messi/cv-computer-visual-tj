@@ -187,3 +187,53 @@
 
 loss: 2.384882
 sanity check: 2.302585
+
+##向量化
+
+	def softmax_loss_vectorized(W, X, y, reg):
+	    """
+	    Softmax loss function, vectorized version.
+	
+	    Inputs and outputs are the same as softmax_loss_naive.
+	    """
+	    # Initialize the loss and gradient to zero.
+	    loss = 0.0
+	    dW = np.zeros_like(W)
+	
+	    #############################################################################
+	    # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
+	    # Store the loss in loss and the gradient in dW. If you are not careful     #
+	    # here, it is easy to run into numeric instability. Don't forget the        #
+	    # regularization!                                                           #
+	    #############################################################################
+	    # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	    #pass
+	    # 训练集的数量
+	    num_train = X.shape[0]
+	    # 分类的数量
+	    num_classes = W.shape[1]
+	
+	    scores = np.dot(X,W)
+	    scores = np.exp(scores)
+	
+	    p=scores/(np.sum(scores,axis=1,keepdims=True))
+	
+	    loss+=np.sum(-np.log(p[np.arange(num_train),y]))
+	
+	    p[np.arange(num_train),y]-=1
+	
+	    dW = np.dot(X.T,p)
+	
+	    loss/=num_train
+	    loss+=0.5*reg*np.sum(W*W)
+	
+	    dW/=num_train
+	    dW+=reg*W
+	
+	
+	
+	    # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+	
+	    return loss, dW
+
