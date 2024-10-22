@@ -1,158 +1,418 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       james                                                     */
-/*    Created:      Mon Aug 31 2020                                           */
-/*    Description:  V5 project                                                */
+/*    Author:       TJU-CodeWeavers                                           */
+/*    Created:      2023/11/1 23:12:20                                        */
+/*    Description:  tjulib for V5 project                                     */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// ---- END VEXCODE CONFIGURED DEVICES ----
-#include "ai_functions.h"
+#include "vex.h"
+#include "tjulib.h"
+#include <string>
 
 using namespace vex;
+using namespace tjulib;
 
-brain Brain;
-// Robot configuration code.
-motor leftDrive = motor(PORT1, ratio18_1, false);
-motor rightDrive = motor(PORT2, ratio18_1, true);
-gps GPS = gps(PORT12, -127, -165, distanceUnits::mm, 180);
-smartdrive Drivetrain = smartdrive(leftDrive, rightDrive, GPS, 319.19, 320, 40, mm, 1);
-// Controls arm used for raising and lowering rings
-motor Arm = motor(PORT4, ratio18_1, false);//测试使用�?�?
-// Controls the chain at the front of the arm
-// used for pushing rings off of the arm
-motor Chain = motor(PORT8, ratio18_1, false);
+/*---------------  模式选择  ---------------*/
+// 如果进行技能赛就def，否则注释，进行自动
+//#define SKILL
+// 如果用里程计就def，否则注释，用雷达
+#define ODOM
+// 如果要开启远程调试就def，否则就注释
+#define Remotedeubug
 
 
-// A global instance of competition
+/**************************电机定义***********************************/
+// ordinary chassis define
+//std::vector<std::vector<vex::motor*>*> _chassisMotors = { &_leftMotors, &_rightMotors} ;
+// oct chassis define
+std::vector<std::vector<vex::motor*>*> _chassisMotors = {&_lfMotors, &_lbMotors, &_rfMotors, &_rbMotors};
+/**************************调参区域***********************************/
+
+// Definition of const variables
+//const double PI = 3.1415926;
+
+// imu零漂误差修正
+double zero_drift_error = 0;  // 零漂误差修正，程序执行时不断增大
+double correct_rate = 0.0000;
+
+// 全局计时器
+static timer global_time;  
+// 竞赛模板类
 competition Competition;
-
-// create instance of jetson class to receive location and other
-// data from the Jetson nano
-//
+// vex-ai jeson nano comms
 ai::jetson  jetson_comms;
-static AI_RECORD local_map;
-/*----------------------------------------------------------------------------*/
-// Create a robot_link on PORT1 using the unique name robot_32456_1
-// The unique name should probably incorporate the team number
-// and be at least 12 characters so as to generate a good hash
-//
-// The Demo is symetrical, we send the same data and display the same status on both
-// manager and worker robots
-// Comment out the following definition to build for the worker robot
-#define  MANAGER_ROBOT    1
 
-#if defined(MANAGER_ROBOT)
-#pragma message("building for the manager")
-ai::robot_link       link( PORT10, "robot_32456_1", linkType::manager );
-#else
-#pragma message("building for the worker")
-ai::robot_link       link( PORT10, "robot_32456_1", linkType::worker );
-#endif
+/*************************************
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                          Auto_Isolation Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous isolation  */
-/*  phase of a VEX AI Competition.                                           */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
+        pid configurations
 
-//��̱�����ڣ�
-void auto_Isolation(void) { 
-  
-  //test code
-  while(1){
-    //if(local_map.detectionCount>0)
-    {
-      Arm.spin(fwd);
-    }
-  }
+*************************************/
 
-// Add functions for autonomous isolation phase
+/*configure meanings：
+    ki, kp, kd, 
+    integral's active zone (either inches or degrees), 
+    error's thredhold      (either inches or degrees),
+    minSpeed               (in voltage),
+    stop_num               (int_type)
+*/
+
+pidParams   fwd_pid(10, 0.6, 0.3, 1, 2, 25, 15), 
+            turn_pid(5, 0.05, 0.05, 3, 2, 20, 15), 
+            cur_pid(8.0, 0.05, 0.15, 3, 1, 20, 15),
+            straightline_pid(10, 0.1, 0.12, 5, 4, 1, 10),
+            wheelmotor_pid(0.25, 0.01, 0.02, 50, 5, 0, 10);
 
 
-  // Calibrate GPS Sensor
-  //GPS.calibrate();
-  // Optional wait to allow for calibration
-  //waitUntil(!(GPS.isCalibrating()));
-  
-  // Set brake mode for the arm
-  //Arm.setStopping(brakeType::hold);
-  // Reset the position of the arm while its still on the ground
-  // Arm.resetPosition();
-  // Lift the arm to prevent dragging
-  //Arm.spinTo(75, rotationUnits::deg);
+/*************************************
 
-  // Finds and moves robot to over the closest blue ring
- // goToObject(OBJECT::BlueRing);
-  //grabRing();
-  // Find and moves robot to the closest mobile drop
-  // then drops the ring on the goal
- // goToObject(OBJECT::MobileGoal);
- // dropRing();
-  // Back off from the goal
-  //Drivetrain.driveFor(-30, distanceUnits::cm);
+        Instance for position
 
+*************************************/
+//Dif_Odom diff_odom(_leftMotors, _rightMotors,  PI * r_motor * 2, r_motor, imu);
+
+// gps correction
+tjulib::GPS gps_(GPS_, gps_offset_x, gps_offset_y);
+// odom(of 45 degree) strategy
+Odom odom(hOffset, vOffset, r_wheel_encoder, encoder_rotate_degree, encoderVertical, encoderHorizonal, imu);
+// diff-odom strategy ----- diff_odom default
+Context *PosTrack = new Context(&odom); 
+// vector for all position strategy
+std::vector<Position*>_PositionStrategy = {&odom};
+
+/*************************************
+
+        Instance for map
+
+*************************************/
+// local storage for latest data from the Jetson Nano
+AI_RECORD local_map;
+HighStakeMap map(PosTrack->position);
+
+/*************************************
+
+        Instance for control
+
+*************************************/
+
+// ====Declaration of PID parameters and PID controllers ====
+pidControl curControl(&cur_pid);
+pidControl fwdControl(&fwd_pid);
+pidControl turnControl(&turn_pid);
+pidControl straightlineControl(&straightline_pid);
+pidControl motorControl(&wheelmotor_pid);
+
+// ====Declaration of Path Planner and Controller ====
+// Declaration of rrt planner
+RRT rrtPlanner(map.obstacleList, -72, 72, 2, 25, 10000, 12);
+// Declaration of PurPursuit Controller
+PurePursuit purepursuitControl(PosTrack->position);
+
+// ====Declaration of Chassis Controller ====
+// 底盘控制
+//Ordi_SmartChassis FDrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width);
+Oct_SmartChassis ODrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width, &purepursuitControl);
+
+// ====Declaration of Upper Controller ====
+
+/***************************
  
+      thread define
+
+ **************************/
+// 远程调试
+RemoteDebug remotedebug(PosTrack->position); 
+// 远程调试
+int RemoteDubug(){
+
+#ifdef DashBoard
+    remotedebug.PositionDebugSerial();
+#else
+
+#endif
+    return 0;
+}
+
+/***************************
+ 
+      initial pos set
+
+ **************************/
+// PosTrack 定位线程，在这里选择定位策略
+int PositionTrack(){
+
+    // _PositionStrategy has {&diff_odom, &odom}
+    PosTrack = new Context(_PositionStrategy[0]);
+    PosTrack->startPosition();
+    return 0;
 
 }
 
+// 更新线程
+int GPS_update(){
+    
+    timer time;
+    time.clear();
+    int flag = 1;
+    while(1){
+       
+        imu.setHeading(GPS_.heading(deg), deg);
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                        Auto_Interaction Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous interaction*/
-/*  phase of a VEX AI Competition.                                           */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
+        gps_x = gps_.gpsX();
+        gps_y = gps_.gpsY();
+        gps_heading = GPS_.heading(deg);
+        
+        if((time.time(msec)-3000)<=10 && flag){
+            imu.setHeading(GPS_.heading(deg), deg);
+            // 第4秒的时候会更新一下坐标
+            PosTrack->setPosition({gps_x, gps_y, GPS_.heading(deg) / 180 * 3.1415926535});
+            
+            printf("position initialization finish\n");
 
+            flag = 0;
+        }
+        task::sleep(10);
+        
+    }
+        
+        
+}
+/***************************
+ 
+    pre-autonomous run
 
-void auto_Interaction(void) {
+ **************************/
+// 设置初始位置、角度
+#ifdef SKILL
+    // 初始位置，单位为inches
+    double init_pos_x = -59;
+    double init_pos_y = 35.4;
 
-  if(local_map.detectionCount>0)
-  {
-      Arm.spin(fwd);
-  }
-  // Add functions for interaction phase
+    // 逆时针角度，范围在0 ~ 360°之间
+    double initangle = 0;
+
+#else
+    // 初始位置，单位为inches
+    double init_pos_x = 0;
+    double init_pos_y = 0;
+
+    // 逆时针角度，范围在0 ~ 360°之间
+    double init_angle = 0;
+
+#endif
+void pre_auton(){
+    thread PosTrack_(PositionTrack);
+/***********是否开启远程调试************/
+#ifdef Remotedeubug
+    thread Remotedebug(RemoteDubug);
+#endif
+/***********imu、gps、distancesensor、vision等设备初始化************/  
+    
+    printf("pre-auton start\n");
+    if(GPS_.installed()){
+        GPS_.calibrate();
+        while(GPS_.isCalibrating()) task::sleep(8);
+        
+    }
+
+    // 这里考虑到只使用imu而不使用gps的情况
+    if(imu.installed()){
+        // 设置初始位置
+        PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
+    }
+    
+    if(GPS_.installed()){
+        thread GPS_update_(GPS_update);
+     }
+    
+    printf("pre-auton finish\n");
+    task::sleep(3000);
 }
 
+/*********************************
+ 
+    Dual-Communication Thread
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                          AutonomousMain Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
+ ***********************************/
+static int received_flag = 0;
+int sendTask(){
 
-bool firstAutoFlag = true;
+    while( !AllianceLink.isLinked() )
+        this_thread::sleep_for(8);
 
-void autonomousMain(void) {
-  // ..........................................................................
-  // The first time we enter this function we will launch our Isolation routine
-  // When the field goes disabled after the isolation period this task will die
-  // When the field goes enabled for the second time this task will start again
-  // and we will enter the interaction period. 
-  // ..........................................................................
-
-  if(firstAutoFlag)
-    auto_Isolation();
-  else 
-    auto_Interaction();
-
-  firstAutoFlag = false;
+    AllianceLink.send("run");
+    Brain.Screen.print("successfully sended\n");
+    return 0;
 }
+void confirm_SmallCar_Finished(const char* message, const char*linkname, double nums){
+
+    received_flag = 1;
+    Brain.Screen.print("successfully received\n");
+}    
+// Dual-Communication Demo
+void demo_dualCommunication(){
+    sendTask();  // 向联队车发送信息
+    task::sleep(200);
+    Brain.Screen.print("send thread jump out\n");
+
+    /************************
+      
+      发送完信号后执行的程序
+      
+    ************************/
+
+    // 等待一下
+    while(1){
+        AllianceLink.received("finished", confirm_SmallCar_Finished);
+        task::sleep(200);
+        if(received_flag){break;}
+    }
+
+}
+
+/***************************
+ 
+      autonomous run
+
+ **************************/
+void autonomous(){
+
+    //ODrive.RotMoveToTarget({0,48,90}, 100, 8000, 10, 1);
+    //std::vector<Point> Path1 = {{-48, 5}, {-40, 15}, {-18, 30}, {0, 48}, {5, 40}, {15, 30}, {30, 20}, {48, 0}};
+    printf("rrt_start\n");
+   Point start_pt = {gps_x, gps_y};
+   std::vector<Point> Path1 = rrtPlanner.optimal_rrt_planning(start_pt, (Point){48, 0, 0}, 4);  // 这里一定要强制类型转换为Point
+    //std::vector<Point> Path1 = {{-48, -55}, {-40,-47}, {-20, -44}, {0, -35}, {5, -40}, {15, -35}, {30, -20}, {48, 0}};
+    for(auto point : Path1){
+        printf("{x:%lf , y:%lf}\n", point.x, point.y);
+    }
+    printf("rrt_end\n");
+    ODrive.PathMove(Path1, 100, 100, 800000, 10, 1, 0);
+    //ODrive.moveToTarget({-35,18}, 100,1000,10,1);
+}
+/***************************
+ 
+      skillautonomous run
+
+ **************************/
+void skillautonoumous(){
+   
+}
+/***************************
+ 
+      usercontrol run
+
+ **************************/
+void usercontrol()
+{
+    Controller1.ButtonL1.pressed([]() {
+        lift_arm.spin(forward); // 电机正转
+    });
+
+    Controller1.ButtonL1.released([]() {
+        lift_arm.setStopping(brakeType::hold);
+        lift_arm.stop(hold);
+    });
+
+    Controller1.ButtonL2.pressed([]() {
+         lift_arm.spin(vex::reverse); // 电机正转
+    });
+
+    Controller1.ButtonL2.released([]() {
+        lift_arm.setStopping(brakeType::hold);
+        lift_arm.stop(hold);
+    });
+    Controller1.ButtonR1.pressed([]() {
+        static bool motorRunning = false; // 用于追踪电机状态
+        
+        if (!motorRunning) {
+            roller_group.spin(forward,100,pct);
+            convey_belt.spin(forward,100,pct);
+
+        } else {
+           roller_group.stop();// 停止电机旋转
+           convey_belt.stop();
+        }
+        motorRunning = !motorRunning; // 切换电机状态}
+    });
+
+    Controller1.ButtonR2.pressed([]() {
+        static bool motorRunning = false; // 用于追踪电机状态
+
+        if (!motorRunning) {
+            roller_group.spin(forward,-100,pct);
+            convey_belt.spin(reverse,100,pct);
+        } else {
+           roller_group.stop();// 停止电机旋转
+           convey_belt.stop();
+        }
+        motorRunning = !motorRunning; // 切换电机状态}
+    });
+
+
+    Controller1.ButtonL1.released([]() {
+        lift_arm.setStopping(brakeType::hold);
+        lift_arm.stop(hold);
+    });
+
+     Controller1.ButtonY.pressed([]() {
+         static bool status_push = false; // 用于追踪电机状态
+
+         if (!status_push) {
+             gas_push.state(100,pct);
+         } else {
+             gas_push.state(0,pct);
+         }
+         status_push = !status_push; // 切换状态
+     });
+
+    Controller1.ButtonB.pressed([]() {
+         static bool status_hold = false; // 用于追踪电机状态
+
+         if (!status_hold) {
+             gas_hold.state(100,pct);
+         } else {
+             gas_hold.state(0,pct);
+         }
+         status_hold = !status_hold; // 切换状态
+     });
+
+     Controller1.ButtonDown.pressed([]() {
+         static bool status_lift = false; // 用于追踪电机状态
+
+         if (!status_lift) {
+             gas_lift.state(100,pct);
+         } else {
+             gas_lift.state(0,pct);
+         }
+         status_lift = !status_lift; // 切换状态
+     });
+
+    while(true){
+        
+        ODrive.ManualDrive_nonPID();
+
+        // 调试时通过按键进入自动
+         if(Controller1.ButtonX.pressing()){ 
+             autonomous();
+         }
+         if(Controller1.ButtonY.pressing()){
+             skillautonoumous();
+         }
+
+        if(Controller1.ButtonUp.pressing()){
+            vexMotorVoltageSet(side_bar.index(), 100*120);
+        }else if(Controller1.ButtonDown.pressing()){
+            vexMotorVoltageSet(side_bar.index(), -100*120);
+        }else{
+            side_bar.stop(hold);
+        }
+
+    }
+}
+
 
 int main() {
-  
+
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
@@ -160,53 +420,47 @@ int main() {
   int32_t loop_time = 33;
 
   // start the status update display
-  thread t1(dashboardTask);//打开一�?在v5 brain 主控上执行的broad
+  thread t1(dashboardTask);
 
-  // Set up callbacks for autonomous and driver control periods.
-  Competition.autonomous(autonomousMain);
-
-  // print through the controller to the terminal (vexos 1.0.12 is needed)
+    // print through the controller to the terminal (vexos 1.0.12 is needed)
   // As USB is tied up with Jetson communications we cannot use
   // printf for debug.  If the controller is connected
   // then this can be used as a direct connection to USB on the controller
   // when using VEXcode.
   //
-  //FILE *fp = fopen("/dev/serial2","wb");
+  FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
-  Arm.setVelocity(60, percent);
+  #ifdef SKILL
+  Competition.autonomous(skillautonoumous);
+  #else
 
-  while(1) 
-  {
-      // get last map data
+    Competition.autonomous(autonomous);
+
+  #endif
+
+
+  Competition.drivercontrol(usercontrol);
+
+  // Run the pre-autonomous function.
+  pre_auton();
+
+  // Prevent main from exiting with an infinite loop.
+  while (true) {
+        // get last map data
       jetson_comms.get_data( &local_map );
 
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
 
-      //fprintf(fp, "%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
+     // printf("%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
 
       // request new data    
       // NOTE: This request should only happen in a single task.    
       jetson_comms.request_map();
 
-      //printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
       // Allow other tasks to run
       this_thread::sleep_for(loop_time);
-      
-      if(local_map.detectionCount>0)
-     {
-        Arm.spin(fwd);
-     }
-      /*
-      jetson_comms.get_data( &local_map );
-      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
-      this_thread::sleep_for(loop_time);
-
-      jetson_comms.get_data( &local_map );
-      printf("%d %d %d  \n", local_map.detections[0].screenLocation.x,local_map.detections[0].screenLocation.y,local_map.detectionCount);
-      this_thread::sleep_for(loop_time);
-      this_thread::sleep_for(loop_time);
-      */
   }
 }
+

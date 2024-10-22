@@ -1,33 +1,30 @@
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       vex.h                                                     */
-/*    Author:       Vex Robotics                                              */
-/*    Created:      1 Feb 2019                                                */
-/*    Description:  Default header for V5 projects                            */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-//
-#include "math.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #include "v5.h"
 #include "v5_vcs.h"
-#include <cmath>
-#include "ai_jetson.h"
-#include "ai_robot_link.h"
 
+#include "robot-config.h"
+#include "vex-ai/ai_jetson.h"
+#include "vex-ai/ai_robot_link.h"
 
-#define waitUntil(condition)                                                   \
-  do {                                                                         \
-    wait(5, msec);                                                             \
-  } while (!(condition))
-
-#define repeat(iterations)                                                     \
-  for (int iterator = 0; iterator < iterations; iterator++)
+#include <vector>
 
 extern ai::jetson      jetson_comms;
 extern ai::robot_link  link;
-
 extern int dashboardTask( void );
+
+#define waitUntil(condition) \
+  do                         \
+  {                          \
+    wait(5, msec);           \
+  } while (!(condition))
+
+#define repeat(iterations) \
+  for (int iterator = 0; iterator < iterations; iterator++)
