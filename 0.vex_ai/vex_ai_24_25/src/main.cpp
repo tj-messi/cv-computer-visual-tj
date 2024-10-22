@@ -428,7 +428,7 @@ int main() {
   // then this can be used as a direct connection to USB on the controller
   // when using VEXcode.
   //
-  FILE *fp = fopen("/dev/serial2","wb");
+  //FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
   #ifdef SKILL
