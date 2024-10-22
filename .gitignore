@@ -1,3 +1,10 @@
 组会记录
 *.h5
 *.mat
+*.zip
+*.rar
+*.tar
+*.tar.gz
+*.tar.bz2
+*.pkl
+
