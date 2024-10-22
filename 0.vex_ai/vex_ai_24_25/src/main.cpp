@@ -8,7 +8,7 @@
 #include "vex.h"
 #include "tjulib.h"
 #include <string>
-#include "ai_functions.h"
+// #include "ai_functions.h"
 using namespace vex;
 using namespace tjulib;
 
@@ -85,7 +85,7 @@ std::vector<Position*>_PositionStrategy = {&odom};
 
 *************************************/
 // local storage for latest data from the Jetson Nano
-AI_RECORD local_map;
+//AI_RECORD local_map;
 HighStakeMap map(PosTrack->position);
 
 /*************************************
@@ -248,19 +248,10 @@ void confirm_SmallCar_Finished(const char* message, const char*linkname, double 
     received_flag = 1;
     Brain.Screen.print("successfully received\n");
 }    
-// Dual-Communication Demo
 void demo_dualCommunication(){
     sendTask();  // 向联队车发送信息
     task::sleep(200);
     Brain.Screen.print("send thread jump out\n");
-
-    /************************
-      
-      发送完信号后执行的程序
-      
-    ************************/
-
-    // 等待一下
     while(1){
         AllianceLink.received("finished", confirm_SmallCar_Finished);
         task::sleep(200);
@@ -269,150 +260,38 @@ void demo_dualCommunication(){
 
 }
 
-/***************************
- 
-      autonomous run
 
- **************************/
-void autonomous(){
 
-    //ODrive.RotMoveToTarget({0,48,90}, 100, 8000, 10, 1);
-    //std::vector<Point> Path1 = {{-48, 5}, {-40, 15}, {-18, 30}, {0, 48}, {5, 40}, {15, 30}, {30, 20}, {48, 0}};
-    printf("rrt_start\n");
-   Point start_pt = {gps_x, gps_y};
-   std::vector<Point> Path1 = rrtPlanner.optimal_rrt_planning(start_pt, (Point){48, 0, 0}, 4);  // 这里一定要强制类型转换为Point
-    //std::vector<Point> Path1 = {{-48, -55}, {-40,-47}, {-20, -44}, {0, -35}, {5, -40}, {15, -35}, {30, -20}, {48, 0}};
-    for(auto point : Path1){
-        printf("{x:%lf , y:%lf}\n", point.x, point.y);
+void auto_Isolation(void) { 
+  
+  //test code
+  while(1){
+    if(local_map.detectionCount>0)
+    {
+      ODrive.simpleMove(50, 0, 0.4, 10);
     }
-    printf("rrt_end\n");
-    ODrive.PathMove(Path1, 100, 100, 800000, 10, 1, 0);
-    //ODrive.moveToTarget({-35,18}, 100,1000,10,1);
-}
-/***************************
- 
-      skillautonomous run
+  }
 
- **************************/
-void skillautonoumous(){
-   
-}
-/***************************
- 
-      usercontrol run
-
- **************************/
-void usercontrol()
-{
-    Controller1.ButtonL1.pressed([]() {
-        lift_arm.spin(forward); // 电机正转
-    });
-
-    Controller1.ButtonL1.released([]() {
-        lift_arm.setStopping(brakeType::hold);
-        lift_arm.stop(hold);
-    });
-
-    Controller1.ButtonL2.pressed([]() {
-         lift_arm.spin(vex::reverse); // 电机正转
-    });
-
-    Controller1.ButtonL2.released([]() {
-        lift_arm.setStopping(brakeType::hold);
-        lift_arm.stop(hold);
-    });
-    Controller1.ButtonR1.pressed([]() {
-        static bool motorRunning = false; // 用于追踪电机状态
-        
-        if (!motorRunning) {
-            roller_group.spin(forward,100,pct);
-            convey_belt.spin(forward,100,pct);
-
-        } else {
-           roller_group.stop();// 停止电机旋转
-           convey_belt.stop();
-        }
-        motorRunning = !motorRunning; // 切换电机状态}
-    });
-
-    Controller1.ButtonR2.pressed([]() {
-        static bool motorRunning = false; // 用于追踪电机状态
-
-        if (!motorRunning) {
-            roller_group.spin(forward,-100,pct);
-            convey_belt.spin(reverse,100,pct);
-        } else {
-           roller_group.stop();// 停止电机旋转
-           convey_belt.stop();
-        }
-        motorRunning = !motorRunning; // 切换电机状态}
-    });
-
-
-    Controller1.ButtonL1.released([]() {
-        lift_arm.setStopping(brakeType::hold);
-        lift_arm.stop(hold);
-    });
-
-     Controller1.ButtonY.pressed([]() {
-         static bool status_push = false; // 用于追踪电机状态
-
-         if (!status_push) {
-             gas_push.state(100,pct);
-         } else {
-             gas_push.state(0,pct);
-         }
-         status_push = !status_push; // 切换状态
-     });
-
-    Controller1.ButtonB.pressed([]() {
-         static bool status_hold = false; // 用于追踪电机状态
-
-         if (!status_hold) {
-             gas_hold.state(100,pct);
-         } else {
-             gas_hold.state(0,pct);
-         }
-         status_hold = !status_hold; // 切换状态
-     });
-
-     Controller1.ButtonDown.pressed([]() {
-         static bool status_lift = false; // 用于追踪电机状态
-
-         if (!status_lift) {
-             gas_lift.state(100,pct);
-         } else {
-             gas_lift.state(0,pct);
-         }
-         status_lift = !status_lift; // 切换状态
-     });
-
-    while(true){
-        
-        ODrive.ManualDrive_nonPID();
-
-        // 调试时通过按键进入自动
-         if(Controller1.ButtonX.pressing()){ 
-             autonomous();
-         }
-         if(Controller1.ButtonY.pressing()){
-             skillautonoumous();
-         }
-
-        if(Controller1.ButtonUp.pressing()){
-            vexMotorVoltageSet(side_bar.index(), 100*120);
-        }else if(Controller1.ButtonDown.pressing()){
-            vexMotorVoltageSet(side_bar.index(), -100*120);
-        }else{
-            side_bar.stop(hold);
-        }
-
-    }
 }
 
+void auto_Interaction(void) {
+
+}
+bool firstAutoFlag = true;
+
+void autonomousMain(void) {
+
+  if(firstAutoFlag)
+    auto_Isolation();
+  else 
+    auto_Interaction();
+
+  firstAutoFlag = false;
+}
 
 int main() {
 
+   printf("get in /n");
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
@@ -429,21 +308,12 @@ int main() {
   // when using VEXcode.
   //
   //FILE *fp = fopen("/dev/serial2","wb");
-  this_thread::sleep_for(loop_time);
-
-  #ifdef SKILL
-  Competition.autonomous(skillautonoumous);
-  #else
-
-    Competition.autonomous(autonomous);
-
-  #endif
-
-
-  Competition.drivercontrol(usercontrol);
+   Competition.autonomous(autonomousMain);
 
   // Run the pre-autonomous function.
-  pre_auton();
+  //pre_auton();
+  this_thread::sleep_for(loop_time);
+ 
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
@@ -453,13 +323,12 @@ int main() {
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
 
-     // printf("%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
+      printf("%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
 
       // request new data    
       // NOTE: This request should only happen in a single task.    
       jetson_comms.request_map();
 
-      // Allow other tasks to run
       this_thread::sleep_for(loop_time);
   }
 }
