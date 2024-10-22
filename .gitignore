@@ -7,4 +7,7 @@
 *.tar.gz
 *.tar.bz2
 *.pkl
+*.pt
+*.pth
+*.yaml
 
