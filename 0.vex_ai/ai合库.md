@@ -53,3 +53,5 @@
 
 	// A global instance of competition
 	competition Competition;
+
+！不能使用原来的automatic的competition类

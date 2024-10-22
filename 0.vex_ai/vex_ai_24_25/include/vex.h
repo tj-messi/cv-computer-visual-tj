@@ -13,7 +13,6 @@
 #include "robot-config.h"
 #include "vex-ai/ai_jetson.h"
 #include "vex-ai/ai_robot_link.h"
-#include "vex-ai/ai_functions.h"
 
 #include <vector>
 
