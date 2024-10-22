@@ -8,7 +8,7 @@
 #include "vex.h"
 #include "tjulib.h"
 #include <string>
-
+#include "ai_functions.h"
 using namespace vex;
 using namespace tjulib;
 
@@ -41,7 +41,7 @@ static timer global_time;
 competition Competition;
 // vex-ai jeson nano comms
 ai::jetson  jetson_comms;
-
+static AI_RECORD local_map;
 /*************************************
 
         pid configurations
