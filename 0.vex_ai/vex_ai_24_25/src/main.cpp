@@ -19,7 +19,170 @@ using namespace tjulib;
 #define ODOM
 // 如果要开启远程调试就def，否则就注释
 #define Remotedeubug
+const double car_width = 11.15;                   // 杞�璺�
+const double r_wheel = 4 / 2;                     // 杞﹁疆鍗婂緞
+const double gear_ratio = 0.667;                  // 搴曠洏鐢垫満-杞�鐨勯娇杞�浼犲姩姣旓紙鍔犻€熼厤姣斿氨澶т簬1锛屽噺閫熼厤姣斿氨灏忎簬1锛�
+const double r_motor = r_wheel * gear_ratio ;     // 鐢垫満杞�瑙�-鐢垫満杞�鍛ㄧ殑鎹㈢畻姣�
+const double cell  = 24;                          // 涓€涓�鍦板灚闀垮害(inches)
+const double hOffset  = -5;                       // 閲岀▼璁″亸缃�锛坕nches锛�----浠庢棆杞�涓�蹇冨悜閲岀▼璁¤疆寤朵几鏂瑰悜浣滃瀭绾�
+const double vOffset  = 5;                        // 閲岀▼璁″亸缃�锛坕nches锛�----浠庢棆杞�涓�蹇冨悜閲岀▼璁¤疆寤朵几鏂瑰悜浣滃瀭绾�
+const double r_wheel_encoder = 2.75 / 2;          // 缂栫爜杞�鍛ㄩ暱
+const double gps_offset_x = 0;                    // GPS鐨剎杞存柟鍚戝亸缃� 
+const double gps_offset_y = 6.7;                  // GPS鐨剏杞存柟鍚戝亸缃� 
+const double encoder_rotate_degree = 45;          // 缂栫爜杞�鏃嬭浆瑙掑害
+/*************************************
 
+            state flags
+
+*************************************/
+// gps鍧愭爣(甯︽棆杞�涓�蹇冨亸缃�淇�姝�)
+double gps_x = 0;
+double gps_y = 0;
+double gps_heading = 0;
+//vision鎺у埗
+bool photoFlag = false;
+bool abandon = true;
+bool throwFlag = false;
+bool reverseSpin = false;
+bool forwardSpin = false;
+
+bool ring_convey_spin = false;  // 鏄�鍚﹀紑濮嬭繘琛屽惛鐜�
+int ring_color = 0;             // 瀵硅幏鍙栫殑鐜�鐨勯�滆壊杩涜�屾�€鏌ワ紝0鏄�娌℃湁鐜�锛�1鏄�钃濊壊鐜�锛�2鏄�绾㈣壊鐜�
+ 
+/*************************************
+
+            VEX devices
+
+*************************************/
+// A global instance of brain used for printing to the V5 Brain screen
+brain  Brain;
+// 搴曠洏鐢垫満 - 鍥涜�掑簳鐩�
+motor L1 = motor(PORT13, ratio6_1, false);
+motor L2 = motor(PORT13, ratio6_1, true);
+motor L3 = motor(PORT13, ratio6_1, false);
+motor L4 = motor(PORT13, ratio6_1, true);
+motor R1 = motor(PORT13, ratio6_1, true);
+motor R2 = motor(PORT13, ratio6_1, false);
+motor R3 = motor(PORT13, ratio6_1, true);
+motor R4 = motor(PORT13, ratio6_1, false); 
+std::vector<vex::motor*> _leftMotors = {&L1, &L2, &L3,  &L4};
+std::vector<vex::motor*> _rightMotors = {&R1, &R2, &R3, &R4};
+
+// 搴曠洏鐢垫満 - 鍏�瑙掑簳鐩�
+motor lf1 = motor(PORT1, ratio18_1, false);
+motor lf2 = motor(PORT2, ratio18_1, true);
+motor lb1 = motor(PORT3, ratio18_1, false);
+motor lb2 = motor(PORT4, ratio18_1, true);
+motor rf1 = motor(PORT10, ratio18_1, false);
+motor rf2 = motor(PORT9, ratio18_1, true);
+motor rb1 = motor(PORT11, ratio18_1, false);
+motor rb2 = motor(PORT12, ratio18_1, true);
+
+std::vector<vex::motor*> _lfMotors = {&lf1, &lf2};
+std::vector<vex::motor*> _lbMotors = {&lb1, &lb2};
+std::vector<vex::motor*> _rfMotors = {&rf1, &rf2};
+std::vector<vex::motor*> _rbMotors = {&rb1, &rb2};
+
+// 鎶�鍗囪噦
+motor lift_armMotorA = motor(PORT8, ratio36_1, true);
+motor lift_armMotorB = motor(PORT15, ratio36_1, false);
+motor_group lift_arm = motor_group(lift_armMotorA, lift_armMotorB);
+
+// 浼犻€佸甫
+motor convey_beltMotorA = motor(PORT18, ratio36_1, true);
+motor convey_beltMotorB = motor(PORT14, ratio36_1, false);
+motor_group convey_belt = motor_group(convey_beltMotorA, convey_beltMotorB);
+
+// 鍚哥悆
+motor rollerMotorA = motor(PORT6, ratio18_1, true);
+motor rollerMotorB = motor(PORT13, ratio18_1, false);
+motor_group roller_group = motor_group(rollerMotorA, rollerMotorB);
+// 閬ユ帶鍣�
+controller Controller1 = controller(primary);
+// 閫氫俊澶╃嚎
+vex::message_link AllianceLink(PORT13, "tju1", linkType::worker);
+// 閲岀▼璁�
+encoder encoderHorizonal = encoder(Brain.ThreeWirePort.A);
+encoder encoderVertical = encoder(Brain.ThreeWirePort.G);
+// 瀵煎叆鏉�
+motor side_bar = motor(PORT13, ratio18_1, false);
+// imu鎯�鎬т紶鎰熷櫒
+inertial imu = inertial(PORT17);  // 绗�浜屼釜鍙傛暟瑕佸啓right
+
+// 姘斿姩浠�
+pwm_out gas_push = pwm_out(Brain.ThreeWirePort.D);
+pwm_out gas_lift = pwm_out(Brain.ThreeWirePort.E);
+pwm_out gas_hold = pwm_out(Brain.ThreeWirePort.F);
+
+// 璺濈�讳紶鎰熷櫒
+distance DistanceSensor = distance(PORT13);
+// gps
+gps GPS_ = gps(PORT16, 0, 0, inches, 0);
+
+// vision signature
+vision::signature Red1 = vision::signature(3, 9051, 11375, 10213, -1977, -833, -1405, 1.6711680, 0);
+vision::signature Red2 = vision::signature(3,  5461, 8761, 7111, -1457, -167, -812, 0.8144962, 0);
+vision::signature Red3 = vision::signature(3,  8191, 9637, 8914, -1831, -735, -1283, 0.6828844, 0);
+
+vision::signature Blue1 = vision::signature(2,  -4177, -3545, -3861, 6099, 7047, 6573, 1.2, 0);
+vision::signature Blue2 = vision::signature(2, -5461, -3919,  -4690, 7721, 11045, 9383, 1.123142, 0);
+vision::signature Blue3 = vision::signature(1,  -4177, -3545, -3861, 6099, 7047, 6573, 1.2, 0);
+std::vector<vision::signature*>Red = {&Red1, &Red2, &Red3};
+std::vector<vision::signature*>Blue = {&Blue1, &Blue2, &Blue3};
+// vision
+vision Vision = vision(PORT19, 50, Blue1, Blue2, Blue3);
+
+
+// VEXcode generated functions
+// define variable for remote controller enable/disable
+bool RemoteControlCodeEnabled = true;
+
+// manager and worker robots
+// Comment out the following definition to build for the worker robot
+#define  MANAGER_ROBOT    1
+
+#if defined(MANAGER_ROBOT)
+#pragma message("building for the manager")
+ai::robot_link       link( PORT13, "robot_32456_1", linkType::manager );
+#else
+#pragma message("building for the worker")
+ai::robot_link       link( PORT13, "robot_32456_1", linkType::worker );
+#endif
+
+/*************************************
+
+            axis defination
+
+*************************************/
+/*
+
+robot_local : 
+
+                  ^ y   Head  ^    ^--->
+                  |           |    |<-- imu  
+                  |
+                  |
+(rotation_center) |鈥斺€斺€斺€斺€斺€斺€斺€斺€斺€�> x
+
+
+robot_global : 
+
+                  ^ y
+                  |           
+                  |
+                  |
+         (middle) |鈥斺€斺€斺€斺€斺€斺€斺€斺€斺€�> x
+
+*/
+
+/**
+ * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
+ * 
+ * This should be called at the start of your int main function.
+ */
+void vexcodeInit( void ) {
+  // nothing to initialize
+}
 
 /**************************电机定义***********************************/
 // ordinary chassis define
@@ -332,4 +495,3 @@ int main() {
       this_thread::sleep_for(loop_time);
   }
 }
-

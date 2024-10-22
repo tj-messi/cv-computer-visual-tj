@@ -4,12 +4,12 @@
 		"json": 2
 	},
 	"project": {
-		"name": "ai_demo5",
+		"name": "ai_demo6",
 		"description": "",
 		"creationDate": "6/5/2024, 3:11:00 PM",
 		"platform": "V5",
 		"language": "cpp",
-		"slot": 3,
+		"slot": 2,
 		"sdkVersion": "V5_20240223_11_00_00",
 		"cpp": {
 			"includePath": [],
