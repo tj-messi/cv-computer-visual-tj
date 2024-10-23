@@ -63,27 +63,6 @@ ai::robot_link       link( PORT10, "robot_32456_1", linkType::worker );
 /*---------------------------------------------------------------------------*/
 
 void auto_Isolation(void) {
-  // Calibrate GPS Sensor
-  GPS.calibrate();
-  // Optional wait to allow for calibration
-  waitUntil(!(GPS.isCalibrating()));
-
-  // Set brake mode for the arm
-  Arm.setStopping(brakeType::hold);
-  // Reset the position of the arm while its still on the ground
-  Arm.resetPosition();
-  // Lift the arm to prevent dragging
-  Arm.spinTo(75, rotationUnits::deg);
-
-  // Finds and moves robot to over the closest blue ring
-  goToObject(OBJECT::BlueRing);
-  grabRing();
-  // Find and moves robot to the closest mobile drop
-  // then drops the ring on the goal
-  goToObject(OBJECT::MobileGoal);
-  dropRing();
-  // Back off from the goal
-  Drivetrain.driveFor(-30, distanceUnits::cm);
 
 }
 
@@ -154,7 +133,7 @@ int main() {
   //FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
-  Arm.setVelocity(60, percent);
+  // Arm.setVelocity(60, percent);
 
   while(1) {
       // get last map data
