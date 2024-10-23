@@ -1,15 +1,15 @@
 {
 	"extension": {
-		"version": "0.5.0",
+		"version": "0.6.0",
 		"json": 2
 	},
 	"project": {
-		"name": "ai_demo6",
+		"name": "ai-github-raw",
 		"description": "",
-		"creationDate": "6/5/2024, 3:11:00 PM",
+		"creationDate": "2024/10/4 02:19:09",
 		"platform": "V5",
 		"language": "cpp",
-		"slot": 1,
+		"slot": 3,
 		"sdkVersion": "V5_20240223_11_00_00",
 		"cpp": {
 			"includePath": [],
