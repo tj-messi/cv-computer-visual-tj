@@ -58,34 +58,6 @@ class HungarianAssigner3D(BaseAssigner):
                num_query,
                gt_bboxes_ignore=None,
                eps=1e-7, gt_repeattimes=1):
-        """Computes one-to-one matching based on the weighted costs.
-        This method assign each query prediction to a ground truth or
-        background. The `assigned_gt_inds` with -1 means don't care,
-        0 means negative sample, and positive number is the index (1-based)
-        of assigned gt.
-        The assignment is done in the following steps, the order matters.
-        1. assign every prediction to -1
-        2. compute the weighted costs
-        3. do Hungarian matching on CPU based on the costs
-        4. assign all to 0 (background) first, then for each matched pair
-           between predictions and gts, treat this prediction as foreground
-           and assign the corresponding gt index (plus 1) to it.
-        Args:
-            bbox_pred (Tensor): Predicted boxes with normalized coordinates
-                (cx, cy, w, h), which are all in range [0, 1]. Shape
-                [num_query, 4].
-            cls_pred (Tensor): Predicted classification logits, shape
-                [num_query, num_class].
-            gt_bboxes (Tensor): Ground truth boxes with unnormalized
-                coordinates (x1, y1, x2, y2). Shape [num_gt, 4].
-            gt_labels (Tensor): Label of `gt_bboxes`, shape (num_gt,).
-            gt_bboxes_ignore (Tensor, optional): Ground truth bboxes that are
-                labelled as `ignored`. Default None.
-            eps (int | float, optional): A value added to the denominator for
-                numerical stability. Default 1e-7.
-        Returns:
-            :obj:`AssignResult`: The assigned result.
-        """
         assert gt_bboxes_ignore is None, \
             'Only case when gt_bboxes_ignore is None is supported.'
         num_gts, num_bboxes = gt_bboxes.size(0), bbox_pred.size(0)
