@@ -8,6 +8,7 @@
 #include "vex.h"
 #include "tjulib.h"
 #include <string>
+#include <vector>
 
 using namespace vex;
 using namespace tjulib;
@@ -283,6 +284,103 @@ void autonomousMain(void) {
   firstAutoFlag = false;
 }
 
+const int MAX_NUM_RINGS = 15;
+double a[MAX_NUM_RINGS][MAX_NUM_RINGS];
+double dp[MAX_NUM_RINGS][1<<MAX_NUM_RINGS];
+int t;
+//自建图
+struct ring
+{
+    int col;//0--red, 1--blue
+    double x,y;
+};
+std::vector<ring> R;
+void create_map(double diff = 0.3,AI_RECORD local_map)
+{
+    int num = R.size();
+    for(int j=0;j<local_map.detectionCount;j++)
+    {    
+        double nx = local_map.detections[j].mapLocation.x+local_map.pos.x;
+        double ny = local_map.detections[j].mapLocation.y+local_map.pos.y;
+        int col = local_map.detections[j].classID;
+        for(int i=0;i<num;i++)
+        {
+            if(abs(nx-R[i].x)>diff || abs(ny-R[i].y)>diff)
+            {
+                R.push_back({col,nx,ny});
+                break;
+            }
+        }
+    }
+}
+
+void init_dp()
+{
+    int n=R.size();
+    int m=n*(n-1)/2;//完全图的边数
+    memset(dp,0,sizeof(dp));
+    memset(a,0,sizeof(a));
+    for(int i=0;i<m;i++)
+    {
+        for(int j=0;j<m;j++)
+        {
+            a[i][j]=sqrt((R[i].x-R[j].x)*(R[i].x-R[j].x)+(R[i].y-R[j].y)*(R[i].y-R[j].y));
+            a[j][i]=a[i][j];
+            //双向边
+        }
+    }
+}
+
+
+void run()
+{
+    //dp核心算法
+    int n=R.size();
+    int m=n*(n-1)/2;//完全图的边数 
+	t=(1<<n);
+	for(int i=1;i<n;i++){//因为起点初始不能被标记已经走过,所以需要手动初始化起点到达其它点的花费 
+		dp[i][1<<i]=a[0][i];
+	}
+	for(int i=0;i<t;i++){//枚举每一个状态 
+		for(int j=0;j<n;j++){//枚举每一个没有走过的点 
+			if(((i>>j)&1)==0){
+				for(int k=0;k<n;k++){//枚举每一个走过的点 
+					if(((i>>k)&1)==1&&dp[j][i^(1<<j)]>dp[k][i]+a[k][j]){//取最优状态 
+						dp[j][i^(1<<j)]=dp[k][i]+a[k][j];
+					}
+				}
+			}
+		}
+	}
+}
+
+int tt;//记录 
+std::vector<int> path(1,0);//初始化从0点出发 ,存储单条路径 
+std::vector<std::vector<int> > paths;//存储所有的路径 
+void getPath(int p){//递归查找所有路径 
+    int n=R.size();
+    int m=n*(n-1)/2;//完全图的边数 
+	if((tt^(1<<p))==0){//如果是最后一个点了就存储改路径 
+		paths.push_back(path);
+		return; 
+	}
+	for(int j=1;j<n;j++){
+		//回溯算法，一个加法的原则
+		//如果点1到达点5的最短距离为100，点1到达点3的最短距离是70
+		//而点3和点5之间的距离为30 ，那么点3是点1到5之间的一个中间点
+		//即1-->...-->3-->5 
+		if(a[j][p]+dp[j][tt^(1<<p)]==dp[p][tt]){
+			tt^=(1<<p);
+			path.push_back(j);
+			getPath(j);
+			tt^=(1<<p);
+			path.pop_back();
+		}
+	}
+	
+}
+
+
 int main() {
 
   // local storage for latest data from the Jetson Nano
@@ -306,6 +404,9 @@ int main() {
   //FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
+  R.push_back({0,local_map.pos.x,local_map.pos.y});//起始点
+
+  int hold_count = 0;
 
   while(1) {
       // get last map data
@@ -320,17 +421,32 @@ int main() {
       // NOTE: This request should only happen in a single task.    
       jetson_comms.request_map();
 
+
+      // ai-decision  
       {
-        if(local_map.detectionCount>0)
-        {
-            convey_belt.spin(fwd);
-        }
-        else
-        {
-            convey_belt.stop();
-        }
+        create_map(0.3,local_map);
+        init_dp();
+        run();
+        tt=0;
+        path.clear();
+        getPath(0);
+        int target_ring=paths[0][paths[0].size()-1];
+        double timecost=sqrt(pow(R[target_ring].x-local_map.pos.x,2)+pow(R[target_ring].y-local_map.pos.y,2));
+        ODrive.moveToTarget({R[target_ring].x,R[target_ring].y,0});
+        R[target_ring].x=1e5+5;
+        R[target_ring].y=1e5+5;
+        // 等待到达目标点
+        this_thread::sleep_for(timecost*1000);
       }  
 
+
+      {
+        if(hold_count==6)
+        {
+            ODrive.moveToTarget({endx,endy,0});
+            hold_count=0;
+        }
+      }
       // Allow other tasks to run
       this_thread::sleep_for(loop_time);
   }
