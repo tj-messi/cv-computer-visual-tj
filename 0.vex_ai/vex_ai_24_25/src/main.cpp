@@ -20,10 +20,10 @@ motor rightDrive = motor(PORT2, ratio18_1, true);
 gps GPS = gps(PORT12, -127, -165, distanceUnits::mm, 180);
 smartdrive Drivetrain = smartdrive(leftDrive, rightDrive, GPS, 319.19, 320, 40, mm, 1);
 // Controls arm used for raising and lowering rings
-motor Arm = motor(PORT2, ratio18_1, false);
+motor Arm = motor(PORT14, ratio18_1, false);
 // Controls the chain at the front of the arm
 // used for pushing rings off of the arm
-motor Chain = motor(PORT8, ratio18_1, false);
+motor Chain = motor(PORT19, ratio18_1, false);
 
 pwm_out lift = pwm_out(Brain.ThreeWirePort.E);
 // A global instance of competition
@@ -101,12 +101,13 @@ void autonomousMain(void) {
 
 void VRUN(double l,double r)
 {
-  vexMotorVoltageSet(vex::PORT15,-l*120); 
-  vexMotorVoltageSet(vex::PORT5,l*120); 
+  vexMotorVoltageSet(vex::PORT18,l*120); 
+  vexMotorVoltageSet(vex::PORT12,l*120); 
   vexMotorVoltageSet(vex::PORT1,-l*120); 
   //vexMotorVoltageSet(vex::PORT,-l*120);
+
   vexMotorVoltageSet(vex::PORT11,r*120);
-  vexMotorVoltageSet(vex::PORT13,-r*120);
+  vexMotorVoltageSet(vex::PORT13,r*120);
   vexMotorVoltageSet(vex::PORT4,r*120);
   //vexMotorVoltageSet(vex::PORT4,-r*120);
 }
