@@ -1,0 +1,12 @@
+result/*
+dataset/*
+save/*
+
+*.pyc
+./idea
+*.pth.tar
+*.pt
+raw_dataset/*
+*.zip
+*.pkl
+anomaly_dataset/*

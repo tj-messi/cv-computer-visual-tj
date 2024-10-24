@@ -25,7 +25,7 @@ motor Arm = motor(PORT2, ratio18_1, false);
 // used for pushing rings off of the arm
 motor Chain = motor(PORT8, ratio18_1, false);
 
-pwm_out lift = pwm_out
+pwm_out lift = pwm_out(Brain.ThreeWirePort.E);
 // A global instance of competition
 competition Competition;
 
