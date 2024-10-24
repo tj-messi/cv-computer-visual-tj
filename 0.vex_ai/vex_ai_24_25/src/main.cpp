@@ -12,7 +12,7 @@
 #include "ai_functions.h"
 
 using namespace vex;
-
+controller Controller;
 brain Brain;
 // Robot configuration code.
 motor leftDrive = motor(PORT1, ratio18_1, false);
@@ -20,12 +20,12 @@ motor rightDrive = motor(PORT2, ratio18_1, true);
 gps GPS = gps(PORT12, -127, -165, distanceUnits::mm, 180);
 smartdrive Drivetrain = smartdrive(leftDrive, rightDrive, GPS, 319.19, 320, 40, mm, 1);
 // Controls arm used for raising and lowering rings
-motor Arm = motor(PORT3, ratio18_1, false);
+motor Arm = motor(PORT2, ratio18_1, false);
 // Controls the chain at the front of the arm
 // used for pushing rings off of the arm
 motor Chain = motor(PORT8, ratio18_1, false);
 
-
+pwm_out lift = pwm_out
 // A global instance of competition
 competition Competition;
 
@@ -99,40 +99,58 @@ void autonomousMain(void) {
   firstAutoFlag = false;
 }
 
-int main() {
-  static AI_RECORD local_map;
+void VRUN(double l,double r)
+{
+  vexMotorVoltageSet(vex::PORT15,-l*120); 
+  vexMotorVoltageSet(vex::PORT5,l*120); 
+  vexMotorVoltageSet(vex::PORT1,-l*120); 
+  //vexMotorVoltageSet(vex::PORT,-l*120);
+  vexMotorVoltageSet(vex::PORT11,r*120);
+  vexMotorVoltageSet(vex::PORT13,-r*120);
+  vexMotorVoltageSet(vex::PORT4,r*120);
+  //vexMotorVoltageSet(vex::PORT4,-r*120);
+}
 
-  int32_t loop_time = 33;
+int main()
+{
+  while(1)
+{
+/***操纵***/
+int fb,lf;
+/********************************************
+相应Axis对应(两个十字对应手柄左右两边遥感，可能有误)：
+Axis1
+=
+Axis2 =====
+= Axis3
+=
+Axis4===
+=
+*********************************************/
+fb=Controller.Axis3.value();
+lf=Controller.Axis4.value();
+fb=std::abs(fb)>15?fb:0;
+lf=std::abs(lf)>15?lf:0;
+if(fb!=0||lf!=0) VRUN((fb+lf)*100.0/127.0,(fb-lf)*100.0/127.0);
+else VRUN(0,0);
+//提前定义好了投盘电机ShootMotor
+//按Y键转动，松开停止
 
-  thread t1(dashboardTask);
+Controller.ButtonL1.pressed([]() {        
+        Arm.spin(fwd);
+      Chain.spin(fwd);// 电机正转
+    });
+Controller.ButtonL1.released([]() {        
+        Arm.stop(hold);
+        Chain.stop(hold);
+    });
+    
+Controller.ButtonR1.pressed([]() {        
+       lift.state(100,pct);
+    });
+Controller.ButtonR1.released([]() {        
+       lift.state(0,pct);
+    });
 
-  Competition.autonomous(autonomousMain);
-
-  // print through the controller to the terminal (vexos 1.0.12 is needed)
-  // As USB is tied up with Jetson communications we cannot use
-  // printf for debug.  If the controller is connected
-  // then this can be used as a direct connection to USB on the controller
-  // when using VEXcode.
-  //
-  //FILE *fp = fopen("/dev/serial2","wb");
-  this_thread::sleep_for(loop_time);
-
-  Arm.setVelocity(60, percent);
-
-  while(1) {
-      // get last map data
-      jetson_comms.get_data( &local_map );
-
-      // set our location to be sent to partner robot
-      link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
-
-      // fprintf(fp, "%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az)
-
-      // request new data    
-      // NOTE: This request should only happen in a single task.    
-      jetson_comms.request_map();
-
-      // Allow other tasks to run
-      this_thread::sleep_for(loop_time);
-  }
+}
 }
