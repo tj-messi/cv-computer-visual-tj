@@ -25,7 +25,7 @@ motor Arm = motor(PORT14, ratio18_1, false);
 // used for pushing rings off of the arm
 motor Chain = motor(PORT19, ratio18_1, false);
 
-pwm_out lift = pwm_out(Brain.ThreeWirePort.E);
+pwm_out lift = pwm_out(Brain.ThreeWirePort.B);
 // A global instance of competition
 competition Competition;
 
@@ -103,19 +103,23 @@ void VRUN(double l,double r)
 {
   vexMotorVoltageSet(vex::PORT18,l*120); 
   vexMotorVoltageSet(vex::PORT12,l*120); 
-  vexMotorVoltageSet(vex::PORT1,-l*120); 
+  vexMotorVoltageSet(vex::PORT1,l*120); 
   //vexMotorVoltageSet(vex::PORT,-l*120);
 
   vexMotorVoltageSet(vex::PORT11,r*120);
-  vexMotorVoltageSet(vex::PORT13,r*120);
+  vexMotorVoltageSet(vex::PORT13,-r*120);
   vexMotorVoltageSet(vex::PORT4,r*120);
   //vexMotorVoltageSet(vex::PORT4,-r*120);
 }
+bool flag=false;
 
 int main()
-{
+{timer clock;
+clock.clear(); 
   while(1)
 {
+  printf("%d \n",clock.time());
+  
 /***操纵***/
 int fb,lf;
 /********************************************
@@ -128,30 +132,41 @@ Axis2 =====
 Axis4===
 =
 *********************************************/
-fb=Controller.Axis3.value();
-lf=Controller.Axis4.value();
+fb=Controller.Axis1.value();
+lf=Controller.Axis2.value();
 fb=std::abs(fb)>15?fb:0;
 lf=std::abs(lf)>15?lf:0;
-if(fb!=0||lf!=0) VRUN((fb+lf)*100.0/127.0,(fb-lf)*100.0/127.0);
+if(fb!=0||lf!=0) VRUN((fb+lf)*1000.0,(fb-lf)*1000.0);
 else VRUN(0,0);
 //提前定义好了投盘电机ShootMotor
 //按Y键转动，松开停止
 
 Controller.ButtonL1.pressed([]() {        
-        Arm.spin(fwd);
-      Chain.spin(fwd);// 电机正转
+        vexMotorVoltageSet(vex::PORT14,-12000);
+      vexMotorVoltageSet(vex::PORT19,12000);// 电机正转
     });
 Controller.ButtonL1.released([]() {        
         Arm.stop(hold);
         Chain.stop(hold);
     });
-    
-Controller.ButtonR1.pressed([]() {        
-       lift.state(100,pct);
-    });
-Controller.ButtonR1.released([]() {        
-       lift.state(0,pct);
-    });
+
+if(Controller.ButtonR1.pressing())
+{
+  ;
+}
+else
+{
+  clock.clear();
+}
+if(clock.time()>200)
+{
+  if(!flag)
+    lift.state(100,pct);
+  else
+    lift.state(0,pct);
+  flag=!flag;
+  clock.clear();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+}
 
 }
 }

@@ -295,7 +295,7 @@ struct ring
     double x,y;
 };
 std::vector<ring> R;
-void create_map(double diff = 0.3,AI_RECORD local_map)
+void create_map(double diff = 0.05,AI_RECORD local_map)
 {
     int num = R.size();
     for(int j=0;j<local_map.detectionCount;j++)
