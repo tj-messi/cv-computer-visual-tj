@@ -314,6 +314,11 @@ int main() {
       // get last map data
       jetson_comms.get_data( &local_map );
 
+        if(local_map.detectionCount>0)
+        {
+            
+        }
+
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
 
