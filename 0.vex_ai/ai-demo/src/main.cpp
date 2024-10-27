@@ -272,6 +272,7 @@ void auto_Interaction(void) {
         }
     }
 }
+// 自动模式 先ioslation 后interaction
 bool firstAutoFlag = true;
 void autonomousMain(void) {
 
