@@ -285,10 +285,31 @@ void autonomousMain(void) {
   firstAutoFlag = false;
 }
 
-
+struct oj_data
+{
+    double x;
+    double y;
+    int kind;
+};
+static std::vector<oj_data> my_map;
+static double diff = 0.5;
+bool suck = false;
 
 int main() {
 
+
+    if(GPS_.installed()){
+        GPS_.calibrate();
+        while(GPS_.isCalibrating()) task::sleep(8);
+        
+    }
+
+    // 这里考虑到只使用imu而不使用gps的情况
+    if(imu.installed()){
+        // 设置初始位置
+        PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
+    }
+  task::sleep(4000);
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
 
@@ -314,11 +335,50 @@ int main() {
       // get last map data
       jetson_comms.get_data( &local_map );
 
-        if(local_map.detectionCount>0)
+        // 本地内存的存储
+        for(int i=0;i<local_map.detectionCount;i++)
         {
-            convey_belt.spin(reverse,100,pct);
-            roller_group.spin(fwd,-100,pct);
+
+            oj_data data;
+            //x y 坐标 : 相对于自己位置+自己的位置
+            data.x = local_map.detections[i].mapLocation.x+local_map.pos.x;
+            data.y = local_map.detections[i].mapLocation.y+local_map.pos.y;
+            // 类别
+            data.kind = local_map.detections[i].classID; 
+            my_map.push_back(data);
+            // for(int j=0;j<my_map.size();j++)
+            // {
+            //     if((data.x-my_map[j].x)*(data.x-my_map[j].x)+(data.y-my_map[j].y)*(data.y-my_map[j].y)<1)//NMS非极大值抑制
+            //     {
+                    
+            //     }
+            // }
         }
+
+        for(int i=0;i<my_map.size();i++)
+        {
+           ODrive.moveToTarget(Point{my_map[i].x,my_map[i].y},10000,4000,30,1);
+        }
+
+
+        // 转履带控制
+        if(suck)
+        {
+             if(my_map.size()>0)
+            {
+                convey_belt.spin(fwd,100,pct);
+                roller_group.spin(fwd,-100,pct);
+            }
+            else
+            {
+                convey_belt.stop();
+                roller_group.stop();
+            }
+        }
+       
+        
+
+
 
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
