@@ -316,7 +316,8 @@ int main() {
 
         if(local_map.detectionCount>0)
         {
-            
+            convey_belt.spin(reverse,100,pct);
+            roller_group.spin(fwd,-100,pct);
         }
 
       // set our location to be sent to partner robot
