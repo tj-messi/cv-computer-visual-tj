@@ -341,8 +341,8 @@ int main() {
 
             oj_data data;
             //x y 坐标 : 相对于自己位置+自己的位置
-            data.x = local_map.detections[i].mapLocation.x+local_map.pos.x;
-            data.y = local_map.detections[i].mapLocation.y+local_map.pos.y;
+            data.x = local_map.detections[i].mapLocation.x*39.37;
+            data.y = local_map.detections[i].mapLocation.y*39.37;
             // 类别
             data.kind = local_map.detections[i].classID; 
             my_map.push_back(data);
@@ -357,8 +357,14 @@ int main() {
 
         for(int i=0;i<my_map.size();i++)
         {
-           ODrive.moveToTarget(Point{my_map[i].x,my_map[i].y},10000,4000,30,1);
+            if (my_map[i].kind==1)
+            {
+                // std::vector<Point> path = rrtPlanner.rrt_planning({gps_x, gps_y}, {my_map[i].x,my_map[i].y});
+                // ODrive.PathMove(path, 100, 100, 40000, 20);
+                ODrive.moveToTarget({my_map[i].x,my_map[i].y}, 100, 100, 40000, 20);
+            }
         }
+                
 
 
         // 转履带控制
