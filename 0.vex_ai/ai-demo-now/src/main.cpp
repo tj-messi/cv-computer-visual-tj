@@ -12,39 +12,39 @@
 using namespace vex;
 using namespace tjulib;
 
-/*---------------  模式选择  ---------------*/
-// 如果进行技能赛就def，否则注释，进行自动
+/*---------------  �?″紡�?夋�??  ---------------*/
+// 濡傛灉杩涜�屾妧鑳借�?�灏眃ef锛屽惁鍒欐敞閲�?�紝杩涜�岃嚜鍔�?
 //#define SKILL
-// 如果用里程计就def，否则注释，用雷达
+// 濡傛灉鐢ㄩ噷绋�??�″氨def锛屽惁鍒欐敞閲�?�紝�?ㄩ浄杈�
 #define ODOM
-// 如果要开启远程调试就def，否则就注释
+// 濡傛灉瑕佸紑鍚�杩滅▼璋�?�?灏眃ef锛屽惁鍒欏氨娉ㄩ�?
 #define Remotedeubug
-// 如果是红方就def，否则就注释
+// 濡傛灉鏄�绾㈡柟灏眃ef锛屽惁鍒欏氨娉ㄩ�?
 #define RED
-// 如果开启jetson_nano感知调试就def，否则就注释
-#define JETSON_NANO_VISION_DEBUG
+// 濡傛灉�??�?鍚痡etson_nano鎰熺煡璋�?�?灏眃ef锛屽惁鍒欏氨娉ㄩ�?
+//#define JETSON_NANO_VISION_DEBUG
 
-/**************************电机定义***********************************/
+/**************************鐢垫満瀹氫�?***********************************/
 // ordinary chassis define
 //std::vector<std::vector<vex::motor*>*> _chassisMotors = { &_leftMotors, &_rightMotors} ;
 // oct chassis define
 std::vector<std::vector<vex::motor*>*> _chassisMotors = {&_lfMotors, &_lbMotors, &_rfMotors, &_rbMotors};
-/**************************调参区域***********************************/
+/**************************璋冨�?鍖哄�?***********************************/
 
 // Definition of const variables
 //const double PI = 3.1415926;
 
-// imu零漂误差修正
-double zero_drift_error = 0;  // 零漂误差修正，程序执行时不断增大
+// imu闆舵紓璇��?��淇�姝�
+double zero_drift_error = 0;  // 闆舵紓璇��?��淇�姝ｏ紝绋�?�?鎵ц�屾�?�涓嶆柇澧炲�?
 double correct_rate = 0.0000;
 
-// 全局计时器
+// 鍏ㄥ�?璁℃椂鍣�?
 static timer global_time;  
-// 竞赛模板类
+// 绔炶禌妯℃澘�?�?
 competition Competition;
 // vex-ai jeson nano comms
 ai::jetson  jetson_comms;
-// 红方标志
+// 绾㈡柟鏍囧織
 bool is_red = true;
 /*************************************
 
@@ -52,7 +52,7 @@ bool is_red = true;
 
 *************************************/
 
-/*configure meanings：
+/*configure meanings锛�
     ki, kp, kd, 
     integral's active zone (either inches or degrees), 
     error's thredhold      (either inches or degrees),
@@ -112,7 +112,7 @@ RRT rrtPlanner(map.obstacleList, -72, 72, 3, 25, 20000, 12);
 PurePursuit purepursuitControl(PosTrack->position);
 
 // ====Declaration of Chassis Controller ====
-// 底盘控制
+// 搴曠洏鎺у�?
 //Ordi_SmartChassis FDrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width);
 Oct_SmartChassis ODrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width, &purepursuitControl, &map, &rrtPlanner);
 
@@ -123,9 +123,9 @@ Oct_SmartChassis ODrive(_chassisMotors, &motorControl, PosTrack->position, r_mot
       thread define
 
  **************************/
-// 远程调试
+// 杩滅▼璋�?�?
 RemoteDebug remotedebug(PosTrack->position); 
-// 远程调试
+// 杩滅▼璋�?�?
 int RemoteDubug(){
 
 #ifdef DashBoard
@@ -141,7 +141,7 @@ int RemoteDubug(){
       initial pos set
 
  **************************/
-// PosTrack 定位线程，在这里选择定位策略
+// PosTrack 瀹氫綅绾跨▼锛屽�?杩欓噷閫夋�?�瀹氫綅绛�?�?
 int PositionTrack(){
 
     // _PositionStrategy has {&diff_odom, &odom}
@@ -172,7 +172,7 @@ int receivedTask(){
     return 0;
 }
   
-// 更新线程
+// 鏇存柊绾跨▼
 int GPS_update(){
     
     timer time;
@@ -190,7 +190,7 @@ int GPS_update(){
         if((time.time(msec)-3000)<=50 && flag){
             imu.setHeading(GPS_.heading(deg), deg);
             imu.setRotation(GPS_.heading(deg), deg);
-            // 第4秒的时候会更新一下坐标
+            // 绗�4绉掔殑鏃跺€欎細鏇存柊涓�?涓�??潗鏍�?
             PosTrack->setPosition({gps_x, gps_y, GPS_.heading(deg) / 180 * 3.1415926535});
             
             printf("position initialization finish\n");
@@ -228,70 +228,7 @@ int GPS_update(){
     pre-autonomous run
 
  **************************/
-// 设置初始位置、角度
-#ifdef SKILL
-    // 初始位置，单位为inches
-    double init_pos_x = -59;
-    double init_pos_y = 35.4;
-
-    // 逆时针角度，范围在0 ~ 360°之间
-    double initangle = 0;
-
-#else
-    // 初始位置，单位为inches
-    double init_pos_x = 0;
-    double init_pos_y = 0;
-
-    // 逆时针角度，范围在0 ~ 360°之间
-    double init_angle = 0;
-
-#endif
-void pre_auton(){
-#ifdef RED
-    is_red = true;
-#else
-    is_red = false;
-#endif
-    thread PosTrack_(PositionTrack);
-/***********是否开启远程调试************/
-#ifdef Remotedeubug
-    thread Remotedebug(RemoteDubug);
-#endif
-/***********imu、gps、distancesensor、vision等设备初始化************/  
-    
-    printf("pre-auton start\n");
-    if(GPS_.installed()){
-        GPS_.calibrate();
-        while(GPS_.isCalibrating()) task::sleep(8);
-        
-    }
-    thread receive(receivedTask);
-
-    // 这里考虑到只使用imu而不使用gps的情况
-    if(imu.installed()){
-        // 设置初始位置
-        PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
-    }
-    // GPS更新线程
-    if(GPS_.installed()){
-        thread GPS_update_(GPS_update);
-    }
-    //thread testvision(VisionTest);
-    // 吸环线程
-    thread GetRing_(GetRing);
-    //thread CheckStuck_(CheckStuck);
-    thread CheckRing_(CheckRing);
-
-    printf("pre-auton finish\n");
-    task::sleep(3000);
-}
-
-
-/*********************************
- 
-    Dual-Communication Thread
-
- ***********************************/
+// 璁剧疆鍒濆�嬩綅缃�銆佽�掑�?
 static int received_flag = 0;
 int sendTask(){
 
@@ -309,17 +246,17 @@ void confirm_SmallCar_Finished(const char* message, const char*linkname, double 
 }    
 // Dual-Communication Demo
 void demo_dualCommunication(){
-    sendTask();  // 向联队车发送信息
+    sendTask();  // 鍚戣仈闃熻溅鍙戦�?佷俊�?�?
     task::sleep(200);
     Brain.Screen.print("send thread jump out\n");
 
     /************************
       
-      发送完信号后执行的程序
+      鍙戦�?佸畬淇″彿鍚庢墽琛岀殑绋�?�?
       
     ************************/
 
-    // 等待一下
+    // 绛�?�緟涓€涓�
     while(1){
         AllianceLink.received("finished", confirm_SmallCar_Finished);
         task::sleep(200);
@@ -345,7 +282,7 @@ void auto_Isolation(void) {
         if(my_map.size()>0)
         {   
 
-            // 获取到最近的环
+            // 鑾峰彇鍒版渶杩戠殑鐜�?
             int min_index;
             int min_distance = INT_MAX;
             for(int i = 0;i<my_map.size();i++){
@@ -355,13 +292,13 @@ void auto_Isolation(void) {
                 }
             }
             oj_data nearest_elem = my_map[min_index];
-            // 停止旋转
+            // 鍋滄�㈡棆杞�?
             ODrive.VRUN(0, 0, 0, 0);
-            // 朝向环
+            // 鏈濆悜鐜�?
             roller_group.spin(forward, 70, pct);
             ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
             ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
-           // 吃环
+           // 鍚冪�?
            //ODrive.HSAct(0, Point{nearest_elem.x, nearest_elem.y}, 100, 100, 5000, 20);
            task::sleep(800);
             
@@ -373,7 +310,7 @@ void auto_Isolation(void) {
 void auto_Interaction(void) {
 
 }
-// 自动模式 先ioslation 后interaction
+// 鑷�鍔ㄦā�?�? 鍏坕oslation 鍚巌nteraction
 bool firstAutoFlag = true;
 void autonomousMain(void) {
 
@@ -398,13 +335,13 @@ int main() {
         thread gps_update(GPS_update);
     }
 
-    // 这里考虑到只使用imu而不使用gps的情况
-    if(imu.installed()){
-        // 设置初始位置
-        PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
-    }
+    // 杩欓噷鑰�?檻鍒板彧浣跨�?imu鑰屼笉浣跨敤gps鐨勬儏鍐�?
+    // if(imu.installed()){
+    //     // 璁剧疆鍒濆�嬩綅缃�
+    //     PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
+    // }
   task::sleep(4000);
-  // local storage for latest data from the Jetson Nano
+  // local storage for latest data from thSe Jetson Nano
   static AI_RECORD local_map;
 
   // Run at about 15Hz
@@ -432,47 +369,50 @@ int main() {
       // get last map data
       jetson_comms.get_data( &local_map );
 
-        // 需要对jetson nano处的GPS死掉做一个应急预案
-        if(fabs(local_map.pos.x - 0) < 1e-6 && fabs(local_map.pos.y - 0) < 1e-6 && fabs(local_map.pos.rot - 0) < 1e-6){       // 完全的(0, 0)只有在死掉的情况下才可能出现
+        // 闇€瑕佸��?�etson nano澶勭殑GPS姝绘帀鍋氫竴涓�搴旀�?ラ��?��
+        if(fabs(local_map.pos.x - 0) < 1e-6 && fabs(local_map.pos.y - 0) < 1e-6 && fabs(local_map.pos.rot - 0) < 1e-6){       // 瀹屽叏鐨�?(0, 0)鍙�鏈�?�湪姝绘帀鐨勬儏鍐典笅鎵嶅彲鑳藉嚭鐜�
             gps_jetson_nano_dead = true;
 
         }
-        // 感知到的移动场地元素的本地内存存储
+        // 鎰熺煡鍒�?殑绉诲姩鍦哄湴鍏�?礌鐨�?湰鍦板唴瀛樺瓨鍌�?
         for(int i=0;i<local_map.detectionCount;i++)
         {
 
             oj_data data;
 
             T data_x, data_y;
-            if(!gps_jetson_nano_dead){
+            if(!gps_jetson_nano_dead)
+            {
                 data_x = local_map.detections[i].mapLocation.x * 39.3700788;
                 data_y = local_map.detections[i].mapLocation.y * 39.3700788;
-            }else{  // jetson_nano读GPS出现了问题，一直是(0, 0), 则需要利用本地信息修正
+            }
+            else
+            {  // jetson_nano璇籊PS鍑虹幇浜嗛棶棰橈紝涓�?鐩存�?(0, 0), 鍒欓渶瑕佸埄�?ㄦ湰鍦�?�俊�?�淇��?��
                 T local_data_x = local_map.detections[i].mapLocation.x * 39.3700788;
                 T local_data_y = local_map.detections[i].mapLocation.y * 39.3700788;
                 T sum_offset_x = camera_offset_x + local_data_x;   
                 T sum_offset_y = camera_offset_y + local_data_y;
-
+                
                 T theta = GPS_.heading(deg) / 180 * 3.1415926535;
                 data_x = gps_x + ( sum_offset_y * sin(theta) + sum_offset_x * cos(theta) );
                 data_y = gps_y + ( sum_offset_y * cos(theta) - sum_offset_x * sin(theta) );
             }
 
-            //x y 坐标 : 相对于自己位置+自己的位置
+            //x y 鍧愭�? : 鐩�?��逛簬鑷�宸变綅缃�?+鑷�宸辩殑浣嶇疆
             data.x = data_x;
             data.y = data_y;
-            // 类别
+            // �?诲埆
             data.kind = local_map.detections[i].classID; 
             my_map.push_back(data);
 
         }
-                // 调试时通过按键进入自动
+                // 璋冭�?鏃堕�?氳繃鎸�?�敭杩涘叆鑷�鍔�?
          if(Controller1.ButtonX.pressing()){ 
              autonomousMain();
          }
 
 #ifdef JETSON_NANO_VISION_DEBUG
-        // jetson_nano感知调试
+        // jetson_nano鎰熺煡璋�?�?
         if(my_map.size()>0){
             convey_belt.spin(fwd,100,pct);
             roller_group.spin(fwd,-100,pct);

@@ -198,7 +198,7 @@ void pre_auton(){
     }
 
     // 这里考虑到只使用imu而不使用gps的情况
-    if(imu.installed()){
+    if(imu.installed()&&!GPS_.installed()){
         // 设置初始位置
         PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
     }
@@ -305,13 +305,19 @@ int main() {
     }
 
     // 这里考虑到只使用imu而不使用gps的情况
-    if(imu.installed()){
-        // 设置初始位置
+    if(imu.installed()&&!GPS_.installed()){
+        // 设置初始位置1
         PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
     }
+    thread gps_update(GPS_update);
   task::sleep(4000);
   // local storage for latest data from the Jetson Nano
   static AI_RECORD local_map;
+
+  {
+    // test
+     ODrive.moveToTarget({-10,-10}, 100, 100, 40000, 20);
+  }
 
   // Run at about 15Hz
   int32_t loop_time = 33;
@@ -340,11 +346,12 @@ int main() {
         {
 
             oj_data data;
-            //x y 坐标 : 相对于自己位置+自己的位置
+            //x y 坐标 : 相对于自己位置
             data.x = local_map.detections[i].mapLocation.x*39.37;
             data.y = local_map.detections[i].mapLocation.y*39.37;
             // 类别
             data.kind = local_map.detections[i].classID; 
+
             my_map.push_back(data);
             // for(int j=0;j<my_map.size();j++)
             // {
@@ -355,15 +362,13 @@ int main() {
             // }
         }
 
-        for(int i=0;i<my_map.size();i++)
-        {
-            if (my_map[i].kind==1)
-            {
-                // std::vector<Point> path = rrtPlanner.rrt_planning({gps_x, gps_y}, {my_map[i].x,my_map[i].y});
-                // ODrive.PathMove(path, 100, 100, 40000, 20);
-                ODrive.moveToTarget({my_map[i].x,my_map[i].y}, 100, 100, 40000, 20);
-            }
-        }
+        // for(int i=0;i<my_map.size();i++)
+        // {
+        //     if (my_map[i].kind==1)
+        //     {
+        //         ODrive.moveToTarget({my_map[i].x,my_map[i].y}, 100, 100, 40000, 20);
+        //     }
+        // }
                 
 
 
