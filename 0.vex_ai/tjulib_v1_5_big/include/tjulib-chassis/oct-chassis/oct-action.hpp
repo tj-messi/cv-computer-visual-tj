@@ -19,12 +19,13 @@ namespace tjulib
     public:
         
         HighStakeMap *map = NULL;
-        RRT *rrt = NULL;
-        Oct_Action(std::vector<std::vector<vex::motor*>*>& _chassisMotors, pidControl* _motorpidControl, Position* _position, const T _r_motor, pidControl* _fwdpid, pidControl* _turnpid, PurePursuit *_ppcontrol, HighStakeMap *_map, RRT *_rrt) :
+        RRT *rrt_short = NULL;
+        RRT *rrt_long = NULL;
+        Oct_Action(std::vector<std::vector<vex::motor*>*>& _chassisMotors, pidControl* _motorpidControl, Position* _position, const T _r_motor, pidControl* _fwdpid, pidControl* _turnpid, PurePursuit *_ppcontrol, HighStakeMap *_map, RRT *_rrt_short, RRT *_rrt_long) :
             Oct_BaseChassis(_chassisMotors, _motorpidControl, _position, _r_motor), 
             Oct_StraChassis(_chassisMotors, _motorpidControl, _position, _r_motor, _fwdpid, _turnpid),
             Oct_CurChassis(_chassisMotors, _motorpidControl, _position, _r_motor, _fwdpid, _turnpid, _ppcontrol),
-            map(_map), rrt(_rrt) {}
+            map(_map), rrt_short(_rrt_short), rrt_long(_rrt_long) {}
         
 
         void HSAct(int action_index, Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 0){
@@ -58,70 +59,102 @@ namespace tjulib
 
         // 取环
         void MoveForRing(Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 0){
-            RRT _rrt = *rrt; 
+            RRT _rrt_long = *rrt_long; 
+            RRT _rrt_short = *rrt_short;
+            
             /*= Step1 : 如果机器人在操作半径外则需要先到达可执行的操作半径范围内 =*/
-            const T radius = 35; 
+            const T radius = 15; 
 
             if(fabs(GetDistance(position->globalPoint, target)) >= radius){  
-
-                
-                /*= Step1.1 : 计算轨迹与圆的交点 =*/
-                Point target_pt = CalcuTargetPoint(_rrt, target, radius);
-                //Point target_pt = target;
-                printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
-                /*= Step1.2 : RRT规划器获取轨迹 =*/
-                printf("rrt2_start\n");   
-                printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
-                printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
-                Point start_pt = {position->globalPoint.x, position->globalPoint.y};
-                std::vector<Point> path = _rrt.rrt_planning(start_pt, (Point)(target_pt));  // 这里一定要强制类型转换为Point
-                for(auto point : path){
-                    printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                std::vector<Point> path;
+                if(GetDistance(position->globalPoint, target) > 50){
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                     Point target_pt = CalcuTargetPoint(_rrt_long, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_long.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                     for(auto point : path){
+                         printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                     }
+                    printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
+                    printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
+                    printf("rrt2_end\n");
+                }else{
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                    Point target_pt = CalcuTargetPoint(_rrt_short, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_short.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                     for(auto point : path){
+                         printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                     }
+                    printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
+                    printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
+                    printf("rrt2_end\n");
                 }
-                printf("rrt2_end\n");
-            
+               
                 /*= Step1.3 : 规划路径跟踪 =*/
                 PathMove(path, goal_pt_track_time, maxSpeed, maxtime_ms, move_gaptime, fwd, back);
 
+
             }
-            
+            //printf("11111111111111\n"); 
             /*= Step2 :执行最后一步动作 =*/
             // 开启吸环线程
             manual = false;
             ring_convey_spin = true;
             reinforce_stop = false;
-            turnToTarget(target,  maxSpeed, 1200,  fwd, back);
-            setStop(hold);
-            moveToTarget(target, maxSpeed, 1400, move_gaptime, fwd);
-            setStop(hold);
+            turnToTarget(target,  maxSpeed * 0.7, 1500,  fwd, back);
+           // setStop(hold);
+            moveToTarget(target, maxSpeed * 0.9, 1000, move_gaptime, fwd);
+           // setStop(hold);
             // 时间用于套环
-            this_thread::sleep_for(1200);
+            this_thread::sleep_for(800);
 
         }
 
         // 取环
         void MoveForRingHalf(Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 0){
-            RRT _rrt = *rrt; 
+            RRT _rrt_long = *rrt_long; 
+            RRT _rrt_short = *rrt_short;  
             /*= Step1 : 如果机器人在操作半径外则需要先到达可执行的操作半径范围内 =*/
-            const T radius = 30; 
-            if(fabs(GetDistance(position->globalPoint, target)) >= radius){  
+            const T radius = 15; 
 
-                /*= Step1.1 : 计算轨迹与圆的交点 =*/
-                Point target_pt = CalcuTargetPoint(_rrt, target, radius);
-                
-                /*= Step1.2 : RRT规划器获取轨迹 =*/
-                printf("rrt2_start\n");   
-                printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
-                printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
-                Point start_pt = {position->globalPoint.x, position->globalPoint.y};
-                std::vector<Point> path = _rrt.rrt_planning(start_pt, (Point)(target_pt));  // 这里一定要强制类型转换为Point
-                 for(auto point : path){
-                     printf("{x:%lf , y:%lf}\n", point.x, point.y);
-                 }
-                printf("rrt2_end\n");
-            
+            if(fabs(GetDistance(position->globalPoint, target)) >= radius){  
+                std::vector<Point> path;
+                if(GetDistance(position->globalPoint, target) > 50){
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                     Point target_pt = CalcuTargetPoint(_rrt_long, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_long.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
+                    printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
+                    printf("rrt2_end\n");
+                }else{
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                    Point target_pt = CalcuTargetPoint(_rrt_short, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_short.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("x0 : %lf, y0 : %lf \n", gps_x, gps_y);
+                    printf("x : %lf, y : %lf \n", target_pt.x, target_pt.y);
+                    printf("rrt2_end\n");
+                }
+               
                 /*= Step1.3 : 规划路径跟踪 =*/
                 PathMove(path, goal_pt_track_time, maxSpeed, maxtime_ms, move_gaptime, fwd, back);
+
             }
             
             /*= Step2 :执行最后一步动作 =*/
@@ -131,69 +164,94 @@ namespace tjulib
             ring_convey_spin = true;
             reinforce_stop = false;
             half_ring_get = true;
-            turnToTarget(target,  maxSpeed, 1300, fwd, back);
-            task::sleep(300);
+            turnToTarget(target,  maxSpeed * 0.7, 1200,  fwd, back);
             setStop(hold);
-            moveToTarget(target, maxSpeed, maxtime_ms, move_gaptime, fwd);
+            moveToTarget(target, maxSpeed * 0.9, 900, move_gaptime, fwd);
             setStop(hold);
-            
+            // 时间用于套环
+            this_thread::sleep_for(500);
         }
 
         // 取桩
         void MoveForStake(Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 1){
-           RRT _rrt = *rrt; 
+            RRT _rrt_long = *rrt_long; 
+            RRT _rrt_short = *rrt_short;      
            /*= Step1 : 如果机器人在操作半径外则需要先到达可执行的操作半径范围内 =*/
-            const T radius = 10;
+            const T radius = 15;
 
             if(fabs(GetDistance(position->globalPoint, target)) >= radius){  
-
-                /*= Step1.1 : 计算轨迹与圆的交点 =*/
-                Point target_pt = CalcuTargetPoint(_rrt, target, radius);
-
-                /*= Step1.2 : RRT规划器获取轨迹 =*/
-                printf("rrt_start\n");   
-                std::vector<Point> path = _rrt.rrt_planning({position->globalPoint.x, position->globalPoint.y}, (Point)(target_pt));  
-                // for(auto point : path){
-                //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
-                // }
-                printf("rrt_end\n");
-            
+                std::vector<Point> path;
+                if(GetDistance(position->globalPoint, target) > 65){
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                     Point target_pt = CalcuTargetPoint(_rrt_long, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_long.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("rrt2_end\n");
+                }else{
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                    Point target_pt = CalcuTargetPoint(_rrt_short, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_short.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("rrt2_end\n");
+                }
+               
                 /*= Step1.3 : 规划路径跟踪 =*/
                 PathMove(path, goal_pt_track_time, maxSpeed, maxtime_ms, move_gaptime, fwd, back);
             }
             
             /*= Step2 :执行最后一步动作 =*/
-
-
-            
-            turnToTarget(target,  maxSpeed, 2500,  fwd, back);
-            moveToTarget(target, maxSpeed, 1000, move_gaptime, fwd);
+            turnToTarget(target,  maxSpeed, 900,  fwd, back);
+            moveToTarget(target, maxSpeed * 0.7, 1000, move_gaptime, fwd);
             gas_hold.state(100, pct);
             this_thread::sleep_for(300);
-
         }
 
         // 将桩放置到得分区(这里由于实际上得分区在四角，不考虑一般情况，只对特定的四角做讨论处理即可)
         void LayDownStake(Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 1){
-            RRT _rrt = *rrt; 
+            RRT _rrt_long = *rrt_long; 
+            RRT _rrt_short = *rrt_short;                                                                                                                                                  
+
             /*= Step1 : 如果机器人在操作半径外则需要先到达可执行的操作半径范围内 =*/
-            const T radius = 15; 
-            const T target_ = 59;
-            const T step_back = 45;
+            const T radius = 50; 
+            const T target_ = 60;
+            const T step_back = 48;
             const T corner = 72;
             if(fabs(GetDistance(position->globalPoint, target)) >= radius){  
-
-                /*= Step1.1 : 计算轨迹与圆的交点 =*/
-                Point target_pt = CalcuTargetPoint(_rrt, target, radius);
-                target_pt.angle = 0;
-                /*= Step1.2 : RRT规划器获取轨迹 =*/
-                printf("rrt2_start\n");   
-                std::vector<Point> path = _rrt.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
-                // for(auto point : path){
-                //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
-                // }
-                printf("rrt2_end\n");
-
+                std::vector<Point> path;
+                if(GetDistance(position->globalPoint, target) > 70){
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                     Point target_pt = CalcuTargetPoint(_rrt_long, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_long.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("rrt2_end\n");
+                }else{
+                    /*= Step1.1 : 计算轨迹与圆的交点 =*/
+                    Point target_pt = CalcuTargetPoint(_rrt_short, target, radius);
+                     target_pt.angle = 0;
+                    /*= Step1.2 : RRT规划器获取轨迹 =*/
+                    printf("rrt2_start\n");   
+                    path = _rrt_short.optimal_rrt_planning({position->globalPoint.x, position->globalPoint.y, 0}, (Point)(target_pt), 4);  
+                    // for(auto point : path){
+                    //     printf("{x:%lf , y:%lf}\n", point.x, point.y);
+                    // }
+                    printf("rrt2_end\n");
+                }
+               
                 /*= Step1.3 : 规划路径跟踪 =*/
                 PathMove(path, goal_pt_track_time, maxSpeed, maxtime_ms, move_gaptime, fwd, back);
 
@@ -211,49 +269,55 @@ namespace tjulib
                     task::sleep(300);
                     moveToTarget({-step_back, step_back}, maxSpeed, 1500, move_gaptime, fwd);
                 }else if(target.x == target_ && target.y == -target_){
-                    turnToTarget({corner, -corner},  maxSpeed, 1500,  fwd, back);
-                    moveToTarget({target_, -target_}, maxSpeed, 1500, move_gaptime, fwd);
+                    moveToTarget({-step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    turnToAngle(-45, maxSpeed, maxtime_ms, fwd, back);
+                    simpleMove(100, 180, 1, 10);
                     gas_hold.state(0, pct);
                     task::sleep(300);
-                    moveToTarget({step_back, -step_back}, maxSpeed, 1500, move_gaptime, fwd);
+                    moveToTarget({-step_back, -step_back}, maxSpeed, 1500, move_gaptime, fwd);
                 }else{
-                    turnToTarget({-corner, -corner},  maxSpeed, 1500,  fwd, back);
-                    moveToTarget({-target_, -target_}, maxSpeed, 1500, move_gaptime, fwd);
+                    moveToTarget({-step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    turnToAngle(-135, maxSpeed, maxtime_ms, fwd, back);
+                    simpleMove(100, 180, 1, 10);
                     gas_hold.state(0, pct);
                     task::sleep(300);
                     moveToTarget({-step_back, -step_back}, maxSpeed, 1500, move_gaptime, fwd);
                 }
 
             }else{      // 如果一开始就在半径内，则需要先退后出来，再转向、放桩
-                if(target.x == target_ && target.y == target_){
-                    moveToTarget({step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    turnToTarget({corner, corner},  maxSpeed, maxtime_ms,  fwd, back);
-                    moveToTarget({target_, target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    gas_hold.state(0, pct);
-                    task::sleep(300);
-                    moveToTarget({step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                }else if(target.x == -target_ && target.y == target_){
-                    moveToTarget({-step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    turnToTarget({-corner, corner},  maxSpeed, maxtime_ms,  fwd, back);
-                    moveToTarget({-target_, target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    gas_hold.state(0, pct);
-                    task::sleep(300);
-                    moveToTarget({-step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                }else if(target.x == target_ && target.y == -target_){
-                    moveToTarget({step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    turnToTarget({corner, -corner},  maxSpeed, maxtime_ms,  fwd, back);
-                    moveToTarget({target_, -target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    gas_hold.state(0, pct);
-                    task::sleep(300);
-                    moveToTarget({step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                }else{
-                    moveToTarget({-step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    turnToTarget({-corner, -corner},  maxSpeed, maxtime_ms,  fwd, back);
-                    moveToTarget({-target_, -target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                    gas_hold.state(0, pct);
-                    task::sleep(300);
-                    moveToTarget({-step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
-                }
+                    if(target.x == target_ && target.y == target_){
+                        moveToTarget({step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                        turnToTarget({corner, corner},  maxSpeed, maxtime_ms,  fwd, back);
+                        moveToTarget({target_, target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                        gas_hold.state(0, pct);
+                        task::sleep(300);
+                        moveToTarget({step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    }else if(target.x == -target_ && target.y == target_){
+                        moveToTarget({-step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                        turnToTarget({-corner, corner},  maxSpeed, maxtime_ms,  fwd, back);
+                        moveToTarget({-target_, target_}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                        gas_hold.state(0, pct);
+                        task::sleep(300);
+                        moveToTarget({-step_back, step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    }else if(target.x == target_ && target.y == -target_){
+                        simpleMove(100, 180, 0.8, 10);
+                        turnToAngle(135, maxSpeed, maxtime_ms, fwd, back);
+                        simpleMove(100, 180, 1, 10);
+                        gas_hold.state(0, pct);
+                        manual = true;
+                        reinforce_stop = true;
+                        task::sleep(500);
+                        moveToTarget({step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    }else{
+                        simpleMove(100, 180, 0.8, 10);
+                        turnToAngle(220, maxSpeed, maxtime_ms, fwd, back);
+                        simpleMove(100, 180, 1, 10);
+                        gas_hold.state(0, pct);
+                        manual = true;
+                        reinforce_stop = true;
+                        task::sleep(500);
+                        moveToTarget({-step_back, -step_back}, maxSpeed, maxtime_ms, move_gaptime, fwd);
+                    }
             }
             
 
@@ -261,7 +325,8 @@ namespace tjulib
 
         // 将环扣到固定桩(这里由于实际上得分区在四边，不考虑一般情况，只对特定的四边做讨论处理即可)
         void SlamDownRing(Point target, T goal_pt_track_time = 100, T maxSpeed = 100, T maxtime_ms = 15000, T move_gaptime = 10 ,int fwd = 1, int back = 1){
-            RRT _rrt = *rrt; 
+            RRT _rrt_long = *rrt_long; 
+            RRT _rrt_short = *rrt_short;       
             /*= Step1 : 如果机器人在操作半径外则需要先到达可执行的操作半径范围内 =*/
             const T head = 53; 
             const T head2 = 42;
@@ -274,7 +339,7 @@ namespace tjulib
             if(target.x == 0 && target.y == target_){
                 target_pt = {-1.8, head};
                 target_pt2 = {-1.8, head2};
-                std::vector<Point> path = _rrt.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
+                std::vector<Point> path = _rrt_short.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
                 // 先正向对齐
                 //turnToAngle(-90, maxSpeed, maxtime_ms);
                 moveToTarget(target_pt2, maxSpeed, maxtime_ms, move_gaptime);
@@ -301,7 +366,7 @@ namespace tjulib
 
                 target_pt = {head, -3};
                 target_pt2 = {head2, -3};
-                std::vector<Point> path = _rrt.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
+                std::vector<Point> path = _rrt_short.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
                 // 先正向对齐
                 //turnToAngle(-90, maxSpeed, maxtime_ms);
                 moveToTarget(target_pt, maxSpeed, maxtime_ms, move_gaptime);
@@ -330,7 +395,7 @@ namespace tjulib
             }else if(target.x == 0 && target.y == -target_){
                 target_pt = {-1.8, -head};
                 target_pt2 = {-1.8, -head2};
-                std::vector<Point> path = _rrt.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
+                std::vector<Point> path = _rrt_short.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
                 // 先正向对齐
                 //turnToAngle(-90, maxSpeed, maxtime_ms);
                 moveToTarget(target_pt2, maxSpeed, maxtime_ms, move_gaptime);
@@ -358,7 +423,7 @@ namespace tjulib
 
                 target_pt = {-head, -3};
                 target_pt2 = {-head2, -3};
-                std::vector<Point> path = _rrt.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
+                std::vector<Point> path = _rrt_short.optimal_rrt_planning({gps_x, gps_y}, (Point)(target_pt2), 2);  
                 // 先正向对齐
                 //turnToAngle(-90, maxSpeed, maxtime_ms);
                 moveToTarget(target_pt, maxSpeed, maxtime_ms, move_gaptime);

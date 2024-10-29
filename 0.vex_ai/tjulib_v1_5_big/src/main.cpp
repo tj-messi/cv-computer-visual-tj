@@ -58,7 +58,7 @@ bool is_red = true;
     stop_num               (int_type)
 */
 
-pidParams   fwd_pid(8, 0.3, 0.3, 2, 2, 12, 15), 
+pidParams   fwd_pid(4, 0.3, 0.3, 2, 2, 10, 15), 
             turn_pid(4, 0.15, 0.15, 45, 1, 10, 15), 
             cur_pid(8.0, 0.05, 0.15, 3, 1, 20, 15),
             straightline_pid(10, 0.1, 0.12, 5, 4, 1, 10),
@@ -105,14 +105,15 @@ pidControl motorControl(&wheelmotor_pid);
 
 // ====Declaration of Path Planner and Controller ====
 // Declaration of rrt planner
-RRT rrtPlanner(map.obstacleList, -72, 72, 3, 25, 20000, 12);
+RRT rrtPlanner_short(map.obstacleList, -72, 72, 2, 25, 20000, 4);
+RRT rrtPlanner_long(map.obstacleList, -72, 72, 3, 20, 20000, 12);
 // Declaration of PurPursuit Controller
 PurePursuit purepursuitControl(PosTrack->position);
 
 // ====Declaration of Chassis Controller ====
 // 底盘控制
 //Ordi_SmartChassis FDrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width);
-Oct_SmartChassis ODrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width, &purepursuitControl, &map, &rrtPlanner);
+Oct_SmartChassis ODrive(_chassisMotors, &motorControl, PosTrack->position, r_motor, &curControl, &fwdControl, &turnControl, car_width, &purepursuitControl, &map, &rrtPlanner_short, &rrtPlanner_long);
 
 
 
@@ -294,6 +295,58 @@ static int received_flag = 0;
 
 // Dual-Communication Demo
 
+int push_enemyring_thread(){
+    task::sleep(1400);
+    gas_push.state(100, pct);
+    task::sleep(1000);
+    gas_push.state(0, pct);
+    return 0;
+}
+int push_enemyring_thread2(){
+    task::sleep(5000);
+    gas_push.state(100, pct);
+    task::sleep(2000);
+    gas_push.state(0, pct);
+    return 0;
+}
+int push_enemyring_thread3(){
+    task::sleep(100);
+    gas_push.state(100, pct);
+    task::sleep(1500);
+    gas_push.state(0, pct);
+    return 0;
+}
+
+int go_out_roller(){
+    while(1){
+        manual = true;
+        reinforce_stop = true;
+        // 当进入桩内的时候退出
+        if((gps_x * gps_x + gps_y * gps_y) < 24){
+            break;
+        }
+    }
+
+    // 吸一下接着就停
+    manual = true;
+    ring_convey_spin = true;
+    reinforce_stop = false;
+    task::sleep(200);
+    manual = true;
+    reinforce_stop = true;
+
+    // 等到走出来之后就套环
+    while(1){
+        // 当进入桩内的时候退出
+        if((gps_x * gps_x + gps_y * gps_y) >= 28){
+            manual = true;
+            ring_convey_spin = true;
+            reinforce_stop = false;
+            break;
+        }
+    }
+    return 0;
+}
 
 /***************************
  
@@ -309,23 +362,90 @@ void autonomous(){
     ODrive.PathMove(Path1, 100, 100, 800000, 10, 1, 0);
 */
     // 加分区坐标
-    std::vector<Point> bonusAreas = {{59, 59}, {-59, 59}, {59, -59}, {-59, -59}};
+    std::vector<Point> bonusAreas = {{60, 60}, {-60, 60}, {60, -60}, {-60, -60}};
     // 固定桩坐标
     std::vector<Point> fixedStakes = {{60, 0}, {-60, 0}, {0, -60}, {0, 60}};
+
     // 动作空间:0取环, 1取桩, 2放桩, 3扣环, 4取半环 
-   // ODrive.HSAct(3, (Point)fixedStakes[1], 100, 100, 800000, 25, 1, 0);
-   // ODrive.DistanceSensorMove(140, 100 * 0.5, 5000, 0);
-   // ODrive.VisionSensorMove(158, 100, 5000, 0);
-  // ODrive.moveToTarget({48,  0}, 100, 5000, 20);
-    //ODrive.turnToAngle(-90, 100, 5000, 1, 0);
-    //   ODrive.HSAct(1, (Point){-48, -24}, 100, 100, 8000, 25, 1, 0);
-    //   ODrive.HSAct(0, (Point){-24, -24}, 60, 100, 8000, 25, 1, 0);
-    //   ODrive.HSAct(0, (Point){-24, -48}, 60, 100, 8000, 25, 1, 0);
-    //   ODrive.HSAct(2, (Point)bonusAreas[3], 100, 100, 8000, 25, 1, 0);
-   //ODrive.HSAct(4, (Point){-24,48}, 100, 100, 800000, 25, 1, 0);
+    /* 清前1/4场 */
+    /*
+     ODrive.HSAct(4, (Point){-48,-48}, 60, 85, 1500, 25, 1, 0);
+     ODrive.HSAct(1, (Point){-24,-48}, 60, 85, 8000, 25, 1, 0);
+     manual = true;
+     ring_convey_spin = true;
+     reinforce_stop = false;
+     ODrive.HSAct(0, (Point){-24,-24}, 60, 85, 1500, 10, 1, 0);
+     ODrive.HSAct(0, (Point){0,-45}, 60, 85, 8000, 25, 1, 0);
+     thread push_enemyring(push_enemyring_thread);
+     ODrive.HSAct(0, (Point){0,-57}, 60, 85, 8000, 25, 1, 0);
+     // 吸角落的
+     {
+     ODrive.moveToTarget((Point){-50,-50}, 100, 2000, 10);
+     ODrive.turnToAngle(200, 100, 2300);
+     ODrive.simpleMove(100, 0, 1.5, 10);
+     manual = true;
+     ring_convey_spin = true;
+     reinforce_stop = false;
+     ODrive.turnToAngle(180, 100, 900);
+     ODrive.simpleMove(70, 0, 0.8, 10);
+     task::sleep(400);
+     ODrive.simpleMove(70, 180, 0.4, 10);
+     ODrive.turnToAngle(-135, 100, 900);
+     }
+     
+    task::sleep(800);
+    ODrive.HSAct(2, (Point)bonusAreas[3], 75, 100, 1500, 10, 1, 0);
 
-    ODrive.HSAct(3, (Point)fixedStakes[1], 100, 100, 800000, 20, 1, 0);
+    /* 套边桩 */
+    /*
+    thread push_enemyring2(push_enemyring_thread2);
+    ODrive.HSAct(4, (Point){24, -48}, 75, 80, 1500, 10, 1, 0);
+    ODrive.HSAct(3, (Point)fixedStakes[2], 75, 100, 1500, 10, 1, 0);
+*/
 
+    /* 清后1/4场 */
+    ODrive.HSAct(1, (Point){24, -24}, 60, 85, 500, 15, 1, 0);    
+    task::sleep(450);
+    //thread go_out_roller(go_out_roller);
+    //ODrive.HSAct(4, (Point){7, -7}, 60, 80, 1000, 10, 1, 0);
+    //task::sleep(500);
+
+    ODrive.HSAct(0, (Point){48,-24}, 60, 85, 1200, 10, 1, 0);
+    ODrive.moveToTarget((Point){20,-48}, 100, 700, 10);
+    ODrive.moveToTarget((Point){32,-57}, 100, 500, 10);
+    ODrive.HSAct(0, (Point){48,-48}, 60, 85, 700, 5, 1, 0);
+    // 吸角落的
+     {
+     manual = true;
+     ring_convey_spin = true;
+     reinforce_stop = false;
+     ODrive.moveToTarget((Point){52,-50}, 100, 2000, 10);
+     ODrive.turnToAngle(135, 100, 2300); 
+
+     thread push_enemyring3(push_enemyring_thread3);
+     manual = true;
+     ring_convey_spin = true;
+     reinforce_stop = false;
+     ODrive.simpleMove(60, 0, 1.3, 10);
+     task::sleep(700);
+     // 转正
+     ODrive.turnToAngle(165, 40, 1700); 
+     ODrive.simpleMove(60, 0, 0.7, 10);
+     manual = true;
+     ring_convey_spin = true;
+     reinforce_stop = false;
+     task::sleep(300);
+     ODrive.turnToAngle(135, 100, 900);
+     manual = true;
+     reinforce_stop = true;
+     }
+    task::sleep(300);
+    ODrive.HSAct(2, (Point)bonusAreas[2], 75, 100, 1500, 10, 1, 0);
+
+    /* 清移动桩
+    ODrive.HSAct(1, (Point){48, 0}, 60, 85, 8000, 25, 1, 0);
+    ODrive.HSAct(0, (Point){56, 0}, 60, 85, 4000, 10, 1, 0);
+ */
 }
 /***************************
  

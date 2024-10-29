@@ -17,12 +17,12 @@ namespace tjulib{
 
         T gpsX() {
             T theta = GPS_.heading(deg) / 180 * PI;  // 弧度制
-            return   GPS_.xPosition(inches) - ( offset_y * sin(theta) + offset_x * cos(theta) ) - 3;
+            return   GPS_.xPosition(inches) - ( offset_y * sin(theta) + offset_x * cos(theta) ) - 1.5;
         }
 
         T gpsY() {
             T theta = GPS_.heading(deg)/ 180 * PI;  // 弧度制
-            return   GPS_.yPosition(inches) - ( offset_y * cos(theta) - offset_x * sin(theta) ) - 2.5;
+            return   GPS_.yPosition(inches) - ( offset_y * cos(theta) - offset_x * sin(theta) ) - 2;
         }
         
         T gpsHeading(){

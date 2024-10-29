@@ -119,8 +119,9 @@ namespace tjulib
                         }
                         goal_point.angle = targetDeg;
                         // 最后一段直接直线移动到目标点
-                        if(targetDeg <= 170 || fabs(targetDeg - 360) <= 170){
-                            RotMoveToTarget(goal_point, maxSpeed , move_gaptime, move_gaptime, fwd);
+                        if(targetDeg <= 120 && fabs(targetDeg - 360) <= 120){
+                            moveToTarget(goal_point, maxSpeed, move_gaptime, move_gaptime, fwd);
+                            //RotMoveToTarget(goal_point, maxSpeed , move_gaptime, move_gaptime, fwd);
                         }else{
                             moveToTarget(goal_point, maxSpeed, move_gaptime, move_gaptime, fwd);
                             //RotMoveToTarget(goal_point, maxSpeed , 1000, move_gaptime, fwd);
@@ -128,8 +129,9 @@ namespace tjulib
                         break;
                     }else{
                         // 最后一段直接直线移动到目标点
-                        if(targetDeg <= 170 || fabs(targetDeg - 360) <= 170){
-                            RotMoveToTarget(goal_point, maxSpeed , move_gaptime, move_gaptime, fwd);
+                        if(targetDeg <= 120 && fabs(targetDeg - 360) <= 120){
+                            moveToTarget(goal_point, maxSpeed, move_gaptime, move_gaptime, fwd);
+                            //RotMoveToTarget(goal_point, maxSpeed , move_gaptime, move_gaptime, fwd);
                         }else{
                             moveToTarget(goal_point, maxSpeed, move_gaptime, move_gaptime, fwd);
                             //RotMoveToTarget(goal_point, maxSpeed , move_gaptime, move_gaptime, fwd);

@@ -41,7 +41,7 @@ namespace tjulib {
         this->start = Node(start.x, start.y, 0); // 起始点半径为0
         this->goal = Node(goal.x, goal.y, 0);     // 目标点半径为0
         node_list.push_back(this->start);// 加入起始点到节点列表中
-        std::vector<Point> path;
+        std::vector<Point> path = {};
         srand((unsigned int)(time(0)));
         for (int i = 0; i < max_iter; ++i) {
             Point rnd = sample();// 随机采样
@@ -53,7 +53,6 @@ namespace tjulib {
 
             if (check_segment_collision(newNode.x, newNode.y, nearestNode.x, nearestNode.y)) {//可以改成线和圆是否有交点
                 node_list.push_back(newNode);
-
                 if (is_near_goal(newNode)) {// 到达目标点
                     if (check_segment_collision(newNode.x, newNode.y, goal.x, goal.y)) {// 到达目标点后，判断是否有障碍物
                         int lastIndex = node_list.size() - 1;
@@ -62,6 +61,7 @@ namespace tjulib {
                     }
                 }
             }
+
         }
         return path; // 如果没有找到路径，则返回空路径
     }

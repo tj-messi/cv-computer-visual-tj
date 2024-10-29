@@ -75,7 +75,7 @@ namespace tjulib
         timer time;
         timer half_stop_time;
         T whole_time = INT_MIN;
-        const T throw_time = 410;   // 要丢弃时候运环的时间
+        const T throw_time = 370;   // 要丢弃时候运环的时间
         const T save_time = 1500;    // 要保留时候运环的时间 
 
         while(1){
@@ -111,14 +111,14 @@ namespace tjulib
                         has_seen_ring = true;
                         convey_belt.setPosition(0, deg);
                         whole_time = throw_time;
-
+                        convey_belt.spin(forward, 100, pct);
                         if(half_ring_get){
                             half_stop_time.clear();
                         }
 
                     }else;
                     if(half_ring_get && has_seen_ring){
-                        if(fabs(half_stop_time.time(msec) - 40)){
+                        if(fabs(half_stop_time.time(msec) - 20)){
                             reinforce_stop = true;
                         }
                     }
@@ -162,7 +162,7 @@ namespace tjulib
 
                         photo_flag = false;   
                         // 如果是手动，则抛完环之后还要继续进行
-                        if(manual){
+                        if(manual || ring_color == 2){
                             ring_convey_spin = true;
                         }
                         half_ring_get = false;
