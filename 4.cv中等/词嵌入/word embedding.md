@@ -45,3 +45,29 @@ John also likes to watch football games.
 ###TF-IDF
 
 **TF-IDF**（term frequency–inverse document frequency）是一种用于信息检索与数据挖掘的常用加权技术。TF意思是词频(Term Frequency)，IDF意思是逆文本频率指数(Inverse Document Frequency)。
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1730466416076.png)
+
+分母之所以加1，是为了避免分母为0。
+
+那么，，从这个公式可以看出，当w在文档中出现的次数增大时，而TF-IDF的值是减小的，所以也就体现了以上所说的了。
+
+**缺点：**还是没有把词与词之间的关系顺序表达出来。
+
+###n-gram模型
+
+n-gram模型为了保持词的顺序，做了一个滑窗的操作，这里的n表示的就是滑窗的大小，例如2-gram模型，也就是把2个词当做一组来处理，然后向后移动一个词的长度，再次组成另一组词，把这些生成一个字典，按照词袋模型的方式进行编码得到结果。改模型考虑了词的顺序。
+
+例如：
+
+John likes to watch movies. Mary likes too
+
+John also likes to watch football games.
+
+以上两句可以构造一个词典，{"John likes”: 1, "likes to”: 2, "to watch”: 3, "watch movies”: 4, "Mary likes”: 5, "likes too”: 6, "John also”: 7, "also likes”: 8, “watch football”: 9, "football games": 10}
+
+那么第一句的向量表示为：[1, 1, 1, 1, 1, 1, 0, 0, 0, 0]，其中第一个1表示John likes在该句中出现了1次，依次类推。
+
+**缺点：**随着n的大小增加，词表会成指数型膨胀，会越来越大。
+
+###2.5离散表示的问题
