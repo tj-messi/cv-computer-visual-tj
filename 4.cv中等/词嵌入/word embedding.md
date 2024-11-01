@@ -43,3 +43,5 @@ John also likes to watch football games.
 词与词之间是没有顺序关系的。
 
 ###TF-IDF
+
+**TF-IDF**（term frequency–inverse document frequency）是一种用于信息检索与数据挖掘的常用加权技术。TF意思是词频(Term Frequency)，IDF意思是逆文本频率指数(Inverse Document Frequency)。
