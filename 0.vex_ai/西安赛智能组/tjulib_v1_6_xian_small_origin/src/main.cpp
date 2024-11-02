@@ -13,13 +13,13 @@ using namespace vex;
 using namespace tjulib;
 
 /*---------------  模式选择  ---------------*/
-// 如果进行技能赛就def，否则注释，进行自动
+// 如果进�?�技能赛就def，否则注释，进�?�自�?
 //#define SKILL
-// 如果用里程计就def，否则注释，用雷达
+// 如果用里程�?�就def，否则注释，用雷�?
 #define ODOM
-// 如果要开启远程调试就def，否则就注释
+// 如果要开�?远程调试就def，否则就注释
 #define Remotedeubug
-// 如果是红方就def，否则就注释
+// 如果�?红方就def，否则就注释
 #define RED
 
 /**************************电机定义***********************************/
@@ -32,13 +32,13 @@ std::vector<std::vector<vex::motor*>*> _chassisMotors = {&_lfMotors, &_lbMotors,
 // Definition of const variables
 //const double PI = 3.1415926;
 
-// imu零漂误差修正
-double zero_drift_error = 0;  // 零漂误差修正，程序执行时不断增大
+// imu零漂�?�?�?�?
+double zero_drift_error = 0;  // 零漂�?�?�?正，程序执�?�时不断增大
 double correct_rate = 0.0000;
 
-// 全局计时器
+// 全局计时�?
 static timer global_time;  
-// 竞赛模板类
+// 竞赛模板�?
 competition Competition;
 // vex-ai jeson nano comms
 ai::jetson  jetson_comms;
@@ -50,7 +50,7 @@ bool is_red = true;
 
 *************************************/
 
-/*configure meanings：
+/*configure meanings�?
     ki, kp, kd, 
     integral's active zone (either inches or degrees), 
     error's thredhold      (either inches or degrees),
@@ -58,8 +58,8 @@ bool is_red = true;
     stop_num               (int_type)
 */
 
-pidParams   fwd_pid(2, 0.08, 0.08, 2, 2, 5, 15), 
-            turn_pid(1.5, 0.08, 0.05, 10, 1, 10, 15), 
+pidParams   fwd_pid(2.7, 0.08, 0.08, 3, 3, 5, 15), 
+            turn_pid(0.8, 0.08, 0.05, 45, 1, 10, 15), 
             cur_pid(8.0, 0.05, 0.15, 3, 1, 20, 15),
             straightline_pid(10, 0.1, 0.12, 5, 4, 1, 10),
             wheelmotor_pid(0.25, 0.01, 0.02, 50, 5, 0, 10);
@@ -185,7 +185,7 @@ int GPS_update(){
         if((time.time(msec)-3000) <= 50 && flag){
             imu.setHeading(GPS_.heading(deg), deg);
             imu.setRotation(GPS_.heading(deg), deg);
-            // 第4秒的时候会更新一下坐标
+            // �?4秒的时候会更新一下坐�?
             PosTrack->setPosition({gps_x, gps_y, GPS_.heading(deg) / 180 * 3.1415926535});
             
             printf("position initialization finish\n");
@@ -223,21 +223,21 @@ int GPS_update(){
     pre-autonomous run
 
  **************************/
-// 设置初始位置、角度
+// 设置初�?�位�?、�?�度
 #ifdef SKILL
-    // 初始位置，单位为inches
+    // 初�?�位�?，单位为inches
     double init_pos_x = -59;
     double init_pos_y = 35.4;
 
-    // 逆时针角度，范围在0 ~ 360°之间
+    // 逆时针�?�度，范围在0 ~ 360°之间
     double initangle = 0;
 
 #else
-    // 初始位置，单位为inches
+    // 初�?�位�?，单位为inches
     double init_pos_x = 0;
     double init_pos_y = 0;
 
-    // 逆时针角度，范围在0 ~ 360°之间
+    // 逆时针�?�度，范围在0 ~ 360°之间
     double init_angle = 0;
 
 #endif
@@ -248,11 +248,11 @@ void pre_auton(){
     is_red = false;
 #endif
     thread PosTrack_(PositionTrack);
-/***********是否开启远程调试************/
+/***********�?否开�?远程调试************/
 #ifdef Remotedeubug
     thread Remotedebug(RemoteDubug);
 #endif
-/***********imu、gps、distancesensor、vision等设备初始化************/  
+/***********imu、gps、distancesensor、vision等�?��?�初始化************/  
     
     printf("pre-auton start\n");
     if(GPS_.installed()){
@@ -262,9 +262,9 @@ void pre_auton(){
     }
 
 
-    // 这里考虑到只使用imu而不使用gps的情况
+    // 这里考虑到只使用imu而不使用gps的情�?
     if(imu.installed()){
-        // 设置初始位置
+        // 设置初�?�位�?
         PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
     }
     // GPS更新线程
@@ -297,7 +297,7 @@ int go_out_roller(){
     while(1){
         manual = true;
         reinforce_stop = true;
-        // 当进入桩内的时候退出
+        // 当进入桩内的时候退�?
         if((gps_x * gps_x + gps_y * gps_y) < 24){
             break;
         }
@@ -313,7 +313,7 @@ int go_out_roller(){
 
     // 等到走出来之后就套环
     while(1){
-        // 当进入桩内的时候退出
+        // 当进入桩内的时候退�?
         if((gps_x * gps_x + gps_y * gps_y) >= 28){
             manual = true;
             ring_convey_spin = true;
@@ -325,7 +325,14 @@ int go_out_roller(){
 }
 
 
-
+struct oj_data
+{
+    double x;
+    double y;
+    int kind;
+};
+static std::vector<oj_data> my_map;
+static double diff = 0.5;
 
 
 /***************************
@@ -336,36 +343,46 @@ int go_out_roller(){
 void autonomous(){
 /*
     Point start_pt = {gps_x, gps_y};
-    std::vector<Point> Path1 = rrtPlanner_short.optimal_rrt_planning(start_pt, (Point){48, 0, 0}, 4);  // 这里一定要强制类型转换为Point
+    std::vector<Point> Path1 = rrtPlanner_short.optimal_rrt_planning(start_pt, (Point){48, 0, 0}, 4);  // 这里一定�?�强制类型转�?为Point
     ODrive.PathMove(Path1, 400, 100, 800000, 10, 1, 0);
 */
 
+/*
+    Point start_pt = {gps_x, gps_y};
+    std::vector<Point> Path1 = rrtPlanner_short.optimal_rrt_planning(start_pt, (Point){48, 0, 0}, 4);  // 这里一定�?�强制类型转�?为Point
+    ODrive.PathMove(Path1, 400, 100, 800000, 10, 1, 0);
+*/
 
-    // 加分区坐标
+    
+
+    // 加分区坐�?
     std::vector<Point> bonusAreas = {{60, 60}, {-60, 60}, {60, -60}, {-60, -60}};
-    // 固定桩坐标
+    // 固定桩坐�?
     std::vector<Point> fixedStakes = {{60, 0}, {-60, 0}, {0, -60}, {0, 60}};
 
-    // 清前1/4场 
+    // 清前1/4�? 
     // 取桩
-    std::vector<Point> Path1 = {{-48, 12}, {-34, 29}, {-28, 42}};
+    std::vector<Point> Path1 = {{-48, 24}, {-36, 36}, {-30, 40}};
     ODrive.turnToTarget((Point){-24, 48}, 40, 900, 1, 1);
-    ODrive.PathMove(Path1, 200, 100, 800000, 10, 1, 0);
+    ODrive.PathMove(Path1, 400, 60, 800000, 10, 1, 0);
     ODrive.turnToTarget((Point){-24, 48}, 40, 700, 1, 1);
-    ODrive.moveToTarget((Point){-24, 48}, 70, 1100, 10);
+    ODrive.moveToTarget((Point){-24, 48}, 50, 1100, 10);
+    ODrive.simpleMove(40, 180, 0.2, 10);
+    task::sleep(200);
     gas_hold.state(100,pct);
-
+    task::sleep(250);
   //  ODrive.HSAct(1, (Point){-24, 48}, 80, 80, 8000, 10, 1, 0););
-    // 取环
-    ODrive.turnToTarget((Point){0, 48}, 40, 1100);
-    ODrive.moveToTarget((Point){-8,48}, 80, 1000, 10);
 
-    ODrive.HSAct(0, (Point){0, 48}, 80, 80, 1000, 15, 1, 0);
-
-    ODrive.moveToTarget((Point){-20,48}, 80, 1000, 10);
-    ODrive.turnToTarget((Point){2, 60}, 40, 1500);
-    ODrive.HSAct(0, (Point){2, 60}, 80, 80, 8000, 15, 1, 0);
-    ODrive.moveToTarget((Point){-39, 24}, 100, 800, 10);
+     // 取二�?
+    ODrive.turnToTarget((Point){0, 48}, 50, 1100);
+    ODrive.moveToTarget((Point){-12,52}, 40, 1000, 10);
+    ODrive.HSAct(0, (Point){0, 48}, 80, 60, 1000, 15, 1, 0);
+    task::sleep(500);
+    ODrive.moveToTarget((Point){-25,48}, 80, 1000, 10);
+    ODrive.turnToTarget((Point){0, 62}, 40, 1500);
+    ODrive.HSAct(0, (Point){0, 62}, 80, 80, 8000, 15, 1, 0);
+    task::sleep(500);
+    ODrive.moveToTarget((Point){-39, 36}, 100, 1100, 10, 1);
     ODrive.turnToTarget((Point){-48, 48}, 40, 1200);
     ODrive.HSAct(0, (Point){-48, 48}, 1500, 80, 1500, 15, 1, 0);
      
@@ -373,84 +390,268 @@ void autonomous(){
     ring_convey_spin = true;
     reinforce_stop = false;
      
+    // // ===吸左下�?�落===
+    // // 吸�?�落�?
+    //  {
+    //  ODrive.moveToTarget((Point){-53, 51}, 40, 1700, 10);
+    //  //再�?�转
+    //  ring_convey_spin = true;
+    //  reinforce_stop = false;
+    //  ODrive.turnToAngle(-45, 50, 900);
+    //  ODrive.simpleMove(30, 0, 0.4, 10);
+    //  ODrive.turnToAngle(-45, 50, 900);
+    //  ODrive.simpleMove(30, 0, 0.4, 10);
+    //  task::sleep(150);
+    //  ODrive.turnToAngle(-20, 60, 350);
+    //  ODrive.simpleMove(30, 0, 0.4, 10);
+    //  ODrive.turnToAngle(10, 60, 350);
+    //  ODrive.simpleMove(40, 0, 0.3, 10);
+    //  ODrive.simpleMove(40, 180, 0.4, 10);
+    //  ODrive.simpleMove(50, 0, 0.6, 10);
+    //  task::sleep(200);
 
-    // ===吸左下角落===
-    // 吸角落的
-     {
-     ODrive.moveToTarget((Point){-51, 50}, 40, 1800, 10);
-     ODrive.turnToAngle(-43, 50, 900);
-     ODrive.simpleMove(43, 0, 0.3, 10);
+    //  ODrive.turnToAngle(-45, 100, 350);
 
-     ODrive.turnToAngle(-45, 40, 0);
-    
-    //再正转
-     ring_convey_spin = true;
-     reinforce_stop = false;
+    //  }
 
-
-    // ODrive.turnToAngle(0, 40, 450);
-     ODrive.simpleMove(70, 0, 0.8, 10);
-     task::sleep(150);
-     ODrive.turnToAngle(-20, 60, 350);
-     ODrive.simpleMove(40, 0, 0.3, 10);
-     ODrive.turnToAngle(0, 60, 350);
-     ODrive.simpleMove(40, 0, 0.3, 10);
-     task::sleep(550);
-
-     ODrive.turnToAngle(-45, 100, 350);
-
-     }
+    ODrive.moveToTarget((Point){-49, 49}, 40, 1200, 10);
+    ODrive.turnToAngle(135, 75, 1500);
+    ODrive.simpleMove(90, 180, 0.8, 10);
+    gas_hold.state(0, pct);
+  // ODrive.simpleMove(70, 0, 0.65, 10);
+   // ODrive.simpleMove(100, 180, 0.75, 10);
+    task::sleep(400);
      
     ODrive.HSAct(2, (Point)bonusAreas[1], 100, 80, 1500, 10, 1, 0);
     
     //ODrive.HSAct(4, (Point){-48, 48}, 100, 80, 500, 10, 1, 0);
-
-
-     // 清后1/4场 
-    // 跑场
-    ODrive.turnToAngle(90, 75, 1000);
-    ODrive.moveToTarget((Point){-28,48}, 70, 1400, 10);
-    ODrive.moveToTarget((Point){12,48}, 70, 1400, 10);
-
-    // 吃第一个半环
-    ODrive.HSAct(4, (Point){24, 48}, 75, 705, 1500, 10, 1, 0);
-    ODrive.turnToTarget((Point){24, 24}, 60, 1100, 1, 1);
-
-    // 持桩
-    ODrive.moveToTarget((Point){5, 48}, 40, 700, 1, 1);
-    ODrive.turnToTarget((Point){24, 24}, 40, 900, 1, 1);
-    ODrive.moveToTarget((Point){24, 24}, 70, 1100, 10);
-    gas_hold.state(100,pct);
+    manual = false;
     ring_convey_spin = true;
-    reinforce_stop = false;
-    task::sleep(200);
-    //ODrive.HSAct(1, (Point){24, 24}, 60, 85, 500, 15, 1, 0);    
-    task::sleep(250);
-    ODrive.HSAct(0, (Point){48,24}, 60, 85, 1200, 10, 1, 0);
-    ODrive.moveToTarget((Point){20, 48}, 100, 500, 10);
-    ODrive.moveToTarget((Point){32, 57}, 100, 500, 10);
-    ODrive.HSAct(0, (Point){48, 48}, 60, 85, 700, 5, 1, 0);
+    reinforce_stop = true;
 
-
-
-    ODrive.moveToTarget((Point){51, 50}, 40, 1200, 10);
-    ODrive.turnToAngle(-45, 75, 1000);
+    // 清后1/4�? 
+    // 跑场
+    ODrive.turnToAngle(90, 50, 1000);
+    ODrive.moveToTarget((Point){-20, 48}, 60, 1200, 10);
+    ODrive.moveToTarget((Point){5, 48}, 60, 1200, 10);
     ring_convey_spin = false;
     reinforce_stop = true;
-    ODrive.simpleMove(70, 180, 0.7, 10);
-    task::sleep(350);
+    manual = false;
+
+    // 吸半�?
+    ODrive.turnToTarget((Point){24, 48}, 50, 1300, 1);
+    ring_convey_spin = true;
+    reinforce_stop = false;
+    manual = false;
+    ODrive.moveToTarget((Point){24, 48}, 45, 1300, 1, 1);
+    ODrive.simpleMove(40, 0, 0.18, 10);
+    task::sleep(500);
+    ring_convey_spin = false;
+    reinforce_stop = true;
+
+    // 持桩
+    ODrive.moveToTarget((Point){24, 38}, 45, 1300, 1, 1);
+    ODrive.turnToTarget((Point){24, 24}, 50, 1300, 1, 1);
+    ODrive.moveToTarget((Point){24, 24}, 40, 1500, 10);
+    ODrive.simpleMove(40, 180, 0.12, 10);
+    task::sleep(200);
+    gas_hold.state(100,pct);
+    task::sleep(150);
+    manual = false;
+    ring_convey_spin = true;
+    reinforce_stop = false;
+    task::sleep(550);
+
+    // // 冲散�?(使用RRT�?动�?�划�?�?)
+    // ODrive.moveToTarget((Point){36, 36}, 60, 800, 10);
+    // ODrive.moveToTarget((Point){20, 56}, 60, 800, 10);
+    // ODrive.moveToTarget((Point){59, 48}, 60, 800, 10);
+    // ODrive.moveToTarget((Point){60, 40}, 60, 800, 10);
+
+    // 吸后1/4区二�?
+    ODrive.HSAct(0, (Point){48,24}, 60, 85, 1200, 10, 1, 0);
+
+    // 吸半�?
+    ODrive.moveToTarget((Point){20, 48}, 52, 500, 10);
+    ODrive.moveToTarget((Point){30, 59}, 52, 1000, 10);
+    ODrive.turnToTarget((Point){48, 48}, 50, 1300, 1);
+    ring_convey_spin = true;
+    reinforce_stop = false;
+    manual = false;
+    ODrive.moveToTarget((Point){48, 48}, 45, 1300, 1, 1);
+    ODrive.simpleMove(45, 0, 0.3, 10);
+    task::sleep(700);
+    ring_convey_spin = false;
+    reinforce_stop = true;
+   // ODrive.HSAct(0, (Point){48, 48}, 60, 85, 700, 5, 1, 0);
+
+    // 推桩
+    ODrive.moveToTarget((Point){50, 50}, 40, 1200, 10);
+    ODrive.turnToAngle(-135, 60, 1500);
+    ODrive.simpleMove(90, 180, 0.8, 10);
+    gas_hold.state(0, pct);
+  //  ODrive.simpleMove(70, 0, 0.65, 10);
+  //  ODrive.simpleMove(100, 180, 0.75, 10);
+    task::sleep(400);
+
+    // 持移动桩
+    ODrive.moveToTarget((Point){40, 30}, 60, 1000, 10 , 1);
+    ODrive.turnToTarget((Point){48, 0}, 40, 1000, 1, 1);
+    ODrive.moveToTarget((Point){48, 0}, 40, 1200, 10 , 1);
+    ODrive.simpleMove(40, 180, 0.12, 10);
+    gas_hold.state(100, pct);
+    task::sleep(200);
+    ring_convey_spin = true;
+    reinforce_stop = false;
+    manual = false;
+    gas_hold.state(0, pct);
+    task::sleep(400);
+
+    ODrive.moveToTarget((Point){24, 24}, 60, 1200, 10 , 1);
+    ODrive.moveToTarget((Point){-4, -4}, 60, 1200, 10 , 1);
+
+
+    
+    while(1)
+    {
+            {
+                convey_belt.spin(fwd,100,pct);
+                roller_group.spin(fwd,-100,pct);
+            }
+            // ��ȡ������ĺ컷
+            int min_index;
+            int min_distance = INT_MAX;
+            for(int i = 0;i<my_map.size();i++){
+                if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 1){
+                    min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
+                    min_index = i;
+                }
+            }
+            oj_data nearest_elem = my_map[min_index];
+            // ͣ???��??
+            ODrive.VRUN(0, 0, 0, 0);
+
+            //�Ի�
+            ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+            ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+            task::sleep(800);
+            //�ѻ���my_map??������ͼ
+            nearest_elem.x=1e5;
+            nearest_elem.y=1e5;
+            task::sleep(800);
+            ODrive.simpleMove(80,0,1,10);
+    }
+
+//     // 加分区坐�?
+//     std::vector<Point> bonusAreas = {{60, 60}, {-60, 60}, {60, -60}, {-60, -60}};
+//     // 固定桩坐�?
+//     std::vector<Point> fixedStakes = {{60, 0}, {-60, 0}, {0, -60}, {0, 60}};
+
+//     // 清前1/4�? 
+//     // 取桩
+//     std::vector<Point> Path1 = {{-48, 12}, {-34, 29}, {-28, 42}};
+//     ODrive.turnToTarget((Point){-24, 48}, 40, 900, 1, 1);
+//     ODrive.PathMove(Path1, 200, 100, 800000, 10, 1, 0);
+//     ODrive.turnToTarget((Point){-24, 48}, 40, 700, 1, 1);
+//     ODrive.moveToTarget((Point){-24, 48}, 70, 1100, 10);
+//     gas_hold.state(100,pct);
+
+//   //  ODrive.HSAct(1, (Point){-24, 48}, 80, 80, 8000, 10, 1, 0););
+//     // 取环
+//     ODrive.turnToTarget((Point){0, 48}, 40, 1100);
+//     ODrive.moveToTarget((Point){-8,48}, 80, 1000, 10);
+
+//     ODrive.HSAct(0, (Point){0, 48}, 80, 80, 1000, 15, 1, 0);
+
+//     ODrive.moveToTarget((Point){-20,48}, 80, 1000, 10);
+//     ODrive.turnToTarget((Point){2, 60}, 40, 1500);
+//     ODrive.HSAct(0, (Point){2, 60}, 80, 80, 8000, 15, 1, 0);
+//     ODrive.moveToTarget((Point){-39, 24}, 100, 800, 10);
+//     ODrive.turnToTarget((Point){-48, 48}, 40, 1200);
+//     ODrive.HSAct(0, (Point){-48, 48}, 1500, 80, 1500, 15, 1, 0);
+     
+//     manual = true;
+//     ring_convey_spin = true;
+//     reinforce_stop = false;
+     
+
+//     // ===吸左下�?�落===
+//     // 吸�?�落�?
+//      {
+//      ODrive.moveToTarget((Point){-51, 50}, 40, 1800, 10);
+//      ODrive.turnToAngle(-43, 50, 900);
+//      ODrive.simpleMove(43, 0, 0.3, 10);
+
+//      ODrive.turnToAngle(-45, 40, 0);
+    
+//     //再�?�转
+//      ring_convey_spin = true;
+//      reinforce_stop = false;
+
+
+//     // ODrive.turnToAngle(0, 40, 450);
+//      ODrive.simpleMove(70, 0, 0.8, 10);
+//      task::sleep(150);
+//      ODrive.turnToAngle(-20, 60, 350);
+//      ODrive.simpleMove(40, 0, 0.3, 10);
+//      ODrive.turnToAngle(0, 60, 350);
+//      ODrive.simpleMove(40, 0, 0.3, 10);
+//      task::sleep(550);
+
+//      ODrive.turnToAngle(-45, 100, 350);
+
+//      }
+     
+//     ODrive.HSAct(2, (Point)bonusAreas[1], 100, 80, 1500, 10, 1, 0);
+    
+//     //ODrive.HSAct(4, (Point){-48, 48}, 100, 80, 500, 10, 1, 0);
+
+
+//      // 清后1/4�? 
+//     // 跑场
+//     ODrive.turnToAngle(90, 75, 1000);
+//     ODrive.moveToTarget((Point){-28,48}, 70, 1400, 10);
+//     ODrive.moveToTarget((Point){12,48}, 70, 1400, 10);
+
+//     // 吃�??一�?半环
+//     ODrive.HSAct(4, (Point){24, 48}, 75, 705, 1500, 10, 1, 0);
+//     ODrive.turnToTarget((Point){24, 24}, 60, 1100, 1, 1);
+
+//     // 持桩
+//     ODrive.moveToTarget((Point){5, 48}, 40, 700, 1, 1);
+//     ODrive.turnToTarget((Point){24, 24}, 40, 900, 1, 1);
+//     ODrive.moveToTarget((Point){24, 24}, 70, 1100, 10);
+//     gas_hold.state(100,pct);
+//     ring_convey_spin = true;
+//     reinforce_stop = false;
+//     task::sleep(200);
+//     //ODrive.HSAct(1, (Point){24, 24}, 60, 85, 500, 15, 1, 0);    
+//     task::sleep(250);
+//     ODrive.HSAct(0, (Point){48,24}, 60, 85, 1200, 10, 1, 0);
+//     ODrive.moveToTarget((Point){20, 48}, 100, 500, 10);
+//     ODrive.moveToTarget((Point){32, 57}, 100, 500, 10);
+//     ODrive.HSAct(0, (Point){48, 48}, 60, 85, 700, 5, 1, 0);
+
+
+
+//     ODrive.moveToTarget((Point){51, 50}, 40, 1200, 10);
+//     ODrive.turnToAngle(-45, 75, 1000);
+//     ring_convey_spin = false;
+//     reinforce_stop = true;
+//     ODrive.simpleMove(70, 180, 0.7, 10);
+//     task::sleep(350);
 
    // ODrive.HSAct(2, (Point)bonusAreas[0], 100, 80, 1500, 10, 1, 0);
 
 
 
-    // 动作空间:0取环, 1取桩, 2放桩, 3扣环, 4取半环 
+    // 动作空间:0取环, 1取桩, 2放桩, 3扣环, 4取半�? 
 
 
 
 
 
-    // 套边桩 
+    // 套边�? 
    // ODrive.HSAct(3, (Point)fixedStakes[2], 75, 100, 1500, 10, 1, 0);
     //imu.setHeading(GPS_.heading(deg), deg);
 
@@ -495,7 +696,7 @@ void usercontrol()
         lift_arm.stop(hold);
     });
     Controller1.ButtonR1.pressed([]() {
-        static bool motorRunning = false; // 用于追踪电机状态
+        static bool motorRunning = false; // 用于追踪电机状�?
         
         if (!motorRunning) {
              manual = true;
@@ -507,14 +708,14 @@ void usercontrol()
         } else {
             manual = true;
             reinforce_stop = true;
-           roller_group.stop();// 停止电机旋转
+           roller_group.stop();// 停�?�电机旋�?
            convey_belt.stop();
         }
         motorRunning = !motorRunning; // 切换电机状态}
     });
 
     Controller1.ButtonR2.pressed([]() {
-        static bool motorRunning = false; // 用于追踪电机状态
+        static bool motorRunning = false; // 用于追踪电机状�?
 
         if (!motorRunning) {
             manual = true;
@@ -526,7 +727,7 @@ void usercontrol()
             manual = true;
             reinforce_stop = false;
 
-            roller_group.stop();// 停止电机旋转
+            roller_group.stop();// 停�?�电机旋�?
             convey_belt.stop();
             
 
@@ -542,14 +743,14 @@ void usercontrol()
 
 
     Controller1.ButtonB.pressed([]() {
-         static bool status_hold = false; // 用于追踪电机状态
+         static bool status_hold = false; // 用于追踪电机状�?
 
          if (!status_hold) {
              gas_hold.state(100,pct);
          } else {
              gas_hold.state(0,pct);
          }
-         status_hold = !status_hold; // 切换状态
+         status_hold = !status_hold; // 切换状�?
      });
 
 
@@ -558,7 +759,7 @@ void usercontrol()
         
         ODrive.ManualDrive_nonPID();
 
-        // 调试时通过按键进入自动
+        // 调试时通过按键进入�?�?
          if(Controller1.ButtonX.pressing()){ 
              autonomous();
          }
@@ -596,16 +797,9 @@ int main() {
   // then this can be used as a direct connection to USB on the controller
   // when using VEXcode.
   //
-  FILE *fp = fopen("/dev/serial2","wb");
+  //FILE *fp = fopen("/dev/serial2","wb");
   this_thread::sleep_for(loop_time);
 
-  #ifdef SKILL
-  Competition.autonomous(skillautonoumous);
-  #else
-
-    Competition.autonomous(autonomous);
-
-  #endif
 
 
 //  Competition.drivercontrol(usercontrol);
@@ -613,15 +807,72 @@ int main() {
   // Run the pre-autonomous function.
   pre_auton();
 
+    Competition.autonomous(autonomous);
+
   // Prevent main from exiting with an infinite loop.
-  while (true) {
-        // get last map data
+  bool gps_jetson_nano_dead = false;
+  while(1) {
+    my_map = {};
+    gps_jetson_nano_dead = false;
+      // get last map data
       jetson_comms.get_data( &local_map );
+
+        // ��Ҫ???jetson nano����GPS������һ??Ӧ��??????
+        if(fabs(local_map.pos.x - 0) < 1e-6 && fabs(local_map.pos.y - 0) < 1e-6 && fabs(local_map.pos.rot - 0) < 1e-6){       // ��ȫ??(0, 0)??��������������²ſ��ܳ�??
+            gps_jetson_nano_dead = true;
+
+        }
+        // ��֪�����ƶ�����Ԫ�صı����ڴ��??
+        for(int i=0;i<local_map.detectionCount;i++)
+        {
+
+            oj_data data;
+
+            T data_x, data_y;
+            if(!gps_jetson_nano_dead){
+
+                data_x = local_map.detections[i].mapLocation.x * 39.3700788;
+                data_y = -2+local_map.detections[i].mapLocation.y * 39.3700788;
+            }else{  // jetson_nano��GPS���������⣬һֱ��(0, 0), ����Ҫ���ñ�����??????
+                T local_data_x = local_map.detections[i].mapLocation.x * 39.3700788;
+                T local_data_y = local_map.detections[i].mapLocation.y * 39.3700788;
+                T sum_offset_x =  local_data_x;   
+                T sum_offset_y = local_data_y;
+
+                T theta = GPS_.heading(deg) / 180 * 3.1415926535;
+                data_x = gps_x + ( sum_offset_y * sin(theta) + sum_offset_x * cos(theta) );
+                data_y = gps_y + ( sum_offset_y * cos(theta) - sum_offset_x * sin(theta) );
+            }
+
+            //x y ���� : ��???��??��λ??+??����λ��
+            data.x = data_x;
+            data.y = data_y;
+            // ���
+            data.kind = local_map.detections[i].classID; 
+            my_map.push_back(data);
+
+        }
+                // ����ʱͨ����������????
+         if(Controller1.ButtonX.pressing()){ 
+             autonomous();
+         }
+
+#ifdef JETSON_NANO_VISION_DEBUG
+        // jetson_nano��֪����
+        if(my_map.size()>0){
+            convey_belt.spin(fwd,100,pct);
+            roller_group.spin(fwd,-100,pct);
+        }
+        else{
+            convey_belt.stop();
+            roller_group.stop();
+        }
+#endif
 
       // set our location to be sent to partner robot
       link.set_remote_location( local_map.pos.x, local_map.pos.y, local_map.pos.az, local_map.pos.status );
 
-     // printf("%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az);
+      // fprintf(fp, "%.2f %.2f %.2f\n", local_map.pos.x, local_map.pos.y, local_map.pos.az)
 
       // request new data    
       // NOTE: This request should only happen in a single task.    

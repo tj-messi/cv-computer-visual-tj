@@ -472,11 +472,7 @@ void autonomous(){
      ODrive.turnToAngle(180, 85, 1100);
      ODrive.simpleMove(70, 0, 0.4, 10);
      ODrive.simpleMove(50, 180, 0.2, 10);
-
-        {
-            //ODrive.simpleMove(70, 0, 1, 10);
-            ODrive.simpleMove(90, 0, 1, 10);
-        }
+     ODrive.simpleMove(70, 0, 1, 10);
      }
      task::sleep(500);
     ODrive.HSAct(2, (Point)bonusAreas[3], 75, 100, 1200, 10, 1, 0);

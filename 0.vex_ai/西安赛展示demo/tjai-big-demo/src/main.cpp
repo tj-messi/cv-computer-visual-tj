@@ -219,7 +219,7 @@ int GPS_update(){
         }
         Vision_front.takeSnapshot(Stake_Blue);
         if(Vision_front.largestObject.exists){
-            int x = Vision_front.largestObject.centerX; ��   
+            int x = Vision_front.largestObject.centerX;
             printf("Blue : center_x : %d\n", x);
         }
         Vision_front.takeSnapshot(Stake_Yellow);
@@ -345,9 +345,10 @@ static std::vector<oj_data> my_map;
 static double diff = 0.5;
 
 
-void auto_Isolation(void) {
+void auto_Isolation(void) 
+{
 
-{                
+    {                
         //     zy+=-8;
         //     zx+=-16;
         //     ODrive.VRUN(0, 0, 0, 0);
@@ -369,42 +370,42 @@ void auto_Isolation(void) {
         //    //往前走一段距�?
         //    task::sleep(800);
         //    ODrive.simpleMove(80,0,0.6,10);
-}
+    }
 
     {   
-        while(1)
-        {   
-            // {
-            //     convey_belt.stop();
-            //     roller_group.stop();
-            // }
-            // 获取到最近的柱子
-            int min_index;
-            int min_distance = INT_MAX;
-            for(int i = 0;i<my_map.size();i++){
-                if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 0){
-                    min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
-                    min_index = i;
-                }
-            }
-            oj_data nearest_elem = my_map[min_index];
-            // 停�?�旋�?
-            ODrive.VRUN(0, 0, 0, 0);
-            // 朝向�?
-            ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000,1,1);
-            // 吃环
-            ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
-            ODrive.simpleMove(80,180,1,10);
-            gas_hold.state(100,pct);
-           //往前走一段距�?
-           task::sleep(800);
-           ODrive.simpleMove(80,0,1,10);
+        // while(1)
+        // {   
+        //     {
+        //         convey_belt.stop();
+        //         roller_group.stop();
+        //     }
+        //     // 获取到最近的柱子
+        //     int min_index;
+        //     int min_distance = INT_MAX;
+        //     for(int i = 0;i<my_map.size();i++){
+        //         if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 0){
+        //             min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
+        //             min_index = i;
+        //         }
+        //     }
+        //     oj_data nearest_elem = my_map[min_index];
+        //     // 停�?�旋�?
+        //     ODrive.VRUN(0, 0, 0, 0);
+        //     // 朝向�?
+        //     ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000,1,1);
+        //     // 吃环
+        //     ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+        //     ODrive.simpleMove(80,180,1,10);
+        //     gas_hold.state(100,pct);
+        //    //往前走一段距�?
+        //    task::sleep(800);
+        //    ODrive.simpleMove(80,0,1,10);
 
-           break;
-        }
+        //    break;
+    }
         
-        while(1)
-        {
+    while(1)
+    {
             {
                 convey_belt.spin(fwd,100,pct);
                 roller_group.spin(fwd,-100,pct);
@@ -431,9 +432,9 @@ void auto_Isolation(void) {
             nearest_elem.y=1e5;
             task::sleep(800);
             ODrive.simpleMove(80,0,1,10);
-        }
     }
 }
+
 void auto_Interaction(void) {
 
 }

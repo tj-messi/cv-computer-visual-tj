@@ -4,12 +4,12 @@
 		"json": 2
 	},
 	"project": {
-		"name": "tjulib_v1-3_task3",
+		"name": "small-ai2",
 		"description": "",
 		"creationDate": "2024/10/4 02:19:09",
 		"platform": "V5",
 		"language": "cpp",
-		"slot": 2,
+		"slot": 8,
 		"sdkVersion": "V5_20240223_11_00_00",
 		"cpp": {
 			"includePath": [],
