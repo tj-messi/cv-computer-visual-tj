@@ -1,3 +1,6 @@
+
+
+
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Author:       TJU-CodeWeavers                                           */
@@ -13,13 +16,13 @@ using namespace vex;
 using namespace tjulib;
 
 /*---------------  模式选择  ---------------*/
-// 如果进�?�技能赛就def，否则注释，进�?�自�?
+// 如果进�?�技能赛就def，否则注释，进�?�自�??
 //#define SKILL
-// 如果用里程�?�就def，否则注释，用雷�?
+// 如果用里程�?�就def，否则注释，用雷�??
 #define ODOM
-// 如果要开�?远程调试就def，否则就注释
+// 如果要开�??远程调试就def，否则就注释
 #define Remotedeubug
-// 如果�?红方就def，否则就注释
+// 如果�??红方就def，否则就注释
 #define RED
 // 如果开启jetson_nano感知调试就def，否则就注释
 //#define JETSON_NANO_VISION_DEBUG
@@ -34,13 +37,13 @@ std::vector<std::vector<vex::motor*>*> _chassisMotors = {&_lfMotors, &_lbMotors,
 // Definition of const variables
 //const double PI = 3.1415926;
 
-// imu零漂�?�?�?�?
-double zero_drift_error = 0;  // 零漂�?�?�?正，程序执�?�时不断增大
+// imu零漂�??�??�??�??
+double zero_drift_error = 0;  // 零漂�??�??�??正，程序执�?�时不断增大
 double correct_rate = 0.0000;
 
-// 全局计时�?
+// 全局计时�??
 static timer global_time;  
-// 竞赛模板�?
+// 竞赛模板�??
 competition Competition;
 // vex-ai jeson nano comms
 ai::jetson  jetson_comms;
@@ -52,7 +55,7 @@ bool is_red = true;
 
 *************************************/
 
-/*configure meanings�?
+/*configure meanings�??
     ki, kp, kd, 
     integral's active zone (either inches or degrees), 
     error's thredhold      (either inches or degrees),
@@ -216,7 +219,7 @@ int GPS_update(){
         if((time.time(msec)-3000)<=50 && flag){
             imu.setHeading(GPS_.heading(deg), deg);
             imu.setRotation(GPS_.heading(deg), deg);
-            // �?4秒的时候会更新一下坐�?
+            // �??4秒的时候会更新一下坐�??
             PosTrack->setPosition({gps_x, gps_y, GPS_.heading(deg) / 180 * 3.1415926535});
             
             printf("position initialization finish\n");
@@ -254,9 +257,9 @@ int GPS_update(){
     pre-autonomous run
 
  **************************/
-// 设置初�?�位�?、�?�度
+// 设置初�?�位�??、�?�度
 #ifdef SKILL
-    // 初�?�位�?，单位为inches
+    // 初�?�位�??，单位为inches
     double init_pos_x = -59;
     double init_pos_y = 35.4;
 
@@ -264,7 +267,7 @@ int GPS_update(){
     double initangle = 0;
 
 #else
-    // 初�?�位�?，单位为inches
+    // 初�?�位�??，单位为inches
     double init_pos_x = 0;
     double init_pos_y = 0;
 
@@ -279,7 +282,7 @@ void pre_auton(){
     is_red = false;
 #endif
     thread PosTrack_(PositionTrack);
-/***********�?否开�?远程调试************/
+/***********�??否开�??远程调试************/
 #ifdef Remotedeubug
     thread Remotedebug(RemoteDubug);
 #endif
@@ -293,9 +296,9 @@ void pre_auton(){
     }
     thread receive(sendTask);
 
-    // 这里考虑到只使用imu而不使用gps的情�?
+    // 这里考虑到只使用imu而不使用gps的情�??
     if(imu.installed()){
-        // 设置初�?�位�?
+        // 设置初�?�位�??
         PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
     }
     // GPS更新线程
@@ -327,7 +330,7 @@ void confirm_SmallCar_Finished(const char* message, const char*linkname, double 
 }    
 // Dual-Communication Demo
 void demo_dualCommunication(){
-    sendTask();  // 向联队车发送信�?
+    sendTask();  // 向联队车发送信�??
     task::sleep(200);
     Brain.Screen.print("send thread jump out\n");
 
@@ -337,7 +340,7 @@ void demo_dualCommunication(){
       
     ************************/
 
-    // 等待一�?
+    // 等待一�??
     while(1){
         AllianceLink.received("finished", confirm_SmallCar_Finished);
         task::sleep(200);
@@ -366,15 +369,15 @@ void auto_Isolation(void) {
     //             }
     //         }
     //         oj_data nearest_elem = my_map[min_index];
-    //         // 停�?�旋�?
+    //         // 停�?�旋�??
     //         ODrive.VRUN(0, 0, 0, 0);
-    //         // 朝向�?
+    //         // 朝向�??
     //         ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000,1,1);
     //         // 吃环
     //         ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
     //         ODrive.simpleMove(80,180,1,10);
     //         gas_hold.state(100,pct);
-    //        //往前走一段距�?
+    //        //往前走一段距�??
     //        task::sleep(800);
     //        ODrive.simpleMove(80,0,1,10);
 
@@ -393,23 +396,23 @@ void auto_Isolation(void) {
     //             }
     //         }
     //         oj_data nearest_elem = my_map[min_index];
-    //         // 停�?�旋�?
+    //         // 停�?�旋�??
     //         ODrive.VRUN(0, 0, 0, 0);
 
     //         //吃环
     //         ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
     //         ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
     //         task::sleep(800);
-    //         //把环从my_map�?丢出地图
+    //         //把环从my_map�??丢出地图
     //         nearest_elem.x=1e5;
     //         nearest_elem.y=1e5;
     //     }
     // }
     std::vector<Point> bonusAreas = {{60, 60}, {-60, 60}, {60, -60}, {-60, -60}};
-    // 固定桩坐�?
+    // 固定桩坐�??
     std::vector<Point> fixedStakes = {{60, 0}, {-60, 0}, {0, -60}, {0, 60}};
 
-    // 清前1/4�? 
+    // 清前1/4�?? 
     // 取桩
     std::vector<Point> Path1 = {{-48, 24}, {-36, 36}, {-30, 40}};
     ODrive.turnToTarget((Point){-24, 48}, 40, 900, 1, 1);
@@ -422,13 +425,13 @@ void auto_Isolation(void) {
     task::sleep(250);
   //  ODrive.HSAct(1, (Point){-24, 48}, 80, 80, 8000, 10, 1, 0););
 
-     // 取二�?
+     // 取二�??
     ODrive.turnToTarget((Point){0, 48}, 50, 1100);
     ODrive.moveToTarget((Point){-12,52}, 40, 1000, 10);
     ODrive.HSAct(0, (Point){0, 48}, 80, 60, 1000, 15, 1, 0);
     task::sleep(500);
     ODrive.moveToTarget((Point){-25,48}, 80, 1000, 10);
-    ODrive.turnToTarget((Point){0, 62}, 40, 1500);
+    ODrive.turnToTarget((Point){0, 62}, 40, 1000);
     ODrive.HSAct(0, (Point){0, 62}, 80, 80, 8000, 15, 1, 0);
     task::sleep(500);
     ODrive.moveToTarget((Point){-39, 36}, 100, 1100, 10, 1);
@@ -440,7 +443,7 @@ void auto_Isolation(void) {
     reinforce_stop = false;
      
     // // ===吸左下�?�落===
-    // // 吸�?�落�?
+    // // 吸�?�落�??
     //  {
     //  ODrive.moveToTarget((Point){-53, 51}, 40, 1700, 10);
     //  //再�?�转
@@ -478,7 +481,7 @@ void auto_Isolation(void) {
     ring_convey_spin = true;
     reinforce_stop = true;
 
-    // 清后1/4�? 
+    // 清后1/4�?? 
     // 跑场
     ODrive.turnToAngle(90, 50, 1000);
     ODrive.moveToTarget((Point){-20, 48}, 60, 1200, 10);
@@ -487,7 +490,7 @@ void auto_Isolation(void) {
     reinforce_stop = true;
     manual = false;
 
-    // 吸半�?
+    // 吸半�??
     ODrive.turnToTarget((Point){24, 48}, 50, 1300, 1);
     ring_convey_spin = true;
     reinforce_stop = false;
@@ -511,16 +514,16 @@ void auto_Isolation(void) {
     reinforce_stop = false;
     task::sleep(550);
 
-    // // 冲散�?(使用RRT�?动�?�划�?�?)
+    // // 冲散�??(使用RRT�??�?�??�划�??�??)
     // ODrive.moveToTarget((Point){36, 36}, 60, 800, 10);
     // ODrive.moveToTarget((Point){20, 56}, 60, 800, 10);
     // ODrive.moveToTarget((Point){59, 48}, 60, 800, 10);
     // ODrive.moveToTarget((Point){60, 40}, 60, 800, 10);
 
-    // 吸后1/4区二�?
+    // 吸后1/4区二�??
     ODrive.HSAct(0, (Point){48,24}, 60, 85, 1200, 10, 1, 0);
 
-    // 吸半�?
+    // 吸半�??
     ODrive.moveToTarget((Point){20, 48}, 52, 500, 10);
     ODrive.moveToTarget((Point){30, 59}, 52, 1000, 10);
     ODrive.turnToTarget((Point){48, 48}, 50, 1300, 1);
@@ -528,7 +531,7 @@ void auto_Isolation(void) {
     reinforce_stop = false;
     manual = false;
     ODrive.moveToTarget((Point){48, 48}, 45, 1300, 1, 1);
-    ODrive.simpleMove(45, 0, 0.3, 10);
+    ODrive.simpleMove(45, 0, 0.4, 10);
     task::sleep(700);
     ring_convey_spin = false;
     reinforce_stop = true;
@@ -547,77 +550,79 @@ void auto_Isolation(void) {
     ODrive.moveToTarget((Point){40, 30}, 60, 1000, 10 , 1);
     ODrive.turnToTarget((Point){48, 0}, 40, 1000, 1, 1);
     ODrive.moveToTarget((Point){48, 0}, 40, 1200, 10 , 1);
-    ODrive.simpleMove(40, 180, 0.12, 10);
+    ODrive.simpleMove(40, 180, 0.3, 10);
+    ODrive.VRUN(0,0,0,0);
     gas_hold.state(100, pct);
     task::sleep(200);
     ring_convey_spin = true;
     reinforce_stop = false;
     manual = false;
+    task::sleep(600);
     gas_hold.state(0, pct);
-    task::sleep(400);
 
     ODrive.moveToTarget((Point){24, 24}, 60, 1200, 10 , 1);
+    ODrive.VRUN(0,0,0,0);
     ODrive.moveToTarget((Point){-4, -4}, 60, 1200, 10 , 1);
 
-    {   
-        while(1)
-        {   
+    // {   
+    //     while(1)
+    //     {   
 
-            // 获取到最近的柱子
-            int min_index;
-            int min_distance = INT_MAX;
-            for(int i = 0;i<my_map.size();i++){
-                if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 0){
-                    min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
-                    min_index = i;
-                }
-            }
-            oj_data nearest_elem = my_map[min_index];
-            // 停�?�旋�?
-            ODrive.VRUN(0, 0, 0, 0);
-            // 朝向�?
-            ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000,1,1);
-            // 吃环
-            ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
-            ODrive.simpleMove(80,180,1,10);
-            gas_hold.state(100,pct);
-           //往前走一段距�?
-           task::sleep(800);
-           ODrive.simpleMove(80,0,1,10);
+    //         // 获取到最近的柱子
+    //         int min_index;
+    //         int min_distance = INT_MAX;
+    //         for(int i = 0;i<my_map.size();i++){
+    //             if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 0){
+    //                 min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
+    //                 min_index = i;
+    //             }
+    //         }
+    //         oj_data nearest_elem = my_map[min_index];
+    //         // 停�?�旋�??
+    //         ODrive.VRUN(0, 0, 0, 0);
+    //         // 朝向�??
+    //         ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000,1,1);
+    //         // 吃环
+    //         ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+    //         ODrive.simpleMove(80,180,1,10);
+    //         gas_hold.state(100,pct);
+    //        //往前走一段距�??
+    //        task::sleep(800);
+    //        ODrive.simpleMove(80,0,1,10);
 
-           break;
-        }
+    //        break;
+    //     }
         
-        while(1)
-        {
-            // 获取到dp最近的红环
-            int min_index;
-            int min_distance = INT_MAX;
-            for(int i = 0;i<my_map.size();i++){
-                if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 1){
-                    min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
-                    min_index = i;
-                }
-            }
-            oj_data nearest_elem = my_map[min_index];
-            // 停�?�旋�?
-            ODrive.VRUN(0, 0, 0, 0);
+    //     while(1)
+    //     {
+    //         // 获取到最近的红环
+    //         int min_index;
+    //         int min_distance = INT_MAX;
+    //         for(int i = 0;i<my_map.size();i++){
+    //             if(min_distance > sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y)) && my_map[i].kind == 1){
+    //                 min_distance = sqrt((gps_x - my_map[i].x) * (gps_x - my_map[i].x) + (gps_y - my_map[i].y));
+    //                 min_index = i;
+    //             }
+    //         }
+    //         oj_data nearest_elem = my_map[min_index];
+    //         // 停�?�旋�??
+    //         ODrive.VRUN(0, 0, 0, 0);
 
-            //吃环
-            ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
-            ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
-            task::sleep(800);
-            //把环从my_map�?丢出地图
-            nearest_elem.x=1e5;
-            nearest_elem.y=1e5;
-        }
-    }
+    //         //吃环
+    //         ODrive.turnToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+    //         ODrive.moveToTarget(Point{nearest_elem.x, nearest_elem.y}, 80, 2000);
+    //         task::sleep(800);
+    //         //把环从my_map�??丢出地图
+    //         nearest_elem.x=1e5;
+    //         nearest_elem.y=1e5;
+    //     }
+    // }
 
 }
 void auto_Interaction(void) {
 
 }
-// �?动模�? 先ioslation 后interaction
+// �??动模�?? 先ioslation 后interaction
 bool firstAutoFlag = true;
 void autonomousMain(void) {
 
@@ -647,9 +652,9 @@ int main() {
     }
     thread receive(sendTask);
 
-    // 这里考虑到只使用imu而不使用gps的情�?
+    // 这里考虑到只使用imu而不使用gps的情�??
     if(imu.installed()){
-        // 设置初�?�位�?
+        // 设置初�?�位�??
         PosTrack->setPosition({init_pos_x, init_pos_y, init_angle});
     }
     // GPS更新线程
@@ -695,12 +700,12 @@ int main() {
       // get last map data
       jetson_comms.get_data( &local_map );
 
-        // 需要�?�jetson nano处的GPS死掉做一�?应急�?��??
-        if(fabs(local_map.pos.x - 0) < 1e-6 && fabs(local_map.pos.y - 0) < 1e-6 && fabs(local_map.pos.rot - 0) < 1e-6){       // 完全�?(0, 0)�?有在死掉的情况下才可能出�?
+        // 需要�?�jetson nano处的GPS死掉做一�??应急�?��??
+        if(fabs(local_map.pos.x - 0) < 1e-6 && fabs(local_map.pos.y - 0) < 1e-6 && fabs(local_map.pos.rot - 0) < 1e-6){       // 完全�??(0, 0)�??有在死掉的情况下才可能出�??
             gps_jetson_nano_dead = true;
 
         }
-        // 感知到的移动场地元素的本地内存存�?
+        // 感知到的移动场地元素的本地内存存�??
         for(int i=0;i<local_map.detectionCount;i++)
         {
 
@@ -711,7 +716,7 @@ int main() {
 
                 data_x = local_map.detections[i].mapLocation.x * 39.3700788;
                 data_y = local_map.detections[i].mapLocation.y * 39.3700788;
-            }else{  // jetson_nano读GPS出现了问题，一直是(0, 0), 则需要利用本地信�?�?�?
+            }else{  // jetson_nano读GPS出现了问题，一直是(0, 0), 则需要利用本地信�??�??�??
                 T local_data_x = local_map.detections[i].mapLocation.x * 39.3700788;
                 T local_data_y = local_map.detections[i].mapLocation.y * 39.3700788;
                 T sum_offset_x =  local_data_x;   
@@ -722,7 +727,7 @@ int main() {
                 data_y = gps_y + ( sum_offset_y * cos(theta) - sum_offset_x * sin(theta) );
             }
 
-            //x y 坐标 : 相�?�于�?己位�?+�?己的位置
+            //x y 坐标 : 相�?�于�??己位�??+�??己的位置
             data.x = data_x;
             data.y = data_y;
             // 类别
@@ -730,7 +735,7 @@ int main() {
             my_map.push_back(data);
 
         }
-                // 调试时通过按键进入�?�?
+                // 调试时通过按键进入�??�??
          if(Controller1.ButtonX.pressing()){ 
              autonomousMain();
          }

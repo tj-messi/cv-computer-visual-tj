@@ -105,11 +105,11 @@ namespace tjulib
             manual = false;
             ring_convey_spin = true;
             reinforce_stop = false;
-            turnToTarget(target,  maxSpeed * 0.7, 1100,  fwd, back);
+            turnToTarget(target,  maxSpeed * 0.7, 900,  fwd, back);
            // setStop(hold);
            
-            moveToTarget(target, 70, 800, 10);
-            simpleMove(45, 0, 0.25, 10);
+            moveToTarget(target, 70, 1400, 10);
+            simpleMove(50, 0, 0.3, 10);
            // setStop(hold);
             // 时间用于套环
             this_thread::sleep_for(400);

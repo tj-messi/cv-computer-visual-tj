@@ -90,7 +90,7 @@ motor rollerMotorB = motor(PORT5, ratio18_1, false);
 motor_group roller_group = motor_group(rollerMotorA, rollerMotorB);
 // 遥控�?
 controller Controller1 = controller(primary);
-// 通信天线=
+// 通信天线
 vex::message_link AllianceLink(PORT3, "tju1", linkType::manager);
 
 // 里程�?
