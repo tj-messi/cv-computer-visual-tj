@@ -40,3 +40,5 @@ word2vec把语料库中的每个单词当成原子的，它会为每个单词生
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107201617.png)
 
 注意：此架构图没有展示词向量的训练过程。可以看到，和CBOW一样，fastText模型也只有三层：输入层、隐含层、输出层（Hierarchical Softmax），输入都是多个经向量表示的单词，输出都是一个特定的target，隐含层都是对多个词向量的叠加平均。
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1730982693356.png)
