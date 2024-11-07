@@ -121,3 +121,7 @@ error = target - sigmoid_scores
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107195240.png)
 
 当我们循环遍历整个数据集多次时，嵌入会继续得到改进。然后我们就可以停止训练过程，丢弃Context矩阵，并使用Embeddings矩阵作为下一项任务的已被训练好的嵌入
+
+##论文解读
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107205839.png)
