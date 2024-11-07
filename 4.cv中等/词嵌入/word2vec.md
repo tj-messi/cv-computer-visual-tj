@@ -71,3 +71,53 @@ CBOW包括以下三层:
 **embedding size**的长度就是用来表示词的向量的长度
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107193136.png)
+
+训练的过程还是这个标准套路/方法，比如
+
+第一步，先用随机值初始化这些矩阵。在每个训练步骤中，我们采取一个相邻的例子及其相关的非相邻例子
+
+
+具体而言，针对这个例子：“Thou shalt not make a machine in the likeness of a human mind”，我们来看看我们的第一组（对于not 的前后各两个邻居单词分别是：Thou shalt 、make a）：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107194144.png)
+
+现在有四个单词：输入单词not，和上下文单词：thou（实际邻居词），aaron和taco（负面例子）
+我们继续查找它们的嵌入
+对于输入词not，我们查看Embedding矩阵
+对于上下文单词，我们查看Context矩阵
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107194338.png)
+
+第二步，计算输入嵌入与每个上下文嵌入的点积
+还记得点积的定义否
+两个向量a = [a1, a2,…, an]和b = [b1, b2,…, bn]的点积定义为：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107194600.png)
+
+而这个点积的结果意味着『输入』和『上下文各个嵌入』的各自相似性程度，结果越大代表越相似
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107194911.png)
+
+为了将这些分数转化为看起来像概率的东西——比如正值且处于0到1之间，可以通过sigmoid这一逻辑函数转换下
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107194954.png)
+
+可以看到taco得分最高，aaron最低，无论是sigmoid操作之前还是之后。
+
+第三步，既然未经训练的模型已做出预测，而且我们拥有真实目标标签来作对比，接下来便可以计算模型预测中的误差了，即让目标标签值减去sigmoid分数，得到所谓的损失函数
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107195030.png)
+
+error = target - sigmoid_scores
+
+第四步，我们可以利用这个错误分数来调整not、thou、aaron和taco的嵌入，使下一次做出这一计算时，结果会更接近目标分数
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107195215.png)
+
+训练步骤到此结束，我们从中得到了这一步所使用词语更好一些的嵌入（not，thou，aaron和taco）
+
+第五步，针对下一个相邻样本及其相关的非相邻样本再次执行相同的过程
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241107195240.png)
+
+当我们循环遍历整个数据集多次时，嵌入会继续得到改进。然后我们就可以停止训练过程，丢弃Context矩阵，并使用Embeddings矩阵作为下一项任务的已被训练好的嵌入
