@@ -15,3 +15,21 @@ textRNN指的是利用RNN循环神经网络解决文本分类问题，文本分�
 基于RNN的文本分类模型非常灵活，有多种多样的结构。接下来，我们主要介绍两种典型的结构。
 
 ##texrRNN网络架构
+
+###结构1
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241108142559.png)
+
+一般取前向/反向LSTM在最后一个时间步长上隐藏状态，然后进行拼接，在经过一个softmax层(输出层使用softmax激活函数)进行一个多分类；或者取前向/反向LSTM在每一个时间步长上的隐藏状态，对每一个时间步长上的两个隐藏状态进行拼接，然后对所有时间步长上拼接后的隐藏状态取均值，再经过一个softmax层(输出层使用softmax激活函数)进行一个多分类(2分类的话使用sigmoid激活函数)。
+
+上述结构也可以添加dropout/L2正则化或BatchNormalization 来防止过拟合以及加速模型训练。
+
+###结构2
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241108142810.png)
+
+与之前结构不同的是，在双向LSTM(上图不太准确，底层应该是一个双向LSTM)的基础上又堆叠了一个单向的LSTM。把双向LSTM在每一个时间步长上的两个隐藏状态进行拼接，作为上层单向LSTM每一个时间步长上的一个输入，最后取上层单向LSTM最后一个时间步长上的隐藏状态，再经过一个softmax层(输出层使用softamx激活函数，2分类的话则使用sigmoid)进行一个多分类。
+
+##总结
+
+TextRNN的结构非常灵活，可以任意改变。比如把LSTM单元替换为GRU单元，把双向改为单向，添加dropout或BatchNormalization以及再多堆叠一层等等。TextRNN在文本分类任务上的效果非常好，与TextCNN不相上下，但RNN的训练速度相对偏慢，一般2层就已经足够多了。
