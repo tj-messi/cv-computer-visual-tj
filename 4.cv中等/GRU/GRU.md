@@ -11,3 +11,15 @@ GRU它引⼊了**重置⻔（reset gate）和更新⻔（update gate）**的概�
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241108103612.png)
 
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731033669278.png)
+
+##候选隐藏状态
+
+接下来，⻔控循环单元将计算候选隐藏状态来辅助稍后的隐藏状态计算。我们将当前时间步重置⻔的输出与上⼀时间步隐藏状态做按元素乘法（符号为⊙）。如果重置⻔中元素值接近0，那么意味着重置对应隐藏状态元素为0，即丢弃上⼀时间步的隐藏状态。如果元素值接近1，那么表⽰保留上⼀时间步的隐藏状态。然后，将按元素乘法的结果与当前时间步的输⼊连结，再通过含激活函数tanh的全连接层计算出候选隐藏状态，其所有元素的值域为[-1,1]。
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731035627891.png)
+
+
+##计算隐藏状态
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731035745023.png)
