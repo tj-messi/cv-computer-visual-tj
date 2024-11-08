@@ -19,3 +19,11 @@ LSTM 中引⼊了3个⻔，即输⼊⻔（input gate）、遗忘⻔（forget gat
 ##候选记忆细胞
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731037197953.png)
+
+##记忆细胞
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731043401631.png)
+
+##隐藏状态
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731044143955.png)
