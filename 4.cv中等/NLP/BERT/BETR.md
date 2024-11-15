@@ -82,3 +82,43 @@ ELMO是“Embedding from Language Models”的简称，其实这个名字并没�
 Bert采用和GPT完全相同的两阶段模型，首先是语言模型预训练；其次是使用Fine-Tuning模式解决下游任务。和GPT的最主要不同在于在预训练阶段采用了类似ELMO的双向语言模型，即双向的Transformer，当然另外一点是语言模型的数据规模要比GPT大。所以这里Bert的预训练过程不必多讲了。模型结构如下：
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241115135216.png)
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1731649970103.png)
+
+###embedding
+
+这里的Embedding由三种Embedding求和而成：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/20241115135445.png)
+
+Token Embeddings是词向量，第一个单词是CLS标志，可以用于之后的分类任务
+
+Segment Embeddings用来区别两种句子，因为预训练不光做LM还要做以两个句子为输入的分类任务
+
+Position Embeddings和之前文章中的Transformer不一样，不是三角函数而是学习出来的
+
+###MLM
+
+MLM可以理解为完形填空，作者会随机mask每一个句子中15%的词，用其上下文来做预测，例如：my dog is hairy → my dog is [MASK]
+
+此处将hairy进行了mask处理，然后采用非监督学习的方法预测mask位置的词是什么，但是该方法有一个问题，因为是mask15%的词，其数量已经很高了，这样就会导致某些词在fine-tuning阶段从未见过，为了解决这个问题，作者做了如下的处理：
+
+80%是采用[mask]，my dog is hairy → my dog is [MASK]
+
+10%是随机取一个词来代替mask的词，my dog is hairy -> my dog is apple
+
+10%保持不变，my dog is hairy -> my dog is hairy
+
+注意：这里的10%是15%需要mask中的10%
+
+那么为啥要以一定的概率使用随机词呢？这是因为transformer要保持对每个输入token分布式的表征，否则Transformer很可能会记住这个[MASK]就是"hairy"。至于使用随机词带来的负面影响，文章中解释说,所有其他的token(即非"hairy"的token)共享15%*10% = 1.5%的概率，其影响是可以忽略不计的。Transformer全局的可视，又增加了信息的获取，但是不让模型获取全量信息。
+
+###Next Sentence Prediction
+
+选择一些句子对A与B，其中50%的数据B是A的下一条句子，剩余50%的数据B是语料库中随机选择的，学习其中的相关性，添加这样的预训练的目的是目前很多NLP的任务比如QA和NLI都需要理解两个句子之间的关系，从而能让预训练的模型更好的适应这样的任务。 个人理解：
+
+Bert先是用Mask来提高视野范围的信息获取量，增加duplicate再随机Mask，这样跟RNN类方法依次训练预测没什么区别了除了mask不同位置外；
+全局视野极大地降低了学习的难度，然后再用A+B/C来作为样本，这样每条样本都有50%的概率看到一半左右的噪声；
+但直接学习Mask A+B/C是没法学习的，因为不知道哪些是噪声，所以又加上next_sentence预测任务，与MLM同时进行训练，这样用next来辅助模型对噪声/非噪声的辨识，用MLM来完成语义的大部分的学习。
+
+
