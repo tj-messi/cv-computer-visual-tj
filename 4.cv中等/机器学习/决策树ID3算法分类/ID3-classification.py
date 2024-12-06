@@ -127,7 +127,7 @@ def calculate_accuracy(tree, samples, attribute_names):
     return correct / len(samples)
 
 
-def main():
+def main1():
     training_data = [
         Sample(["青绿", "蜷缩", "浊响", "清晰", "凹陷", "硬滑"], "是"),
         Sample(["乌黑", "蜷缩", "沉闷", "清晰", "凹陷", "硬滑"], "是"),
@@ -160,5 +160,47 @@ def main():
 
 
 
+def main2():
+    # 读取数据文件
+    filename = "nursery_trainingdata.txt"
+    training_data = []
+    test_data = []
+    attributes = ["parents", "has_nurs", "form", "children", "housing", "finance", "social", "health"]
+
+    with open(filename, "r") as file:
+        lines = file.readlines()
+        for i, line in enumerate(lines):
+            # 跳过空行和无效行
+            parts = line.strip().split()
+            if len(parts) < len(attributes) + 1:  # 属性值 + 类别至少应有 9 列
+                continue
+            attributes_values = parts[:-1]  # 属性值
+            classification = parts[-1]  # 类别
+            sample = Sample(attributes_values, classification)
+            if i % 5 == 0:  # 20% 数据作为测试集
+                test_data.append(sample)
+            else:  # 80% 数据作为训练集
+                training_data.append(sample)
+
+    # 检查是否成功加载数据
+    if not training_data:
+        print("训练集为空，请检查数据文件内容。")
+        return
+    if not test_data:
+        print("测试集为空，请检查数据文件内容。")
+        return
+
+    # 构造决策树
+    decision_tree = build_decision_tree(training_data, attributes)
+
+    # 计算训练集和测试集准确度
+    train_accuracy = calculate_accuracy(decision_tree, training_data, attributes)
+    test_accuracy = calculate_accuracy(decision_tree, test_data, attributes)
+
+    # 输出结果
+    print(f"训练集准确度: {train_accuracy}")
+    print(f"测试集准确度: {test_accuracy}")
+
+
 if __name__ == "__main__":
-    main()
+    main2()
