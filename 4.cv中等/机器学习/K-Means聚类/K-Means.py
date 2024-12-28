@@ -157,7 +157,7 @@ def show_cluster_optimized(dataset, central_points, result, save_name, sample_si
 
 def main():
     dataset = load_dataset("box3.csv", ',')  # Adjust path as necessary
-    k = 6  # Number of clusters
+    k = 3  # Number of clusters
     print("Data loaded successfully.")
     print(f"Dataset size: {len(dataset)} records.")
     print(f"Target number of clusters: {k}")
@@ -168,7 +168,7 @@ def main():
 
     judge = True  # Do not visualize step-by-step for simplicity
     #showElbow(dataset, 10)  # Display the elbow method plot for optimal k
-    central_points, result = BiKmeans(dataset, k,judge)  # Perform BiKMeans clustering
+    central_points, result = Kmeans(dataset, k)  # Perform BiKMeans clustering
     #show_cluster_optimized(dataset, central_points, result, 'final_corrected')  # Show and save final cluster plot
     show_cluster_optimized(dataset, central_points, result, 'final_corrected')
 
