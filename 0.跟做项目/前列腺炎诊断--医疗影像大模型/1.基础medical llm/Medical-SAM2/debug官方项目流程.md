@@ -256,6 +256,23 @@ PositionEmbeddingSine 类
 PositionEmbeddingRandom 类
 作用：基于随机高斯矩阵的随机位置编码，用于在输入中引入随机性。
 
+然后回到prompt_encoder.py内
+
+ 是一个用于编码提示信息的模块，提供了将点、框、掩码等不同类型的提示信息编码成稀疏（sparse）和密集（dense）嵌入的功能，主要用于输入到 SAM（Segment Anything Model） 的掩码解码器中
+
+之后进入Transformer.py 中 引入 misc中一些杂项之后返回Transformer.py 之中定义一些双向Transformer和Transformer块的内容。
+
+最后把SAMbase的模型定义完毕
+
+来到sam2_image_predictor.py的类定义
+SAM2ImagePredictor 是一个基于 SAM2Base 模型的高级工具类，专注于图像分割任务。通过该类，用户可以：
+
+加载图像并计算其嵌入（image embeddings）。
+提供提示（点、框或掩码）以预测分割掩码。
+高效处理单张或多张图像，支持批量操作。
+
+在初始化network的时候，在image_encoder.py里面定义imageencoder用于提取图像特征
+
 
 	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
 
