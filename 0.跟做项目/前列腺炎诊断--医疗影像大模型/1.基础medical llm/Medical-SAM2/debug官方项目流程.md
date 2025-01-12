@@ -40,7 +40,14 @@
 
 	net = get_network(args, args.net, use_gpu=args.gpu, gpu_device=GPUdevice, distribution = args.distributed)
 
+	from hydra import initialize_config_module
+
+	initialize_config_module("sam2_train", version_base="1.2")
+
 调用utils.py的get network函数，确定是否进行分布式多GPU训练。
+Hydra 是一个强大的配置管理框架，initialize_config_module 是其用来初始化配置模块的函数
+
+之后会进入build_sam.py
 
 	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
 
