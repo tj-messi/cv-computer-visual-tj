@@ -248,6 +248,14 @@ MLP 是一个多层感知机（Multi-Layer Perceptron，简称 MLP）的实现�
 
 MaskDecoder 是一个用于预测图像掩码的深度学习模块，基于 Transformer 架构实现。该模块通过接收图像嵌入和提示嵌入，生成对应的掩码、掩码质量分数（如 IoU 分数），并支持多掩码预测和动态掩码选择。
 
+再返回进入到prompt_encoder.py 其中先引入 position_encoding.py
+
+PositionEmbeddingSine 类
+作用：实现标准的正弦位置编码（Sine Positional Encoding），类似于 Transformer 论文中使用的编码方法，适用于图像处理任务。
+
+PositionEmbeddingRandom 类
+作用：基于随机高斯矩阵的随机位置编码，用于在输入中引入随机性。
+
 
 	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
 
