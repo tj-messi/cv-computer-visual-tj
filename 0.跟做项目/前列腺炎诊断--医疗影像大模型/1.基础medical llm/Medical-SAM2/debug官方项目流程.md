@@ -78,7 +78,31 @@ Hydra 是一个强大的配置管理框架，initialize_config_module 是其用�
 
 调整了sam2模型的初始参数类型，并且判断了是否有动态覆盖配置的列表apply_postprocessing=True时候：hydra_overrides_extra=[]
 
+	def _load_checkpoint(model, ckpt_path):
+	    if ckpt_path is not None:
+	        sd = torch.load(ckpt_path, map_location="cpu")["model"]
+	        missing_keys, unexpected_keys = model.load_state_dict(sd)
+	        if missing_keys:
+	            logging.error(missing_keys)
+	            raise RuntimeError()
+	        if unexpected_keys:
+	            logging.error(unexpected_keys)
+	            raise RuntimeError()
+	        logging.info("Loaded checkpoint sucessfully")
+
+_load_checkpoint 函数用于将预训练权重加载到模型中，并进行完整性检查
+
 	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+
+再进入sam2_image_predictor.py
+
+再进入sam2_base.py
+
+再进入mask_decoder.py
+
+
+
+
 
 这行代码创建了一个 Adam 优化器，用于优化模型 net 的参数。具体配置如下：
 
