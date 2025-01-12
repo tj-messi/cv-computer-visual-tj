@@ -244,6 +244,11 @@ MLP 是一个多层感知机（Multi-Layer Perceptron，简称 MLP）的实现�
 
 是一个针对 2D 特征图的 Layer Normalization 实现，常用于深度学习模型中的卷积层输出。与标准 Layer Normalization 类似，它对特征图的每个通道单独进行归一化。
 
+再返回到进入mask_decoder.py，其中定义了class MaskDecoder(nn.Module)
+
+MaskDecoder 是一个用于预测图像掩码的深度学习模块，基于 Transformer 架构实现。该模块通过接收图像嵌入和提示嵌入，生成对应的掩码、掩码质量分数（如 IoU 分数），并支持多掩码预测和动态掩码选择。
+
+
 	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
 
 这行代码创建了一个 Adam 优化器，用于优化模型 net 的参数。具体配置如下：
