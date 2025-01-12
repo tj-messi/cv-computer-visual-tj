@@ -29,3 +29,33 @@
 
 启用TF32模式
 
+	args = cfg.parse_args()
+
+调用cfg.py中的parse_args拿到参数列args
+
+	GPUdevice = torch.device('cuda', args.gpu_device)
+
+拿GPU信息
+
+
+	net = get_network(args, args.net, use_gpu=args.gpu, gpu_device=GPUdevice, distribution = args.distributed)
+
+调用utils.py的get network函数，确定是否进行分布式多GPU训练。
+
+	optimizer = optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+
+这行代码创建了一个 Adam 优化器，用于优化模型 net 的参数。具体配置如下：
+
+学习率：使用 args.lr（外部传入的值）。
+动量参数：beta1=0.9 和 beta2=0.999，分别控制一阶和二阶动量。
+防止分母为 0：设置了 eps=1e-08。
+不使用权重衰减：weight_decay=0。
+不启用 AMSGrad：amsgrad=False。
+最终，优化器将在训练过程中逐步调整模型的参数，最小化损失函数，从而提高模型的性能。
+
+	
+	 '''load pretrained model'''
+
+    args.path_helper = set_log_dir('logs', args.exp_name)
+    logger = create_logger(args.path_helper['log_path'])
+    logger.info(args)
