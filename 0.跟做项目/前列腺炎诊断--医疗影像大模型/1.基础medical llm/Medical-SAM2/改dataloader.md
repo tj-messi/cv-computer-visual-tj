@@ -171,4 +171,4 @@
 
 最后
 
-	python train_2d.py -net sam2 -exp_name US_PROSTATE_MedSAM2 -vis 1 -sam_ckpt ./checkpoints/sam2_hiera_small.pt -sam_config sam2_hiera_s -image_size 1024 -out_size 1024 -b 4 -val_freq 1 -dataset US_PROSTATE -data_path ./data/US_PROSTATE
+	python test_2d.py -net sam2 -exp_name US_PROSTATE_MedSAM2_NZK -vis 1 -sam_ckpt ./logs/US_PROSTATE_MedSAM2_2025_01_12_22_20_53/Model/latest_epoch.pth -sam_config sam2_hiera_s -image_size 1024 -out_size 1024 -b 4 -val_freq 1 -dataset US_PROSTATE -data_path ./US_PROSTATE_NZK
