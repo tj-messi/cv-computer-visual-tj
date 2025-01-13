@@ -88,3 +88,87 @@
 	        }
 	
 
+改成US-PROSTATE的内容就是
+
+	class US_PROSTATE(Dataset):
+	    def __init__(self, args, data_path , transform = None, transform_msk = None, mode = 'Training',prompt = 'click', plane = False):
+	        self.data_path = data_path
+	        self.subfolders = [f.path for f in os.scandir(os.path.join(data_path, mode)) if f.is_dir()] #检查大文件夹
+	        self.mode = mode
+	        self.prompt = prompt
+	        self.img_size = args.image_size
+	        self.mask_size = args.out_size
+	
+	        self.transform = transform
+	        self.transform_msk = transform_msk
+	
+	    def __len__(self):
+	        return len(self.subfolders)
+	    
+	    def __getitem__(self, index):
+	
+	        """Get the images"""
+	        subfolder = self.subfolders[index] #单个子文件夹
+	        name = subfolder.split('/')[-1] #单个子文件夹名字
+	
+	         # raw image and raters path
+	        img_path = os.path.join(subfolder, name + '_img.png')
+	        label_path = os.path.join(subfolder, name + '_label.png')
+	
+	        # raw image and rater images
+	        img = Image.open(img_path).convert('RGB')
+	        label = [Image.open(label_path).convert('L') ]
+	
+	        # 对图像和掩码应用变换
+	        if self.transform:
+	            state = torch.get_rng_state()  # 保存随机状态
+	            img = self.transform(img)
+	            label = [torch.as_tensor((self.transform(single_label) >= 0.5).float(), dtype=torch.float32) for single_label in label]
+	            label = torch.stack(label, dim=0)  # 将所有标注者的掩码堆叠为一个张量
+	            torch.set_rng_state(state)  # 恢复随机状态
+	
+	         # 根据提示类型生成初始点击点
+	        if self.prompt == 'click':
+	            point_label, pt = random_click(np.array((label.mean(axis=0)).squeeze(0)), point_label=1)
+	            
+	            # 计算多标注者的平均掩码，并二值化
+	            selected_rater_mask_ori = label.mean(axis=0)
+	            selected_rater_mask_ori = (selected_rater_mask_ori >= 0.5).float()
+	
+	            # 调整掩码大小到指定输出大小
+	            selected_rater_mask = F.interpolate(
+	                selected_rater_mask_ori.unsqueeze(0),
+	                size=(self.mask_size, self.mask_size),
+	                mode='bilinear',
+	                align_corners=False
+	            ).mean(dim=0)
+	            selected_rater_mask = (selected_rater_mask >= 0.5).float()
+	
+	        # 图像元信息字典
+	        image_meta_dict = {'filename_or_obj': name}
+	
+	        return {
+	            'image': img,
+	            'multi_rater': label,
+	            'p_label': point_label,
+	            'pt': pt,
+	            'mask': selected_rater_mask,
+	            'mask_ori': selected_rater_mask_ori,
+	            'image_meta_dict': image_meta_dict,
+	        }
+	        '''
+	        return
+	        {
+	            'image':img,
+	            'multi_rater': multi_rater_cup, 
+	            'p_label': point_label_cup,
+	            'pt':pt_cup, 
+	            'mask': selected_rater_mask_cup, 
+	            'mask_ori': selected_rater_mask_cup_ori,
+	            'image_meta_dict':image_meta_dict,
+	        }
+	      
+
+最后
+
+	python train_2d.py -net sam2 -exp_name US_PROSTATE_MedSAM2 -vis 1 -sam_ckpt ./checkpoints/sam2_hiera_small.pt -sam_config sam2_hiera_s -image_size 1024 -out_size 1024 -b 4 -val_freq 1 -dataset US_PROSTATE -data_path ./data/US_PROSTATE
