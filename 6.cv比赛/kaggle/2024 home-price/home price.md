@@ -1,6 +1,6 @@
 #home price
 
-#提交格式
+##格式，数据内容
 
 提交文件格式，该文件应包含标题，并采用以下格式：
 
@@ -100,6 +100,28 @@
 	SaleType: Type of sale
 	SaleCondition: Condition of sale
 
+##设计思路：
 
+对于连续的数据，比如价格可以先求出均值和方差等等特征。然后normalization做标准化（standardization）：设该特征在整个数据集上的均值为μ，标准差为σ。那么，我们可以将该特征的每个值先减去μ再除以σ得到标准化后的每个特征值。对于缺失的特征值，我们将其替换成该特征的均值。
 
+标准化后，每个数值特征的均值变为0，所以可以直接用0代替缺失值,即缺失值NA和无意义值NAN用0代替
+
+然后处理离散的数据。假设特征MSZoning里面有两个不同的离散值RL和RM，那么这一步转换将去掉MSZoning特征，并新加两个特征MSZoning_RL和MSZoning_RM，其值为0或1。如果一个样本原来在MSZoning里的值为RL，那么有MSZoning_RL=1且MSZoning_RM=0。
+
+将 分类变量 转换为 独热编码（One-Hot Encoding）
+
+使用
+	
+	get_dummies即上述将离散值转换为指示特征
+	pd.get_dummies
+	
+
+然后转化张量特征
+
+	# 训练集特征
+	train_features = torch.tensor(all_features[:n_train].values, dtype=torch.float)
+	# 测试集特征
+	test_features = torch.tensor(all_features[n_train:].values, dtype=torch.float)
+	# 训练集标签
+	train_labels = torch.tensor(train_data.SalePrice.values, dtype=torch.float).view(-1, 1)
 
