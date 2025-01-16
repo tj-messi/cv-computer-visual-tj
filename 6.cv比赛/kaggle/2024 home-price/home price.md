@@ -125,3 +125,25 @@
 	# 训练集标签
 	train_labels = torch.tensor(train_data.SalePrice.values, dtype=torch.float).view(-1, 1)
 
+##方法设计
+
+用简单的回归问题
+
+初始化net网络
+
+	def get_net(feature_num):
+		# 实例化nn
+	    net = nn.Linear(feature_num, 1)
+	    for param in net.parameters():
+	        nn.init.normal_(param, mean=0, std=0.01)
+	    return net
+
+均方差损失
+
+	def log_rmse(net, features, labels):
+	    with torch.no_grad():
+	        # 将小于1的值设成1，使得取对数时数值更稳定
+	        clipped_preds = torch.max(net(features), torch.tensor(1.0))
+	        rmse = torch.sqrt(loss(clipped_preds.log(), labels.log()))
+	    return rmse.item()
+
