@@ -53,7 +53,7 @@ all_features = pd.get_dummies(all_features, dummy_na=True)
 # 再次检查数据类型
 # print(all_features.dtypes)
 
-#print(all_features.shape)
+print(all_features.shape)
 #print(all_features)
 
 # 取train_data的行数，即训练集个数
