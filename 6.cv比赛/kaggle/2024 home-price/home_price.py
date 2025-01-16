@@ -38,7 +38,7 @@ all_features = pd.concat((train_data.iloc[:, 1:-1], test_data.iloc[:, 1:]))
 numeric_features = all_features.dtypes[all_features.dtypes != 'object'].index  # 排除object类型的特征
 
 # 打印非离散的数据类型
-print(numeric_features)
+# print(numeric_features)
 
 # 对每种数字型的特征(每一的数字)进行标准化
 all_features[numeric_features] = all_features[numeric_features].apply(lambda x: (x - x.mean()) / (x.std()))
@@ -50,11 +50,15 @@ all_features[numeric_features] = all_features[numeric_features].fillna(0)
 # get_dummies即上述将离散值转换为指示特征
 all_features = pd.get_dummies(all_features, dummy_na=True)
 
+# 检查bool型特征
+bool_features = all_features.dtypes[all_features.dtypes == 'bool'].index 
+# print(bool_features)
+# 将bool型特征转换为float64型特征
+for feature in bool_features:
+    all_features[feature] = all_features[feature].astype('float64')
+
 # 再次检查数据类型
 # print(all_features.dtypes)
-
-print(all_features.shape)
-#print(all_features)
 
 # 取train_data的行数，即训练集个数
 n_train = train_data.shape[0] 
@@ -66,7 +70,7 @@ test_features = torch.tensor(all_features[n_train:].values, dtype=torch.float)
 # 训练集标签
 train_labels = torch.tensor(train_data.SalePrice.values, dtype=torch.float).view(-1, 1)
 
-## 模型训练
+## 模型训练             
 loss = torch.nn.MSELoss()
 
 def get_net(feature_num):
@@ -96,7 +100,7 @@ def train(net,train_features,train_labels,test_features,test_labels,
     net = net.float()
 
     # 开始训练
-    for num_epochs in range(num_epochs):
+    for epoch in range(num_epochs):
         for X, y in train_iter:
             l = loss(net(X.float()), y.float())
 
@@ -200,7 +204,7 @@ def k_fold(k, X_train, y_train, num_epochs,
         print('fold %d, train rmse %f, valid rmse %f' % (i, train_ls[-1], valid_ls[-1]))
     return train_l_sum / k, valid_l_sum / k
 
-k, num_epochs, lr, weight_decay, batch_size = 6, 100, 6, 0, 64
+k, num_epochs, lr, weight_decay, batch_size = 10, 200, 6, 0, 64
 train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr, weight_decay, batch_size)
 print('%d-fold validation: avg train rmse %f, avg valid rmse %f' % (k, train_l, valid_l))
 

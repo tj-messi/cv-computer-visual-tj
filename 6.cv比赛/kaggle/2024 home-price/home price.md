@@ -147,3 +147,67 @@
 	        rmse = torch.sqrt(loss(clipped_preds.log(), labels.log()))
 	    return rmse.item()
 
+训练
+
+	def train(net,train_features,train_labels,test_features,test_labels,
+	          num_epochs,learning_rate,weight_decay,batch_size):
+	    # 训练损失，测试损失
+	    train_ls, test_ls = [], []
+	    # 加载数据
+	    dataset = torch.utils.data.TensorDataset(train_features, train_labels)
+	    train_iter = torch.utils.data.DataLoader(dataset, batch_size, shuffle=True)
+	
+	     # 这里使用了Adam优化算法
+	    optimizer = torch.optim.Adam(params=net.parameters(), lr=learning_rate, weight_decay=weight_decay)
+	    net = net.float()
+	
+	    # 开始训练
+	    for num_epochs in range(num_epochs):
+	        for X, y in train_iter:
+	            l = loss(net(X.float()), y.float())
+	
+	            # 梯度清零
+	            optimizer.zero_grad()
+	            # 反向传播
+	            l.backward()
+	            # 更新参数
+	            optimizer.step()
+	        # 记录训练损失
+	        train_ls.append(log_rmse(net, train_features, train_labels))
+	        if test_labels is not None:
+	            test_ls.append(log_rmse(net, test_features, test_labels))
+	
+	    return train_ls, test_ls
+
+k交叉验证
+
+	def get_k_fold_data(k, i, X, y):
+	    # 返回第i折交叉验证时所需要的训练和验证数据
+	    # k需要大于1,assert用于判断一个表达式，在表达式条件为false的时候出发异常。
+	    assert k > 1
+	    # 划分成k个集合，fold_size每个集合的个数
+	    fold_size = X.shape[0] // k
+	    # 初始化X_train, y_train
+	    X_train, y_train = None, None
+	    # 循环访问k个集合
+	    for j in range(k):
+	    	# slice(start, stop[, step])；start:开始位置，stop:结束位置，step：间距
+			# 则idx等于就是第j个集合切片对象的集合
+	        idx = slice(j * fold_size, (j + 1) * fold_size)
+	        # 将第j个集合的特征，和第j个集合的标签分别放在X_part, y_part
+	        X_part, y_part = X[idx, :], y[idx]
+	        # 如果当前的集合是第i折交叉验证，就将当前的集合当作验证模型
+	        # （j=i）就是当前所取部分刚好是要当验证集的部分
+	        if j == i:
+	            # 将当前所取集合放进验证集
+	            X_valid, y_valid = X_part, y_part
+	        # 如果j!=i且X_train是空的则直接将此部分放进训练集
+	        elif X_train is None:
+	            X_train, y_train = X_part, y_part
+	        # 如果j!=i且访问到其余除了验证集（j=i）其余集合的子集，就使用concat连接已经放进训练集的集合
+	        else:
+	            X_train = torch.cat((X_train, X_part), dim=0)
+	            y_train = torch.cat((y_train, y_part), dim=0)
+	    # 依次返回训练模型和第i个验证模型
+	    return X_train, y_train, X_valid, y_valid
+	
