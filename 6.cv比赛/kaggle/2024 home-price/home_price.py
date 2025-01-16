@@ -232,4 +232,5 @@ def train_and_pred(train_features, test_features, train_labels, test_data,
 
 train_and_pred(train_features, test_features, train_labels, test_data, num_epochs, lr, weight_decay, batch_size)
 
-
+#main()
+    
