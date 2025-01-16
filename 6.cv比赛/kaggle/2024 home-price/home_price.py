@@ -204,7 +204,7 @@ def k_fold(k, X_train, y_train, num_epochs,
         print('fold %d, train rmse %f, valid rmse %f' % (i, train_ls[-1], valid_ls[-1]))
     return train_l_sum / k, valid_l_sum / k
 
-k, num_epochs, lr, weight_decay, batch_size = 10, 200, 6, 0, 64
+k, num_epochs, lr, weight_decay, batch_size = 10, 500, 6, 0, 64
 train_l, valid_l = k_fold(k, train_features, train_labels, num_epochs, lr, weight_decay, batch_size)
 print('%d-fold validation: avg train rmse %f, avg valid rmse %f' % (k, train_l, valid_l))
 
@@ -227,7 +227,7 @@ def train_and_pred(train_features, test_features, train_labels, test_data,
     # 将测试集的Id和预测结果拼接在一起，axis沿水平方向拼接，与上面默认纵向拼接不同。
     submission = pd.concat([test_data['Id'], test_data['SalePrice']], axis=1)
     # 转成可提交的csv格式
-    submission.to_csv('./submission.csv', index=False)
+    submission.to_csv('./submission-final.csv', index=False)
 
 
 train_and_pred(train_features, test_features, train_labels, test_data, num_epochs, lr, weight_decay, batch_size)
