@@ -20,6 +20,10 @@ git下来psp
 
 	sudo apt install build-essential
 
+都ok了之后要先找一下驾驶员数据
 
+	https://driveandact.com/
+
+	https://www.kaggle.com/c/state-farm-distracted-driver-detection/data
 
 	
