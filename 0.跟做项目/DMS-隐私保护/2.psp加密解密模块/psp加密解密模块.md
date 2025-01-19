@@ -24,6 +24,8 @@ git下来psp
 
 	https://driveandact.com/
 
+这个网站里面大多是是黑白红外线摄像数据
+
 	https://www.kaggle.com/c/state-farm-distracted-driver-detection/data
 
 	
