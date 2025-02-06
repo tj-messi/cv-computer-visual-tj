@@ -39,3 +39,16 @@ git下来psp
 
 ##项目第一步：人脸特征提取&存储
 
+	python scripts/store_latent_codes.py \
+	--exp_dir=./exp-zjz/super_resolution_4 \
+	--checkpoint_path=./pretrained_models/psp_celebs_super_resolution.pt \
+	--data_path=./exp-zjz/driver-face \
+	--test_batch_size=4 \
+	--test_workers=4 >/dev/null &
+
+
+当不输入那个 
+	
+	>/dev/null &
+
+此时就可以监视窗口
