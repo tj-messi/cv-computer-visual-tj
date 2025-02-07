@@ -49,6 +49,13 @@
 	    tokenizer.padding_side = "right"
 	
 	    return model, tokenizer
+
+把dataloaderGPT2Classification.py中108行
+
+	self.image_processor = AutoFeatureExtractor.from_pretrained("microsoft/swin-tiny-patch4-window7-224")
+
+改为现在模型的相对路径
 	
+	self.image_processor = AutoFeatureExtractor.from_pretrained("./model_pt_dir")
 
 ##创新点复现
