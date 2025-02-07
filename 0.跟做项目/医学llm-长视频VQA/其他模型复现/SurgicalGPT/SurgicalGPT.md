@@ -58,4 +58,8 @@
 	
 	self.image_processor = AutoFeatureExtractor.from_pretrained("./model_pt_dir")
 
+这个相对路径里面保存着模型
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1738939317937.png)
+
 ##创新点复现
