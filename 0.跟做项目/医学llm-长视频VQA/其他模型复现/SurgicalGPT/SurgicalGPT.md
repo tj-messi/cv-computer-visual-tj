@@ -62,4 +62,8 @@
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1738939317937.png)
 
+gpt-2也需要如法炮制
+
+
+
 ##创新点复现
