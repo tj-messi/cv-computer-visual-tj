@@ -16,3 +16,5 @@
 AI for science
 *.mp4
 5.cv论文/2025.1.21 空间智能汇报调研/978-3-031-72995-9.pdf
+*.bin
+*.safetensors
