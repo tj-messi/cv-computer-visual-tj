@@ -26,6 +26,6 @@
 
 然后train
 
-	python main.py --dataset=endo18 --epochs=60 --batch_size=64 --lr=0.00002
+	python main.py --dataset=pit24 --epochs=60 --batch_size=64 --lr=0.00002
 
 ##创新点复现
