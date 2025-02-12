@@ -1,0 +1,9 @@
+What is the surgical phase shown in the image?|nasal_sphenoid
+What is the surgical step shown in this frame?|nasal_corridor_creation
+What is the surgical operation performed in the image?|The middle and superior turbinates are laterally displaced
+What is the next surgical phase?|sellar
+What is the next surgical step?|anterior_sphenoidotomy
+What instrument is used in the bottom-left of the image?|freer_elevator
+What surgical activity is performing by the instrument freer_elevator?|The middle and superior turbinates are laterally displaced
+Where is the surgical instrument freer_elevator tip located in the image?|bottom-left
+How many instruments are present in the image?|one
