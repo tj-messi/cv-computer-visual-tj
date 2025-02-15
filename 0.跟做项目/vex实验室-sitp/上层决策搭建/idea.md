@@ -1,6 +1,6 @@
 # idea conclusion
 
-## pic to mask
+## pic to sam2
 
 ## masked pic + pic to LLM
 
@@ -10,4 +10,4 @@
 
 ## simple encoder
 
-## 
+## vision decoder
