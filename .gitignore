@@ -19,3 +19,4 @@ AI for science
 *.bin
 *.safetensors
 *.msgpack
+*数据集
