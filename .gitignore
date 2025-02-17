@@ -19,5 +19,5 @@ AI for science
 *.bin
 *.safetensors
 *.msgpack
-*数据集
+* 数据集
 *0.跟做项目
