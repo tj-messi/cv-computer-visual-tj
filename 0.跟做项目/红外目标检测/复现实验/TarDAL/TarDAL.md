@@ -215,3 +215,5 @@ TarDAL ROOT
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1739850251806.png)
 
 改为我们的pipeline：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/8e52b1b38028d06431a31758822f4e6.png)
