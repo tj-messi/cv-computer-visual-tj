@@ -10,7 +10,7 @@ git下来上传，环境配置没问题
 
 ##数据
 
-
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1739899770270.png)
 
 ##禁止load pretrain
 
