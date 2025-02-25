@@ -18,5 +18,12 @@ fine-tunning数据准备
 	create_csv.py
 
 
+##fine_tine
 
-##
+使用蒸馏后的模型，base版本
+
+	--model vit_base_patch16_224
+
+走finetune路线
+
+注意二分类并非多分类，把损失函数改成二分类的交叉熵即可
