@@ -50,3 +50,21 @@
 	            mask = np.stack(mask, axis=0)
 	            mask_list.append(mask)
 	        self.all_mask_maps = np.stack(mask_list, axis=0)
+
+在这里拿到ROI
+
+    def get_candidate_region(self, frame_fname):
+
+        vid = frame_fname.split("/")[-2]
+        frame = frame_fname.split("/")[-1]
+        jsonfile = os.path.join(self.candidate_json_path, f"res_frcnn_{vid}.json")
+        try:
+            with open(jsonfile, 'r') as f:
+                data = json.load(f)
+            framebboxes = data['results']
+            for frames in framebboxes:
+                
+                if frames['image_id'] == frame:
+                    return frames['Boxes']
+        except:
+            return []
