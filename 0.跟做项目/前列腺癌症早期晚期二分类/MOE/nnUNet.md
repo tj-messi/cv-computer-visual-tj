@@ -59,4 +59,19 @@ png格式的内容可以考虑参考其中的road模式的放置来安排数据�
 
 	image = image[...,:3]
 
+##开始训练
+
+先处理数据
+
+	python Dataset1234_Prostate.py 
+
+预处理，计划
+
+	nnUNetv2_plan_and_preprocess -d 1234 --verify_dataset_integrity
+
+训练，其中FOLD是0,1,2,3,4
+
+	nnUNetv2_train DATASET_NAME_OR_ID 2d FOLD
+
+##接口test
 
