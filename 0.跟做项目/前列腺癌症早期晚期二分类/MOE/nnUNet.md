@@ -27,6 +27,36 @@ png格式的内容可以考虑参考其中的road模式的放置来安排数据�
 
 ##数据格式转换
 
+可以按照road的方式参考，不过注意前列腺超声影像为RGBA格式的数据需要转换
 
+	def load_and_convert_case(input_image: str, input_seg: str, output_image: str, output_seg: str,
+	                          min_component_size: int = 50):
+	    seg = io.imread(input_seg)
+	    seg[seg == 255] = 1
+	    image = io.imread(input_image)
+	    # print(image.shape)
+	    if image.shape[-1] == 4:
+	        image = image[..., :3] 
+	
+	    image = image.sum(2)
+	    mask = image == (3 * 255)
+	    # the dataset has large white areas in which road segmentations can exist but no image information is available.
+	    # Remove the road label in these areas
+	    mask = generic_filter_components(mask, filter_fn=lambda ids, sizes: [i for j, i in enumerate(ids) if
+	                                                                         sizes[j] > min_component_size])
+	    mask = binary_fill_holes(mask)
+	    seg[mask] = 0
+	    seg = seg[..., 0]
+	    print(seg.shape)
+	    io.imsave(output_seg, seg, check_contrast=False)
+	    image_pil = Image.fromarray(image.astype(np.uint8))  # 转换为 PIL 图像对象
+	    image_pil = image_pil.convert('RGB')  # 确保是 RGB 图像
+	    image_pil.save(output_image)  # 保存图像
+
+确定mask的图像shape为（H，W）
+
+确定了图像的格式为（H，W，4）的时候就可以只取前三个管道了
+
+	image = image[...,:3]
 
 
