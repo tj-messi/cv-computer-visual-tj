@@ -295,6 +295,9 @@
 	# 运行测试
 	test(model, test_loader, device, best_model_path)
 
+
+with open(job_name,"rb") as job_file :
+
 	
 
 
