@@ -191,3 +191,112 @@
 
 ##数据集
 
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1740970173634.png)
+
+##train
+
+	python train.py
+
+##test
+
+	import os
+	import torch
+	from tqdm import tqdm
+	from torchvision import models, transforms
+	import numpy as np
+	from PIL import Image
+	from torch.utils.data import DataLoader
+	
+	from dataset import *
+	
+	def save_predicted_mask(mask, file_path):
+	    """
+	    Save the predicted mask as an image.
+	    :param mask: The predicted mask (numpy array).
+	    :param file_path: The path to save the image.
+	    """
+	    if mask.ndim == 3:
+	        mask = np.argmax(mask,axis=0)
+	
+	    mask = np.squeeze(mask)  # Remove unnecessary dimensions to ensure 2D (H, W)
+	    mask = (mask > 0.5).astype(np.uint8)  # Convert to binary mask (0 or 255)
+	
+	    print(mask.shape)
+	
+	    mask_image = Image.fromarray(mask * 255)  # Convert to black and white image (0 for black, 255 for white)
+	    mask_image.save(file_path)
+	
+	transform = transforms.Compose([
+	    transforms.Resize((256, 256)),
+	    transforms.ToTensor(),
+	])
+	
+	def load_model_with_ignored_keys(model, model_path):
+	    # Load the saved model state_dict
+	    checkpoint = torch.load(model_path)
+	    model_dict = model.state_dict()
+	
+	    # Create a new state_dict excluding the auxiliary classifier weights
+	    checkpoint_dict = {k: v for k, v in checkpoint.items() if k in model_dict}
+	
+	    # Load the weights
+	    model_dict.update(checkpoint_dict)
+	    model.load_state_dict(model_dict)
+	
+	    return model
+	
+	def test(model, test_loader, device, best_model_path):
+	    # 加载保存的最佳模型
+	    model = load_model_with_ignored_keys(model, best_model_path)
+	    model.to(device)
+	    model.eval()  # 切换到评估模式
+	
+	    with torch.no_grad():  # 禁用梯度计算
+	        for images, img_names in tqdm(test_loader, desc="Testing", unit="batch"):
+	            images = images.to(device)
+	
+	            # 进行推理
+	            outputs = model(images)["out"]
+	            prob = torch.softmax(outputs, dim=1)  # 对于多分类问题
+	            predicted_mask = (prob > 0.5).cpu().numpy()  # 选择大于 0.5 的部分作为病灶区域
+	
+	            # 保存预测掩码
+	            for i in range(predicted_mask.shape[0]):
+	                img_name = img_names[i]  # 获取当前图像的文件名
+	
+	                # 保存预测掩码
+	                save_path = f"/media/tongji/Deeplabv3/train_output/test/predicted_mask_{img_name}"
+	                save_predicted_mask(predicted_mask[i], save_path)  # 保存预测掩码
+	
+	    print("Test completed!")
+	
+	# 使用方法
+	best_model_path = '/media/tongji/Deeplabv3/train_output/output_3-3-11-0/best_model.pth'
+	
+	# 创建数据加载器
+	test_dataset = MedicalSegmentationDataset(
+	    image_dir='/media/tongji/Deeplabv3/data/testing/input', 
+	    mask_dir='/media/tongji/Deeplabv3/data/testing/output',  # GT 不是必须的
+	    transform=transform,
+	    mode = 'test'
+	)
+	test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False)
+	
+	# 创建并初始化模型
+	model = models.segmentation.deeplabv3_resnet101(pretrained=False)
+	num_classes = 2  # 1个病灶类别 + 1个背景类别
+	in_channels = model.classifier[4].in_channels
+	model.classifier[4] = nn.Conv2d(in_channels, num_classes, kernel_size=(1, 1))
+	
+	# 使用 GPU 或 CPU
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	model.to(device)
+	
+	# 运行测试
+	test(model, test_loader, device, best_model_path)
+
+	
+
+
+
+
