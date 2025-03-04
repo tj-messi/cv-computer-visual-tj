@@ -75,3 +75,35 @@ png格式的内容可以考虑参考其中的road模式的放置来安排数据�
 
 ##接口test
 
+	nnUNetv2_predict -i /media/tongji/Deeplabv3/train_output/test/predicted_mask_PB03900034.png  -o /media/tongji/nnUNet-master -d 1234 -c 2d --save_probabilities 
+
+针对/media/tongji/Deeplabv3/train_output/test/predicted_mask_PB03900034.png
+
+##注意
+
+nnUNet对分割图片保存了二值化
+
+所以要进行转化
+
+	import numpy as np
+	from skimage import io
+	
+	def convert_mask(input_mask_path: str, output_mask_path: str):
+	    # 读取输入的分割图像
+	    mask = io.imread(input_mask_path)
+	    
+	    # 确保是二值图像（0 或 1）
+	    mask = (mask > 0).astype(np.uint8)  # 处理任何非零值为1，零值保持为0
+	    
+	    # 将0和1转换为0和255
+	    mask = mask * 255
+	    
+	    # 保存转换后的分割图像
+	    io.imsave(output_mask_path, mask)
+	    print(f"转换后的掩膜保存为: {output_mask_path}")
+	
+	# 示例：使用转换函数
+	input_mask = "/media/tongji/nnUNet-master/zjz-nnUNetFrame/nnUNet_results/Dataset1234_Prostate/nnUNetTrainer__nnUNetPlans__2d/fold_1/validation/img-4293.png"  # 输入的掩膜路径
+	output_mask = "/media/tongji/nnUNet-master/zjz-nnUNetFrame/nnUNet_results/Dataset1234_Prostate/nnUNetTrainer__nnUNetPlans__2d/fold_1/validation/img-4293-0to255.png"  # 输出的掩膜路径
+	
+	convert_mask(input_mask, output_mask)
