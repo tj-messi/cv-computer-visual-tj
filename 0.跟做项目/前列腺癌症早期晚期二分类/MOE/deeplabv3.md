@@ -298,6 +298,9 @@
 
 with open(job_name,"rb") as job_file :
 
+
+##直接测试就好
+
 	
 
 
