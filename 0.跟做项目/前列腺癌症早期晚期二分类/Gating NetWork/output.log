@@ -1,0 +1,668 @@
+Not using distributed mode
+Namespace(auto_resume=True, batch_size=4, clip_grad=0.02, color_jitter=0.0, data_path='/media/tongji/VideoMAEv2-master/data/US_annotation/MAE.csv', data_root='', decoder_depth=4, decoder_mask_ratio=0.5, decoder_mask_type='run_cell', device='cuda', dist_on_itp=False, dist_url='env://', distributed=False, drop_path=0.0, epochs=500, finetune='', fname_tmpl='img_{:05}.png', imagenet_default_mean_and_std=True, input_size=224, local_rank=-1, log_dir='/media/tongji/VideoMAEv2-master/output/US_GT&PN_pt(load_pretraink710)', lr=0.0006, mask_ratio=0.9, mask_type='tube', min_lr=1e-05, model='pretrain_videomae_base_patch16_224', momentum=0.9, normlize_target=True, num_frames=16, num_sample=4, num_workers=10, opt='adamw', opt_betas=[0.9, 0.95], opt_eps=1e-08, output_dir='/media/tongji/VideoMAEv2-master/output/US_GT&PN_pt(load_pretraink710)', pin_mem=True, resume='', sampling_rate=4, save_ckpt_freq=5, seed=0, start_epoch=0, train_interpolation='bicubic', tubelet_size=2, warmup_epochs=30, warmup_lr=1e-06, warmup_steps=-1, weight_decay=0.05, weight_decay_end=None, with_checkpoint=True, world_size=1)
+Creating model: pretrain_videomae_base_patch16_224
+Patch size = (16, 16)
+Data Aug = (DataAugmentationForVideoMAEv2,
+  transform = Compose(
+    <dataset.transforms.GroupMultiScaleCrop object at 0x7fa3631645b0>
+    <dataset.transforms.Stack object at 0x7fa363164640>
+    <dataset.transforms.ToTorchFormatTensor object at 0x7fa363164580>
+    <dataset.transforms.GroupNormalize object at 0x7fa363164670>
+),
+  Encoder Masking Generator = Tube Masking: total patches 1568, mask patches 1408,
+  Decoder Masking Generator = Running Cell Masking with mask ratio 0.5,
+)
+Sampler_train = <torch.utils.data.distributed.DistributedSampler object at 0x7fa3608c6940>
+Load ckpt from /media/tongji/VideoMAEv2-master/pretrain_model/vit_b_k710_dl_from_giant.pth
+Load state_dict by model_key = module
+Weights of PretrainVisionTransformer not initialized from pretrained model: ['mask_token', 'encoder.pos_embed_probs', 'encoder.patch_embed.proj.weight', 'encoder.patch_embed.proj.bias', 'encoder.blocks.0.norm1.weight', 'encoder.blocks.0.norm1.bias', 'encoder.blocks.0.attn.q_bias', 'encoder.blocks.0.attn.v_bias', 'encoder.blocks.0.attn.qkv.weight', 'encoder.blocks.0.attn.proj.weight', 'encoder.blocks.0.attn.proj.bias', 'encoder.blocks.0.norm2.weight', 'encoder.blocks.0.norm2.bias', 'encoder.blocks.0.mlp.fc1.weight', 'encoder.blocks.0.mlp.fc1.bias', 'encoder.blocks.0.mlp.fc2.weight', 'encoder.blocks.0.mlp.fc2.bias', 'encoder.blocks.1.norm1.weight', 'encoder.blocks.1.norm1.bias', 'encoder.blocks.1.attn.q_bias', 'encoder.blocks.1.attn.v_bias', 'encoder.blocks.1.attn.qkv.weight', 'encoder.blocks.1.attn.proj.weight', 'encoder.blocks.1.attn.proj.bias', 'encoder.blocks.1.norm2.weight', 'encoder.blocks.1.norm2.bias', 'encoder.blocks.1.mlp.fc1.weight', 'encoder.blocks.1.mlp.fc1.bias', 'encoder.blocks.1.mlp.fc2.weight', 'encoder.blocks.1.mlp.fc2.bias', 'encoder.blocks.2.norm1.weight', 'encoder.blocks.2.norm1.bias', 'encoder.blocks.2.attn.q_bias', 'encoder.blocks.2.attn.v_bias', 'encoder.blocks.2.attn.qkv.weight', 'encoder.blocks.2.attn.proj.weight', 'encoder.blocks.2.attn.proj.bias', 'encoder.blocks.2.norm2.weight', 'encoder.blocks.2.norm2.bias', 'encoder.blocks.2.mlp.fc1.weight', 'encoder.blocks.2.mlp.fc1.bias', 'encoder.blocks.2.mlp.fc2.weight', 'encoder.blocks.2.mlp.fc2.bias', 'encoder.blocks.3.norm1.weight', 'encoder.blocks.3.norm1.bias', 'encoder.blocks.3.attn.q_bias', 'encoder.blocks.3.attn.v_bias', 'encoder.blocks.3.attn.qkv.weight', 'encoder.blocks.3.attn.proj.weight', 'encoder.blocks.3.attn.proj.bias', 'encoder.blocks.3.norm2.weight', 'encoder.blocks.3.norm2.bias', 'encoder.blocks.3.mlp.fc1.weight', 'encoder.blocks.3.mlp.fc1.bias', 'encoder.blocks.3.mlp.fc2.weight', 'encoder.blocks.3.mlp.fc2.bias', 'encoder.blocks.4.norm1.weight', 'encoder.blocks.4.norm1.bias', 'encoder.blocks.4.attn.q_bias', 'encoder.blocks.4.attn.v_bias', 'encoder.blocks.4.attn.qkv.weight', 'encoder.blocks.4.attn.proj.weight', 'encoder.blocks.4.attn.proj.bias', 'encoder.blocks.4.norm2.weight', 'encoder.blocks.4.norm2.bias', 'encoder.blocks.4.mlp.fc1.weight', 'encoder.blocks.4.mlp.fc1.bias', 'encoder.blocks.4.mlp.fc2.weight', 'encoder.blocks.4.mlp.fc2.bias', 'encoder.blocks.5.norm1.weight', 'encoder.blocks.5.norm1.bias', 'encoder.blocks.5.attn.q_bias', 'encoder.blocks.5.attn.v_bias', 'encoder.blocks.5.attn.qkv.weight', 'encoder.blocks.5.attn.proj.weight', 'encoder.blocks.5.attn.proj.bias', 'encoder.blocks.5.norm2.weight', 'encoder.blocks.5.norm2.bias', 'encoder.blocks.5.mlp.fc1.weight', 'encoder.blocks.5.mlp.fc1.bias', 'encoder.blocks.5.mlp.fc2.weight', 'encoder.blocks.5.mlp.fc2.bias', 'encoder.blocks.6.norm1.weight', 'encoder.blocks.6.norm1.bias', 'encoder.blocks.6.attn.q_bias', 'encoder.blocks.6.attn.v_bias', 'encoder.blocks.6.attn.qkv.weight', 'encoder.blocks.6.attn.proj.weight', 'encoder.blocks.6.attn.proj.bias', 'encoder.blocks.6.norm2.weight', 'encoder.blocks.6.norm2.bias', 'encoder.blocks.6.mlp.fc1.weight', 'encoder.blocks.6.mlp.fc1.bias', 'encoder.blocks.6.mlp.fc2.weight', 'encoder.blocks.6.mlp.fc2.bias', 'encoder.blocks.7.norm1.weight', 'encoder.blocks.7.norm1.bias', 'encoder.blocks.7.attn.q_bias', 'encoder.blocks.7.attn.v_bias', 'encoder.blocks.7.attn.qkv.weight', 'encoder.blocks.7.attn.proj.weight', 'encoder.blocks.7.attn.proj.bias', 'encoder.blocks.7.norm2.weight', 'encoder.blocks.7.norm2.bias', 'encoder.blocks.7.mlp.fc1.weight', 'encoder.blocks.7.mlp.fc1.bias', 'encoder.blocks.7.mlp.fc2.weight', 'encoder.blocks.7.mlp.fc2.bias', 'encoder.blocks.8.norm1.weight', 'encoder.blocks.8.norm1.bias', 'encoder.blocks.8.attn.q_bias', 'encoder.blocks.8.attn.v_bias', 'encoder.blocks.8.attn.qkv.weight', 'encoder.blocks.8.attn.proj.weight', 'encoder.blocks.8.attn.proj.bias', 'encoder.blocks.8.norm2.weight', 'encoder.blocks.8.norm2.bias', 'encoder.blocks.8.mlp.fc1.weight', 'encoder.blocks.8.mlp.fc1.bias', 'encoder.blocks.8.mlp.fc2.weight', 'encoder.blocks.8.mlp.fc2.bias', 'encoder.blocks.9.norm1.weight', 'encoder.blocks.9.norm1.bias', 'encoder.blocks.9.attn.q_bias', 'encoder.blocks.9.attn.v_bias', 'encoder.blocks.9.attn.qkv.weight', 'encoder.blocks.9.attn.proj.weight', 'encoder.blocks.9.attn.proj.bias', 'encoder.blocks.9.norm2.weight', 'encoder.blocks.9.norm2.bias', 'encoder.blocks.9.mlp.fc1.weight', 'encoder.blocks.9.mlp.fc1.bias', 'encoder.blocks.9.mlp.fc2.weight', 'encoder.blocks.9.mlp.fc2.bias', 'encoder.blocks.10.norm1.weight', 'encoder.blocks.10.norm1.bias', 'encoder.blocks.10.attn.q_bias', 'encoder.blocks.10.attn.v_bias', 'encoder.blocks.10.attn.qkv.weight', 'encoder.blocks.10.attn.proj.weight', 'encoder.blocks.10.attn.proj.bias', 'encoder.blocks.10.norm2.weight', 'encoder.blocks.10.norm2.bias', 'encoder.blocks.10.mlp.fc1.weight', 'encoder.blocks.10.mlp.fc1.bias', 'encoder.blocks.10.mlp.fc2.weight', 'encoder.blocks.10.mlp.fc2.bias', 'encoder.blocks.11.norm1.weight', 'encoder.blocks.11.norm1.bias', 'encoder.blocks.11.attn.q_bias', 'encoder.blocks.11.attn.v_bias', 'encoder.blocks.11.attn.qkv.weight', 'encoder.blocks.11.attn.proj.weight', 'encoder.blocks.11.attn.proj.bias', 'encoder.blocks.11.norm2.weight', 'encoder.blocks.11.norm2.bias', 'encoder.blocks.11.mlp.fc1.weight', 'encoder.blocks.11.mlp.fc1.bias', 'encoder.blocks.11.mlp.fc2.weight', 'encoder.blocks.11.mlp.fc2.bias', 'encoder.norm.weight', 'encoder.norm.bias', 'encoder.MoE.experts.0.block.norm1.weight', 'encoder.MoE.experts.0.block.norm1.bias', 'encoder.MoE.experts.0.block.attn.qkv.weight', 'encoder.MoE.experts.0.block.attn.proj.weight', 'encoder.MoE.experts.0.block.attn.proj.bias', 'encoder.MoE.experts.0.block.norm2.weight', 'encoder.MoE.experts.0.block.norm2.bias', 'encoder.MoE.experts.0.block.mlp.fc1.weight', 'encoder.MoE.experts.0.block.mlp.fc1.bias', 'encoder.MoE.experts.0.block.mlp.fc2.weight', 'encoder.MoE.experts.0.block.mlp.fc2.bias', 'encoder.MoE.experts.0.fc.weight', 'encoder.MoE.experts.0.fc.bias', 'encoder.MoE.experts.1.block.norm1.weight', 'encoder.MoE.experts.1.block.norm1.bias', 'encoder.MoE.experts.1.block.attn.qkv.weight', 'encoder.MoE.experts.1.block.attn.proj.weight', 'encoder.MoE.experts.1.block.attn.proj.bias', 'encoder.MoE.experts.1.block.norm2.weight', 'encoder.MoE.experts.1.block.norm2.bias', 'encoder.MoE.experts.1.block.mlp.fc1.weight', 'encoder.MoE.experts.1.block.mlp.fc1.bias', 'encoder.MoE.experts.1.block.mlp.fc2.weight', 'encoder.MoE.experts.1.block.mlp.fc2.bias', 'encoder.MoE.experts.1.fc.weight', 'encoder.MoE.experts.1.fc.bias', 'encoder.MoE.experts.2.block.norm1.weight', 'encoder.MoE.experts.2.block.norm1.bias', 'encoder.MoE.experts.2.block.attn.qkv.weight', 'encoder.MoE.experts.2.block.attn.proj.weight', 'encoder.MoE.experts.2.block.attn.proj.bias', 'encoder.MoE.experts.2.block.norm2.weight', 'encoder.MoE.experts.2.block.norm2.bias', 'encoder.MoE.experts.2.block.mlp.fc1.weight', 'encoder.MoE.experts.2.block.mlp.fc1.bias', 'encoder.MoE.experts.2.block.mlp.fc2.weight', 'encoder.MoE.experts.2.block.mlp.fc2.bias', 'encoder.MoE.experts.2.fc.weight', 'encoder.MoE.experts.2.fc.bias', 'encoder.MoE.gating_network.fc.weight', 'encoder.MoE.gating_network.fc.bias', 'decoder.blocks.0.norm1.weight', 'decoder.blocks.0.norm1.bias', 'decoder.blocks.0.attn.q_bias', 'decoder.blocks.0.attn.v_bias', 'decoder.blocks.0.attn.qkv.weight', 'decoder.blocks.0.attn.proj.weight', 'decoder.blocks.0.attn.proj.bias', 'decoder.blocks.0.norm2.weight', 'decoder.blocks.0.norm2.bias', 'decoder.blocks.0.mlp.fc1.weight', 'decoder.blocks.0.mlp.fc1.bias', 'decoder.blocks.0.mlp.fc2.weight', 'decoder.blocks.0.mlp.fc2.bias', 'decoder.blocks.1.norm1.weight', 'decoder.blocks.1.norm1.bias', 'decoder.blocks.1.attn.q_bias', 'decoder.blocks.1.attn.v_bias', 'decoder.blocks.1.attn.qkv.weight', 'decoder.blocks.1.attn.proj.weight', 'decoder.blocks.1.attn.proj.bias', 'decoder.blocks.1.norm2.weight', 'decoder.blocks.1.norm2.bias', 'decoder.blocks.1.mlp.fc1.weight', 'decoder.blocks.1.mlp.fc1.bias', 'decoder.blocks.1.mlp.fc2.weight', 'decoder.blocks.1.mlp.fc2.bias', 'decoder.blocks.2.norm1.weight', 'decoder.blocks.2.norm1.bias', 'decoder.blocks.2.attn.q_bias', 'decoder.blocks.2.attn.v_bias', 'decoder.blocks.2.attn.qkv.weight', 'decoder.blocks.2.attn.proj.weight', 'decoder.blocks.2.attn.proj.bias', 'decoder.blocks.2.norm2.weight', 'decoder.blocks.2.norm2.bias', 'decoder.blocks.2.mlp.fc1.weight', 'decoder.blocks.2.mlp.fc1.bias', 'decoder.blocks.2.mlp.fc2.weight', 'decoder.blocks.2.mlp.fc2.bias', 'decoder.blocks.3.norm1.weight', 'decoder.blocks.3.norm1.bias', 'decoder.blocks.3.attn.q_bias', 'decoder.blocks.3.attn.v_bias', 'decoder.blocks.3.attn.qkv.weight', 'decoder.blocks.3.attn.proj.weight', 'decoder.blocks.3.attn.proj.bias', 'decoder.blocks.3.norm2.weight', 'decoder.blocks.3.norm2.bias', 'decoder.blocks.3.mlp.fc1.weight', 'decoder.blocks.3.mlp.fc1.bias', 'decoder.blocks.3.mlp.fc2.weight', 'decoder.blocks.3.mlp.fc2.bias', 'decoder.norm.weight', 'decoder.norm.bias', 'decoder.head.weight', 'decoder.head.bias', 'encoder_to_decoder.weight']
+Weights from pretrained model not used in PretrainVisionTransformer: ['patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight', 'blocks.0.norm1.bias', 'blocks.0.attn.q_bias', 'blocks.0.attn.v_bias', 'blocks.0.attn.qkv.weight', 'blocks.0.attn.proj.weight', 'blocks.0.attn.proj.bias', 'blocks.0.norm2.weight', 'blocks.0.norm2.bias', 'blocks.0.mlp.fc1.weight', 'blocks.0.mlp.fc1.bias', 'blocks.0.mlp.fc2.weight', 'blocks.0.mlp.fc2.bias', 'blocks.1.norm1.weight', 'blocks.1.norm1.bias', 'blocks.1.attn.q_bias', 'blocks.1.attn.v_bias', 'blocks.1.attn.qkv.weight', 'blocks.1.attn.proj.weight', 'blocks.1.attn.proj.bias', 'blocks.1.norm2.weight', 'blocks.1.norm2.bias', 'blocks.1.mlp.fc1.weight', 'blocks.1.mlp.fc1.bias', 'blocks.1.mlp.fc2.weight', 'blocks.1.mlp.fc2.bias', 'blocks.2.norm1.weight', 'blocks.2.norm1.bias', 'blocks.2.attn.q_bias', 'blocks.2.attn.v_bias', 'blocks.2.attn.qkv.weight', 'blocks.2.attn.proj.weight', 'blocks.2.attn.proj.bias', 'blocks.2.norm2.weight', 'blocks.2.norm2.bias', 'blocks.2.mlp.fc1.weight', 'blocks.2.mlp.fc1.bias', 'blocks.2.mlp.fc2.weight', 'blocks.2.mlp.fc2.bias', 'blocks.3.norm1.weight', 'blocks.3.norm1.bias', 'blocks.3.attn.q_bias', 'blocks.3.attn.v_bias', 'blocks.3.attn.qkv.weight', 'blocks.3.attn.proj.weight', 'blocks.3.attn.proj.bias', 'blocks.3.norm2.weight', 'blocks.3.norm2.bias', 'blocks.3.mlp.fc1.weight', 'blocks.3.mlp.fc1.bias', 'blocks.3.mlp.fc2.weight', 'blocks.3.mlp.fc2.bias', 'blocks.4.norm1.weight', 'blocks.4.norm1.bias', 'blocks.4.attn.q_bias', 'blocks.4.attn.v_bias', 'blocks.4.attn.qkv.weight', 'blocks.4.attn.proj.weight', 'blocks.4.attn.proj.bias', 'blocks.4.norm2.weight', 'blocks.4.norm2.bias', 'blocks.4.mlp.fc1.weight', 'blocks.4.mlp.fc1.bias', 'blocks.4.mlp.fc2.weight', 'blocks.4.mlp.fc2.bias', 'blocks.5.norm1.weight', 'blocks.5.norm1.bias', 'blocks.5.attn.q_bias', 'blocks.5.attn.v_bias', 'blocks.5.attn.qkv.weight', 'blocks.5.attn.proj.weight', 'blocks.5.attn.proj.bias', 'blocks.5.norm2.weight', 'blocks.5.norm2.bias', 'blocks.5.mlp.fc1.weight', 'blocks.5.mlp.fc1.bias', 'blocks.5.mlp.fc2.weight', 'blocks.5.mlp.fc2.bias', 'blocks.6.norm1.weight', 'blocks.6.norm1.bias', 'blocks.6.attn.q_bias', 'blocks.6.attn.v_bias', 'blocks.6.attn.qkv.weight', 'blocks.6.attn.proj.weight', 'blocks.6.attn.proj.bias', 'blocks.6.norm2.weight', 'blocks.6.norm2.bias', 'blocks.6.mlp.fc1.weight', 'blocks.6.mlp.fc1.bias', 'blocks.6.mlp.fc2.weight', 'blocks.6.mlp.fc2.bias', 'blocks.7.norm1.weight', 'blocks.7.norm1.bias', 'blocks.7.attn.q_bias', 'blocks.7.attn.v_bias', 'blocks.7.attn.qkv.weight', 'blocks.7.attn.proj.weight', 'blocks.7.attn.proj.bias', 'blocks.7.norm2.weight', 'blocks.7.norm2.bias', 'blocks.7.mlp.fc1.weight', 'blocks.7.mlp.fc1.bias', 'blocks.7.mlp.fc2.weight', 'blocks.7.mlp.fc2.bias', 'blocks.8.norm1.weight', 'blocks.8.norm1.bias', 'blocks.8.attn.q_bias', 'blocks.8.attn.v_bias', 'blocks.8.attn.qkv.weight', 'blocks.8.attn.proj.weight', 'blocks.8.attn.proj.bias', 'blocks.8.norm2.weight', 'blocks.8.norm2.bias', 'blocks.8.mlp.fc1.weight', 'blocks.8.mlp.fc1.bias', 'blocks.8.mlp.fc2.weight', 'blocks.8.mlp.fc2.bias', 'blocks.9.norm1.weight', 'blocks.9.norm1.bias', 'blocks.9.attn.q_bias', 'blocks.9.attn.v_bias', 'blocks.9.attn.qkv.weight', 'blocks.9.attn.proj.weight', 'blocks.9.attn.proj.bias', 'blocks.9.norm2.weight', 'blocks.9.norm2.bias', 'blocks.9.mlp.fc1.weight', 'blocks.9.mlp.fc1.bias', 'blocks.9.mlp.fc2.weight', 'blocks.9.mlp.fc2.bias', 'blocks.10.norm1.weight', 'blocks.10.norm1.bias', 'blocks.10.attn.q_bias', 'blocks.10.attn.v_bias', 'blocks.10.attn.qkv.weight', 'blocks.10.attn.proj.weight', 'blocks.10.attn.proj.bias', 'blocks.10.norm2.weight', 'blocks.10.norm2.bias', 'blocks.10.mlp.fc1.weight', 'blocks.10.mlp.fc1.bias', 'blocks.10.mlp.fc2.weight', 'blocks.10.mlp.fc2.bias', 'blocks.11.norm1.weight', 'blocks.11.norm1.bias', 'blocks.11.attn.q_bias', 'blocks.11.attn.v_bias', 'blocks.11.attn.qkv.weight', 'blocks.11.attn.proj.weight', 'blocks.11.attn.proj.bias', 'blocks.11.norm2.weight', 'blocks.11.norm2.bias', 'blocks.11.mlp.fc1.weight', 'blocks.11.mlp.fc1.bias', 'blocks.11.mlp.fc2.weight', 'blocks.11.mlp.fc2.bias', 'fc_norm.weight', 'fc_norm.bias', 'head.weight', 'head.bias']
+Model = PretrainVisionTransformer(
+  (encoder): PretrainVisionTransformerEncoder(
+    (patch_embed): PatchEmbed(
+      (proj): Conv3d(3, 768, kernel_size=(2, 16, 16), stride=(2, 16, 16))
+    )
+    (blocks): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (2): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (3): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (4): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (5): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (6): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (7): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (8): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (9): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (10): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (11): Block(
+        (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=768, out_features=2304, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=768, out_features=768, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=768, out_features=3072, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=3072, out_features=768, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+    (head): Identity()
+    (MoE): MoE(
+      (experts): ModuleList(
+        (0): ExpertModel(
+          (block): Block(
+            (norm1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (attn): Attention(
+              (qkv): Linear(in_features=768, out_features=2304, bias=False)
+              (attn_drop): Dropout(p=0.0, inplace=False)
+              (proj): Linear(in_features=768, out_features=768, bias=True)
+              (proj_drop): Dropout(p=0.1, inplace=False)
+            )
+            (drop_path): Identity()
+            (norm2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (mlp): Mlp(
+              (fc1): Linear(in_features=768, out_features=3072, bias=True)
+              (act): GELU(approximate=none)
+              (fc2): Linear(in_features=3072, out_features=768, bias=True)
+              (drop): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (fc): Linear(in_features=768, out_features=1, bias=True)
+          (flatten): Flatten(start_dim=1, end_dim=-1)
+        )
+        (1): ExpertModel(
+          (block): Block(
+            (norm1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (attn): Attention(
+              (qkv): Linear(in_features=768, out_features=2304, bias=False)
+              (attn_drop): Dropout(p=0.0, inplace=False)
+              (proj): Linear(in_features=768, out_features=768, bias=True)
+              (proj_drop): Dropout(p=0.1, inplace=False)
+            )
+            (drop_path): Identity()
+            (norm2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (mlp): Mlp(
+              (fc1): Linear(in_features=768, out_features=3072, bias=True)
+              (act): GELU(approximate=none)
+              (fc2): Linear(in_features=3072, out_features=768, bias=True)
+              (drop): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (fc): Linear(in_features=768, out_features=1, bias=True)
+          (flatten): Flatten(start_dim=1, end_dim=-1)
+        )
+        (2): ExpertModel(
+          (block): Block(
+            (norm1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (attn): Attention(
+              (qkv): Linear(in_features=768, out_features=2304, bias=False)
+              (attn_drop): Dropout(p=0.0, inplace=False)
+              (proj): Linear(in_features=768, out_features=768, bias=True)
+              (proj_drop): Dropout(p=0.1, inplace=False)
+            )
+            (drop_path): Identity()
+            (norm2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+            (mlp): Mlp(
+              (fc1): Linear(in_features=768, out_features=3072, bias=True)
+              (act): GELU(approximate=none)
+              (fc2): Linear(in_features=3072, out_features=768, bias=True)
+              (drop): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (fc): Linear(in_features=768, out_features=1, bias=True)
+          (flatten): Flatten(start_dim=1, end_dim=-1)
+        )
+      )
+      (gating_network): GatingNetwork(
+        (fc): Linear(in_features=768, out_features=3, bias=True)
+        (softmax): Softmax(dim=1)
+      )
+    )
+    (softmax): Softmax(dim=-1)
+  )
+  (decoder): PretrainVisionTransformerDecoder(
+    (blocks): ModuleList(
+      (0): Block(
+        (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=384, out_features=1152, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=384, out_features=384, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=384, out_features=1536, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=1536, out_features=384, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (1): Block(
+        (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=384, out_features=1152, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=384, out_features=384, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=384, out_features=1536, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=1536, out_features=384, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (2): Block(
+        (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=384, out_features=1152, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=384, out_features=384, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=384, out_features=1536, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=1536, out_features=384, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (3): Block(
+        (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=384, out_features=1152, bias=False)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=384, out_features=384, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (drop_path): Identity()
+        (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (mlp): Mlp(
+          (fc1): Linear(in_features=384, out_features=1536, bias=True)
+          (act): GELU(approximate=none)
+          (fc2): Linear(in_features=1536, out_features=384, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (head): Linear(in_features=384, out_features=1536, bias=True)
+  )
+  (encoder_to_decoder): Linear(in_features=768, out_features=384, bias=False)
+)
+number of params: 116.676486 M
+LR = 0.00000937
+Batch size = 4
+Number of training steps = 194
+Number of training examples per epoch = 776
+Param groups = {
+  "no_decay": {
+    "weight_decay": 0.0,
+    "params": [
+      "mask_token",
+      "encoder.patch_embed.proj.bias",
+      "encoder.blocks.0.norm1.weight",
+      "encoder.blocks.0.norm1.bias",
+      "encoder.blocks.0.attn.q_bias",
+      "encoder.blocks.0.attn.v_bias",
+      "encoder.blocks.0.attn.proj.bias",
+      "encoder.blocks.0.norm2.weight",
+      "encoder.blocks.0.norm2.bias",
+      "encoder.blocks.0.mlp.fc1.bias",
+      "encoder.blocks.0.mlp.fc2.bias",
+      "encoder.blocks.1.norm1.weight",
+      "encoder.blocks.1.norm1.bias",
+      "encoder.blocks.1.attn.q_bias",
+      "encoder.blocks.1.attn.v_bias",
+      "encoder.blocks.1.attn.proj.bias",
+      "encoder.blocks.1.norm2.weight",
+      "encoder.blocks.1.norm2.bias",
+      "encoder.blocks.1.mlp.fc1.bias",
+      "encoder.blocks.1.mlp.fc2.bias",
+      "encoder.blocks.2.norm1.weight",
+      "encoder.blocks.2.norm1.bias",
+      "encoder.blocks.2.attn.q_bias",
+      "encoder.blocks.2.attn.v_bias",
+      "encoder.blocks.2.attn.proj.bias",
+      "encoder.blocks.2.norm2.weight",
+      "encoder.blocks.2.norm2.bias",
+      "encoder.blocks.2.mlp.fc1.bias",
+      "encoder.blocks.2.mlp.fc2.bias",
+      "encoder.blocks.3.norm1.weight",
+      "encoder.blocks.3.norm1.bias",
+      "encoder.blocks.3.attn.q_bias",
+      "encoder.blocks.3.attn.v_bias",
+      "encoder.blocks.3.attn.proj.bias",
+      "encoder.blocks.3.norm2.weight",
+      "encoder.blocks.3.norm2.bias",
+      "encoder.blocks.3.mlp.fc1.bias",
+      "encoder.blocks.3.mlp.fc2.bias",
+      "encoder.blocks.4.norm1.weight",
+      "encoder.blocks.4.norm1.bias",
+      "encoder.blocks.4.attn.q_bias",
+      "encoder.blocks.4.attn.v_bias",
+      "encoder.blocks.4.attn.proj.bias",
+      "encoder.blocks.4.norm2.weight",
+      "encoder.blocks.4.norm2.bias",
+      "encoder.blocks.4.mlp.fc1.bias",
+      "encoder.blocks.4.mlp.fc2.bias",
+      "encoder.blocks.5.norm1.weight",
+      "encoder.blocks.5.norm1.bias",
+      "encoder.blocks.5.attn.q_bias",
+      "encoder.blocks.5.attn.v_bias",
+      "encoder.blocks.5.attn.proj.bias",
+      "encoder.blocks.5.norm2.weight",
+      "encoder.blocks.5.norm2.bias",
+      "encoder.blocks.5.mlp.fc1.bias",
+      "encoder.blocks.5.mlp.fc2.bias",
+      "encoder.blocks.6.norm1.weight",
+      "encoder.blocks.6.norm1.bias",
+      "encoder.blocks.6.attn.q_bias",
+      "encoder.blocks.6.attn.v_bias",
+      "encoder.blocks.6.attn.proj.bias",
+      "encoder.blocks.6.norm2.weight",
+      "encoder.blocks.6.norm2.bias",
+      "encoder.blocks.6.mlp.fc1.bias",
+      "encoder.blocks.6.mlp.fc2.bias",
+      "encoder.blocks.7.norm1.weight",
+      "encoder.blocks.7.norm1.bias",
+      "encoder.blocks.7.attn.q_bias",
+      "encoder.blocks.7.attn.v_bias",
+      "encoder.blocks.7.attn.proj.bias",
+      "encoder.blocks.7.norm2.weight",
+      "encoder.blocks.7.norm2.bias",
+      "encoder.blocks.7.mlp.fc1.bias",
+      "encoder.blocks.7.mlp.fc2.bias",
+      "encoder.blocks.8.norm1.weight",
+      "encoder.blocks.8.norm1.bias",
+      "encoder.blocks.8.attn.q_bias",
+      "encoder.blocks.8.attn.v_bias",
+      "encoder.blocks.8.attn.proj.bias",
+      "encoder.blocks.8.norm2.weight",
+      "encoder.blocks.8.norm2.bias",
+      "encoder.blocks.8.mlp.fc1.bias",
+      "encoder.blocks.8.mlp.fc2.bias",
+      "encoder.blocks.9.norm1.weight",
+      "encoder.blocks.9.norm1.bias",
+      "encoder.blocks.9.attn.q_bias",
+      "encoder.blocks.9.attn.v_bias",
+      "encoder.blocks.9.attn.proj.bias",
+      "encoder.blocks.9.norm2.weight",
+      "encoder.blocks.9.norm2.bias",
+      "encoder.blocks.9.mlp.fc1.bias",
+      "encoder.blocks.9.mlp.fc2.bias",
+      "encoder.blocks.10.norm1.weight",
+      "encoder.blocks.10.norm1.bias",
+      "encoder.blocks.10.attn.q_bias",
+      "encoder.blocks.10.attn.v_bias",
+      "encoder.blocks.10.attn.proj.bias",
+      "encoder.blocks.10.norm2.weight",
+      "encoder.blocks.10.norm2.bias",
+      "encoder.blocks.10.mlp.fc1.bias",
+      "encoder.blocks.10.mlp.fc2.bias",
+      "encoder.blocks.11.norm1.weight",
+      "encoder.blocks.11.norm1.bias",
+      "encoder.blocks.11.attn.q_bias",
+      "encoder.blocks.11.attn.v_bias",
+      "encoder.blocks.11.attn.proj.bias",
+      "encoder.blocks.11.norm2.weight",
+      "encoder.blocks.11.norm2.bias",
+      "encoder.blocks.11.mlp.fc1.bias",
+      "encoder.blocks.11.mlp.fc2.bias",
+      "encoder.norm.weight",
+      "encoder.norm.bias",
+      "encoder.MoE.experts.0.block.norm1.weight",
+      "encoder.MoE.experts.0.block.norm1.bias",
+      "encoder.MoE.experts.0.block.attn.proj.bias",
+      "encoder.MoE.experts.0.block.norm2.weight",
+      "encoder.MoE.experts.0.block.norm2.bias",
+      "encoder.MoE.experts.0.block.mlp.fc1.bias",
+      "encoder.MoE.experts.0.block.mlp.fc2.bias",
+      "encoder.MoE.experts.0.fc.bias",
+      "encoder.MoE.experts.1.block.norm1.weight",
+      "encoder.MoE.experts.1.block.norm1.bias",
+      "encoder.MoE.experts.1.block.attn.proj.bias",
+      "encoder.MoE.experts.1.block.norm2.weight",
+      "encoder.MoE.experts.1.block.norm2.bias",
+      "encoder.MoE.experts.1.block.mlp.fc1.bias",
+      "encoder.MoE.experts.1.block.mlp.fc2.bias",
+      "encoder.MoE.experts.1.fc.bias",
+      "encoder.MoE.experts.2.block.norm1.weight",
+      "encoder.MoE.experts.2.block.norm1.bias",
+      "encoder.MoE.experts.2.block.attn.proj.bias",
+      "encoder.MoE.experts.2.block.norm2.weight",
+      "encoder.MoE.experts.2.block.norm2.bias",
+      "encoder.MoE.experts.2.block.mlp.fc1.bias",
+      "encoder.MoE.experts.2.block.mlp.fc2.bias",
+      "encoder.MoE.experts.2.fc.bias",
+      "encoder.MoE.gating_network.fc.bias",
+      "decoder.blocks.0.norm1.weight",
+      "decoder.blocks.0.norm1.bias",
+      "decoder.blocks.0.attn.q_bias",
+      "decoder.blocks.0.attn.v_bias",
+      "decoder.blocks.0.attn.proj.bias",
+      "decoder.blocks.0.norm2.weight",
+      "decoder.blocks.0.norm2.bias",
+      "decoder.blocks.0.mlp.fc1.bias",
+      "decoder.blocks.0.mlp.fc2.bias",
+      "decoder.blocks.1.norm1.weight",
+      "decoder.blocks.1.norm1.bias",
+      "decoder.blocks.1.attn.q_bias",
+      "decoder.blocks.1.attn.v_bias",
+      "decoder.blocks.1.attn.proj.bias",
+      "decoder.blocks.1.norm2.weight",
+      "decoder.blocks.1.norm2.bias",
+      "decoder.blocks.1.mlp.fc1.bias",
+      "decoder.blocks.1.mlp.fc2.bias",
+      "decoder.blocks.2.norm1.weight",
+      "decoder.blocks.2.norm1.bias",
+      "decoder.blocks.2.attn.q_bias",
+      "decoder.blocks.2.attn.v_bias",
+      "decoder.blocks.2.attn.proj.bias",
+      "decoder.blocks.2.norm2.weight",
+      "decoder.blocks.2.norm2.bias",
+      "decoder.blocks.2.mlp.fc1.bias",
+      "decoder.blocks.2.mlp.fc2.bias",
+      "decoder.blocks.3.norm1.weight",
+      "decoder.blocks.3.norm1.bias",
+      "decoder.blocks.3.attn.q_bias",
+      "decoder.blocks.3.attn.v_bias",
+      "decoder.blocks.3.attn.proj.bias",
+      "decoder.blocks.3.norm2.weight",
+      "decoder.blocks.3.norm2.bias",
+      "decoder.blocks.3.mlp.fc1.bias",
+      "decoder.blocks.3.mlp.fc2.bias",
+      "decoder.norm.weight",
+      "decoder.norm.bias",
+      "decoder.head.bias"
+    ],
+    "lr_scale": 1.0
+  },
+  "decay": {
+    "weight_decay": 0.05,
+    "params": [
+      "encoder.pos_embed_probs",
+      "encoder.patch_embed.proj.weight",
+      "encoder.blocks.0.attn.qkv.weight",
+      "encoder.blocks.0.attn.proj.weight",
+      "encoder.blocks.0.mlp.fc1.weight",
+      "encoder.blocks.0.mlp.fc2.weight",
+      "encoder.blocks.1.attn.qkv.weight",
+      "encoder.blocks.1.attn.proj.weight",
+      "encoder.blocks.1.mlp.fc1.weight",
+      "encoder.blocks.1.mlp.fc2.weight",
+      "encoder.blocks.2.attn.qkv.weight",
+      "encoder.blocks.2.attn.proj.weight",
+      "encoder.blocks.2.mlp.fc1.weight",
+      "encoder.blocks.2.mlp.fc2.weight",
+      "encoder.blocks.3.attn.qkv.weight",
+      "encoder.blocks.3.attn.proj.weight",
+      "encoder.blocks.3.mlp.fc1.weight",
+      "encoder.blocks.3.mlp.fc2.weight",
+      "encoder.blocks.4.attn.qkv.weight",
+      "encoder.blocks.4.attn.proj.weight",
+      "encoder.blocks.4.mlp.fc1.weight",
+      "encoder.blocks.4.mlp.fc2.weight",
+      "encoder.blocks.5.attn.qkv.weight",
+      "encoder.blocks.5.attn.proj.weight",
+      "encoder.blocks.5.mlp.fc1.weight",
+      "encoder.blocks.5.mlp.fc2.weight",
+      "encoder.blocks.6.attn.qkv.weight",
+      "encoder.blocks.6.attn.proj.weight",
+      "encoder.blocks.6.mlp.fc1.weight",
+      "encoder.blocks.6.mlp.fc2.weight",
+      "encoder.blocks.7.attn.qkv.weight",
+      "encoder.blocks.7.attn.proj.weight",
+      "encoder.blocks.7.mlp.fc1.weight",
+      "encoder.blocks.7.mlp.fc2.weight",
+      "encoder.blocks.8.attn.qkv.weight",
+      "encoder.blocks.8.attn.proj.weight",
+      "encoder.blocks.8.mlp.fc1.weight",
+      "encoder.blocks.8.mlp.fc2.weight",
+      "encoder.blocks.9.attn.qkv.weight",
+      "encoder.blocks.9.attn.proj.weight",
+      "encoder.blocks.9.mlp.fc1.weight",
+      "encoder.blocks.9.mlp.fc2.weight",
+      "encoder.blocks.10.attn.qkv.weight",
+      "encoder.blocks.10.attn.proj.weight",
+      "encoder.blocks.10.mlp.fc1.weight",
+      "encoder.blocks.10.mlp.fc2.weight",
+      "encoder.blocks.11.attn.qkv.weight",
+      "encoder.blocks.11.attn.proj.weight",
+      "encoder.blocks.11.mlp.fc1.weight",
+      "encoder.blocks.11.mlp.fc2.weight",
+      "encoder.MoE.experts.0.block.attn.qkv.weight",
+      "encoder.MoE.experts.0.block.attn.proj.weight",
+      "encoder.MoE.experts.0.block.mlp.fc1.weight",
+      "encoder.MoE.experts.0.block.mlp.fc2.weight",
+      "encoder.MoE.experts.0.fc.weight",
+      "encoder.MoE.experts.1.block.attn.qkv.weight",
+      "encoder.MoE.experts.1.block.attn.proj.weight",
+      "encoder.MoE.experts.1.block.mlp.fc1.weight",
+      "encoder.MoE.experts.1.block.mlp.fc2.weight",
+      "encoder.MoE.experts.1.fc.weight",
+      "encoder.MoE.experts.2.block.attn.qkv.weight",
+      "encoder.MoE.experts.2.block.attn.proj.weight",
+      "encoder.MoE.experts.2.block.mlp.fc1.weight",
+      "encoder.MoE.experts.2.block.mlp.fc2.weight",
+      "encoder.MoE.experts.2.fc.weight",
+      "encoder.MoE.gating_network.fc.weight",
+      "decoder.blocks.0.attn.qkv.weight",
+      "decoder.blocks.0.attn.proj.weight",
+      "decoder.blocks.0.mlp.fc1.weight",
+      "decoder.blocks.0.mlp.fc2.weight",
+      "decoder.blocks.1.attn.qkv.weight",
+      "decoder.blocks.1.attn.proj.weight",
+      "decoder.blocks.1.mlp.fc1.weight",
+      "decoder.blocks.1.mlp.fc2.weight",
+      "decoder.blocks.2.attn.qkv.weight",
+      "decoder.blocks.2.attn.proj.weight",
+      "decoder.blocks.2.mlp.fc1.weight",
+      "decoder.blocks.2.mlp.fc2.weight",
+      "decoder.blocks.3.attn.qkv.weight",
+      "decoder.blocks.3.attn.proj.weight",
+      "decoder.blocks.3.mlp.fc1.weight",
+      "decoder.blocks.3.mlp.fc2.weight",
+      "decoder.head.weight",
+      "encoder_to_decoder.weight"
+    ],
+    "lr_scale": 1.0
+  }
+}
+optimizer settings: {'lr': 9.375e-06, 'weight_decay': 0.0, 'eps': 1e-08, 'betas': [0.9, 0.95]}
+Use step level LR & WD scheduler!
+Set warmup steps = 5820
+Set warmup steps = 0
+Max WD = 0.0500000, Min WD = 0.0500000
+Auto resume checkpoint: 
+Start training for 500 epochs
+Epoch: [0]  [  0/194]  eta: 1:12:53  lr: 0.000000  min_lr: 0.000000  loss: 1.2596 (1.2596)  loss_scale: 65536.0000 (65536.0000)  weight_decay: 0.0500 (0.0500)  grad_norm: 0.8451 (0.8451)  time: 22.5416 (22.5416 -- 22.5416)  data: 20.5037 (20.5037 -- 20.5037)  max mem: 12632
