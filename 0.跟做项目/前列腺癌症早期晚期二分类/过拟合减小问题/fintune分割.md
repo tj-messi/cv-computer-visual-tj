@@ -89,8 +89,50 @@
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1743600775741.png)
 
 
-#
+#topk做额外Prompt
 
+	def forward_features(self, x ,mask):
+		B = x.size(0)
+
+        x = self.patch_embed(x)
+
+        B, N, C = x.shape
+
+        embedded_x = x + self.pos_embed.type_as(x).to(x.device).clone().detach()
+        self.encoder_mask_map_generator = SegmentMaskingGenerator((16, 224, 224),Segments=mask)
+        encoder_mask_map = self.encoder_mask_map_generator()
+        import_x = self.MoE(embedded_x,encoder_mask_map)
+        import_x = torch.sigmoid(import_x)  # shape (1, 1568)
+
+        topk_ratio = 0.1  # 取 10%
+        topk_num = max(1, int(N * topk_ratio))
+
+        _, topk_indices = torch.topk(import_x, topk_num, dim=1)  # shape (B, topk_num)
+        prompt_tokens = torch.gather(x, dim=1, index=topk_indices.unsqueeze(-1).expand(-1, -1, C))  # shape (B, topk_num, C)
+
+        # 将 Prompt 拼接到输入
+        x = torch.cat([prompt_tokens, x], dim=1)  # shape (B, N + topk_num, C)
+
+        # 位置编码同步扩展
+        if self.pos_embed is not None:
+            pos_embed_expanded = self.pos_embed.expand(B, -1, -1).type_as(x).to(x.device).clone().detach()
+            pos_prompt = torch.gather(pos_embed_expanded, dim=1, index=topk_indices.unsqueeze(-1).expand(-1, -1, C))
+            x = x + torch.cat([pos_prompt, pos_embed_expanded], dim=1)
+
+        x = self.pos_drop(x)
+
+        # 经过 Transformer 编码
+        for blk in self.blocks:
+            if self.with_cp:
+                x = cp.checkpoint(blk, x)
+            else:
+                x = blk(x)
+
+        # 输出分类特征
+        if self.fc_norm is not None:
+            return self.fc_norm(x.mean(1))
+        else:
+            return self.norm(x[:, 0])
 
 #clip数量问题
 
