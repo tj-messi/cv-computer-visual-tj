@@ -87,3 +87,15 @@
 	        # 返回聚合信息(3,768)
 
 ![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1743600775741.png)
+
+
+#
+
+
+#clip数量问题
+
+可以按照论文里面这样说的：
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1743734586518.png)
+
+![](https://cdn.jsdelivr.net/gh/tj-messi/picture/1743734600723.png)
