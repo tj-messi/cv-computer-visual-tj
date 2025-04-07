@@ -510,4 +510,5 @@
             return multi_scale_features[0]
 
 
-#可学习的多尺度特征
+#3,6,9层平均+concat给12层多尺度特征
+
