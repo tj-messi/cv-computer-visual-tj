@@ -508,3 +508,6 @@
 	            return fused_features
 	        else:
             return multi_scale_features[0]
+
+
+#可学习的多尺度特征
