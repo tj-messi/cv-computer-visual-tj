@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Website</title>
+    <link rel="stylesheet" href="{% static 'llm/css/styles.css' %}">
+    <link rel="icon" href="{% static 'llm/images/logo.ico' %}">
+</head>
+<body>
+    <header>
+        <img src="{% static 'llm/images/log.jpg' %}">
+        <div class="container">
+            <h1>LLM+ Clinic</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}">首页</a></li>
+                    <li><a href="#services">服务</a></li>
+                    <li><a href="#about">更多</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="upload">
+        <div class="container">
+            <h2>上传诊断文件</h2>
+            <br><br>
+            <form id="uploadForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="file" name="file" accept=".rar" required>
+                <button type="submit">上传</button>
+            </form>
+            <p id="uploadStatus"></p>
+        </div>
+    </section>
+
+
+<section id="history">
+    <div class="container">
+        <h2>LLM诊断结果</h2>
+        <p>{{ message }}</p>  <!-- 显示传递的消息 -->
+        {% if result_chart %}
+            <img src="{% static 'result/result_chart.jpg' %}" >  <!-- 使用静态文件路径 -->
+        {% endif %}
+        {% if message != "暂无文件信息。" %}
+            <button onclick="deleteFile()">删除文件</button>
+        {% endif %}
+    </div>
+</section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 HealthCare+ Clinic. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();  // 阻止表单默认提交行为
+
+            const formData = new FormData(this);
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            fetch('{% url "upload_file" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',  // 添加 CSRF 令牌
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    uploadStatus.textContent = '文件上传成功！';
+                    uploadStatus.style.color = 'green';
+                    // 上传成功后刷新页面
+                    window.location.reload();
+                } else {
+                    uploadStatus.textContent = data.message || '文件上传失败！';
+                    uploadStatus.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                uploadStatus.textContent = '文件上传失败！';
+                uploadStatus.style.color = 'red';
+                console.error('Error:', error);
+            });
+        });
+
+        function deleteFile() {
+            fetch('{% url "delete_file" %}', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',  // 添加 CSRF 令牌
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 删除成功后刷新页面
+                    window.location.reload();
+                } else {
+                    console.error('删除文件失败！');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

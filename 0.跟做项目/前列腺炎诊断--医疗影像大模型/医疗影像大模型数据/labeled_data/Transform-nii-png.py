@@ -5,7 +5,7 @@ import os
 
 
 nii_file = 'case000000.nii'
-save_dir = ' D:/cv/cv-computer-visual/0.跟做项目/前列腺炎诊断--医疗影像大模型/医疗影像大模型数据/labeled_data/train_png/label'
+save_dir = ' D:cv/cv-computer-visual/0.跟做项目/前列腺炎诊断--医疗影像大模型/医疗影像大模型数据/labeled_data/train_png/label'
 img = nib.load(nii_file)
 
 img_fdata = img.get_fdata() # 获取图像数据
