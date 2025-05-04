@@ -1,0 +1,41 @@
+1.memory bank 
+注释以下三句
+self.MemoryNetwork = GeneMemoryNetwork(gene_dim=64, num_genes=self.gene_num,query_dim=self.gene_num,memory_bank = co_expression)
+h_temp = self.MemoryNetwork(h_temp)
+h_temp = F.relu(h_temp)
+2.gene contrastive 
+注释
+gene_loss = self.compute_contrastive_loss(h_x.clone())
+修改
+return com_WSI, com_spot,  dist_WSI, dist_spot,GMSD_loss,gene_loss,self.out(h)少一个gene_loss
+terms['gene'] = gene_loss
+terms["loss"] = terms["mse"] + 0.01*terms["disent"] + terms["vb"]+0.01*terms['grad']+0.01*terms['gene']
+terms["loss"] = terms["mse"] + terms["disent"]+0.01*terms['grad']+0.01*terms['gene']
+3.probabilistic masking 
+h_spot = self.replacer.replace_with_noise(h_spot, ratio, dtype=torch.float32)ratio 固定成0.8
+4.CL
+h_320WSI = h_320WSI[:, 0:int(h_320WSI.shape[1] * ratio*1), ...]
+5.local gradient 
+GMSD_loss/com_loss
+6.model modality
+#modulatoion
+先删再换 comh dist_wsi dist_spoth
+
+7.Local Memory 
+        sparse_memory = self.sparse_attention(queries, adapted_memory)  # [batch, query_dim, gene_dim]
+        device = sparse_memory.device
+        global_memory=global_memory.unsqueeze(0).expand(2, -1, -1)
+        global_memory = global_memory.to(device)
+        # Expand local_memory to match sparse_memory
+        local_memory = local_memory.unsqueeze(2).expand(-1, -1, sparse_memory.size(-1))  # [batch, query_dim, gene_dim]\
+        print(sparse_memory.shape,global_memory.shape)
+        # 5. 注意力交互
+        # Concatenate along dimension 1
+        combined_memory = torch.cat([global_memory, sparse_memory], dim=1)  # [batch, query_dim * 2, gene_dim]# 组合局部与稀疏记忆
+8.sparse representation 
+
+
+9.Meta-learning 
+换成global，gpu换在一个设备上 
+10.解耦
+
